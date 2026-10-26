@@ -26,6 +26,21 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 > [!NOTE]
 > Need slides in the same style? The matching slide template is [touying-nasapunk](https://typst.app/universe/package/touying-nasapunk) on Typst Universe.
 
+## Contents
+
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Quick start](#quick-start)
+- [Configuration](#configuration)
+- [Writing posts](#writing-posts)
+- [Components](#components)
+- [Deployment](#deployment)
+- [Project structure](#project-structure)
+- [Fonts](#fonts)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+- [Star History](#star-history)
+
 ## Features
 
 <table>
@@ -257,4 +272,14 @@ Built on [Tola](https://github.com/tola-rs/tola-ssg) and [Typst](https://typst.a
 
 ## License
 
-The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `assets/webfonts/`.
+The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `assets/webfonts/` and `typst-fonts/`.
+
+## Star History
+
+<a href="https://www.star-history.com/#KKKZOZ/tola-theme-nasapunk&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date&theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date">
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date">
+  </picture>
+</a>

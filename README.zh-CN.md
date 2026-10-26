@@ -26,6 +26,21 @@
 > [!NOTE]
 > 需要同一风格的幻灯片？配套的 slides 模板是 Typst Universe 上的 [touying-nasapunk](https://typst.app/universe/package/touying-nasapunk)。
 
+## 目录
+
+- [特性](#特性)
+- [截图](#截图)
+- [快速开始](#快速开始)
+- [配置](#配置)
+- [写文章](#写文章)
+- [组件](#组件)
+- [部署](#部署)
+- [目录结构](#目录结构)
+- [字体](#字体)
+- [致谢](#致谢)
+- [许可证](#许可证)
+- [Star History](#star-history)
+
 ## 特性
 
 <table>
@@ -257,4 +272,14 @@ tola dev
 
 ## 许可证
 
-主题以 [MIT 许可证](LICENSE) 发布。随附字体使用 SIL Open Font License 1.1，许可证原文见 `assets/webfonts/`。
+主题以 [MIT 许可证](LICENSE) 发布。随附字体使用 SIL Open Font License 1.1，许可证原文见 `assets/webfonts/` 与 `typst-fonts/`。
+
+## Star History
+
+<a href="https://www.star-history.com/#KKKZOZ/tola-theme-nasapunk&Date">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date&theme=dark">
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date">
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=KKKZOZ/tola-theme-nasapunk&type=Date">
+  </picture>
+</a>
