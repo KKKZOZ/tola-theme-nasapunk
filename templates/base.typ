@@ -3,6 +3,7 @@
 
 #import "@tola/address:0.0.0": slugify
 #import "@tola/document:0.0.0": current-document
+#import "/templates/config.typ": cjk-font
 #import "/templates/data.typ": draft-index
 
 // Mirrors the day values of the `--*` tokens in assets/styles/site.css, for
@@ -16,8 +17,11 @@
   hint-emphasis: rgb("#326D65"), warning: rgb("#8A5B13"), danger: rgb("#A73434"),
 )
 
-#let title-font = ("Rajdhani", "Sarasa Gothic SC")
-#let body-font = ("IBM Plex Mono", "Sarasa Gothic SC")
+// Rajdhani and IBM Plex Mono come from typst-fonts/; CJK text uses
+// `cjk-font` (config.typ), else any system font that has the glyphs.
+#let cjk = if cjk-font == none { () } else { (cjk-font,) }
+#let title-font = ("Rajdhani",) + cjk
+#let body-font = ("IBM Plex Mono",) + cjk
 
 /// Elements matching `sel` in the current document only: the site is one
 /// Bundle, so a bare `query` would also see every other page. Needs `context`.

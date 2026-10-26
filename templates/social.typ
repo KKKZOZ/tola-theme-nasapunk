@@ -9,10 +9,6 @@
 #import "/templates/config.typ": social-image
 #import "/templates/layout.typ": author, orbital-glyph, social-output
 
-/// The body font, then DejaVu Sans Mono, which Typst bundles: a build machine
-/// without IBM Plex Mono still sets the card's small text in a monospace.
-#let mono = body-font + ("DejaVu Sans Mono",)
-
 /// Day values of the livery `--band-*` tokens in assets/styles/site.css.
 #let bands = (rgb("#B84636"), rgb("#DE783C"), rgb("#E3B65A"), rgb("#719C98"), rgb("#355B70"))
 
@@ -20,7 +16,7 @@
 #let rail(width, stripe) = stack(..bands.map(c => rect(width: width, height: stripe, fill: c, stroke: none)))
 
 /// Small uppercase mono annotation, as the `.label` class.
-#let label(body, fill: palette.muted) = text(font: mono, size: 8.5pt, weight: 500, tracking: .1em, fill: fill, upper(body))
+#let label(body, fill: palette.muted) = text(font: body-font, size: 8.5pt, weight: 500, tracking: .1em, fill: fill, upper(body))
 
 /// "example.com/blog": the site's address without the scheme, or `none`.
 #let host = if site.url != none { site.url.replace(regex("^https?://"), "").trim("/", at: end) }
@@ -30,7 +26,7 @@
 #let social-card() = if social-image == auto {
   document(social-output, format: "png")[
     #set page(width: 600pt, height: 315pt, margin: (x: 40pt, top: 50pt, bottom: 26pt), fill: palette.paper)
-    #set text(font: mono, fill: palette.ink)
+    #set text(font: body-font, fill: palette.ink)
     // Spacing is set with `v` below: the default `1.2em` would scale with the title.
     #set par(spacing: 0pt)
     #set block(spacing: 0pt)

@@ -23,6 +23,12 @@
 /// absolute.
 #let social-image = auto
 
+/// Font for Chinese, Japanese and Korean text in figures and the preview
+/// image drawn by Typst, e.g. "Sarasa Gothic SC" once it is installed on the
+/// build machine. `none` uses any system font that has the glyphs. Pages
+/// themselves use the browser's fonts (assets/styles/site.css).
+#let cjk-font = none
+
 /// Extra <head> content on every page, such as an analytics script.
 /// `html.elem` takes any attribute; Plausible, for example:
 /// ```typst

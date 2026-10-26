@@ -149,9 +149,9 @@ tola dev
 | 目录收录的标题层级 | `templates/post.typ` → `toc-depth` |
 | RSS 收录的文章数；全文还是摘要 | `templates/feeds.typ` → `feed-size`、`full-text` |
 | 配色 | `assets/styles/site.css` 开头的颜色变量，`templates/base.typ` 里的 `palette` 与之对应 |
-| 搜索语言 | `package.json` 里的 `index` 脚本（见下文） |
+| 搜索语言 | `scripts/search-index.mjs` → `forceLanguage`（见下文） |
 
-搜索会根据 `[site] language` 识别语言。如果站点以中文为主，在 `index` 脚本末尾加上 `--force-language zh`。
+搜索会根据 `[site] language` 识别语言。如果站点以中文为主，把 `scripts/search-index.mjs` 里的 `forceLanguage` 设为 `"zh"`。
 
 ## 写文章
 
@@ -226,6 +226,8 @@ tola dev
 ```
 ├── site.typ              站点程序：生成所有页面
 ├── tola.toml             站点配置
+├── typst-fonts/          插图使用的 IBM Plex Mono 与 Rajdhani
+├── scripts/              搜索索引构建 hook（Pagefind）
 ├── templates/            页面布局、页眉页脚、列表页
 │   ├── config.typ        tola.toml 之外的站点设置
 │   ├── feeds.typ         RSS 订阅源、sitemap 与 robots.txt
@@ -244,7 +246,10 @@ tola dev
 
 ## 字体
 
-正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。中日韩文字回退到更纱黑体或系统字体。Typst 绘制的插图和预览图使用构建机器上已安装的字体；缺少这些字体时构建仍会成功，只是插图和预览图里会换用备用字体。
+正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。Typst 绘制的插图和预览图使用 `typst-fonts/` 里的同两套字体，因此在任何构建机器上效果都一致。中日韩文字在页面和插图中都回退到系统字体。
+
+> [!NOTE]
+> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `templates/config.typ` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
 
 ## 致谢
 

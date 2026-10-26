@@ -28,23 +28,23 @@ resources = "error"
 fragments = "error"
 
 # tola help "[build.hooks]"
-# Pagefind indexes the compiled pages for /search/ (see package.json).
+# Pagefind indexes the compiled pages for /search/ (scripts/search-index.mjs).
 # Skipped by `tola dev` so saves reload without waiting for the index; `tola
 # preview` and `tola build` run it. Set `dev = "run"` to search in dev too.
 [[build.hooks.generate-outputs]]
 enable = true
 name = "search"
-command = ["npm", "run", "--silent", "index"]
+command = ["node", "scripts/search-index.mjs"]
 dev = "skip"
-rerun-on = ["package.json", "package-lock.json"]
+rerun-on = ["scripts/search-index.mjs", "package.json", "package-lock.json"]
 outputs = [{ tree = "pagefind" }]
 
 # tola help "[typst.fonts]"
-# Compiler fonts for SVG frames (math, cetz): the figures use IBM Plex Mono and
-# Sarasa Gothic SC (for CJK) from the system. `tola vendor` can copy
-# them into the site for builds elsewhere.
+# Compiler fonts for SVG frames (math, cetz) and the preview image: IBM Plex
+# Mono and Rajdhani ship in typst-fonts/. System fonts stay on for CJK text,
+# which no bundled font covers (`cjk-font` in templates/config.typ).
 [typst.fonts]
-paths = []
+paths = ["typst-fonts"]
 system = true
 
 # tola help "[assets]"

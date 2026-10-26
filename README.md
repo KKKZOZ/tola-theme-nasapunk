@@ -149,9 +149,9 @@ Then make it yours:
 | Heading levels in the table of contents | `templates/post.typ` → `toc-depth` |
 | Posts in the RSS feed; full text or summaries | `templates/feeds.typ` → `feed-size`, `full-text` |
 | Colours | tokens at the top of `assets/styles/site.css`, mirrored by `palette` in `templates/base.typ` |
-| Search language | `index` script in `package.json` (see below) |
+| Search language | `scripts/search-index.mjs` → `forceLanguage` (see below) |
 
-Search detects the language from `[site] language`. For a site written mostly in Chinese, add `--force-language zh` to the `index` script.
+Search detects the language from `[site] language`. For a site written mostly in Chinese, set `forceLanguage` to `"zh"` in `scripts/search-index.mjs`.
 
 ## Writing posts
 
@@ -226,6 +226,8 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ```
 ├── site.typ              site program: emits every page
 ├── tola.toml             site settings
+├── typst-fonts/          IBM Plex Mono and Rajdhani for figures
+├── scripts/              search index build hook (Pagefind)
 ├── templates/            layouts, header and footer, listings
 │   ├── config.typ        settings tola.toml has no key for
 │   ├── feeds.typ         RSS feed, sitemap and robots.txt
@@ -244,7 +246,10 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 
 ## Fonts
 
-Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Chinese, Japanese and Korean text falls back to Sarasa Gothic or the system font. Figures and the preview image drawn by Typst use the fonts installed on the build machine; a build without them still succeeds, with fallback fonts in the figures and the image.
+Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts from `typst-fonts/`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
+
+> [!NOTE]
+> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` in `templates/config.typ`, and figures and the preview image use it too.
 
 ## Acknowledgements
 
