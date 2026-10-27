@@ -15,7 +15,7 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 
 **English** · [简体中文](README.zh-CN.md)
 
-**[Live demo](https://kkkzoz.github.io/tola-theme-nasapunk/)**
+**[Live demo](https://kkkzoz.github.io/tola-theme-nasapunk/)** · **[My blog](https://blog.kkkzoz.top/)**
 
 <br>
 

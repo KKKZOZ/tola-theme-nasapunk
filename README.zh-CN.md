@@ -15,7 +15,7 @@
 
 [English](README.md) · **简体中文**
 
-**[在线演示](https://kkkzoz.github.io/tola-theme-nasapunk/)**
+**[在线演示](https://kkkzoz.github.io/tola-theme-nasapunk/)** · **[我的博客](https://blog.kkkzoz.top/)**
 
 <br>
 
