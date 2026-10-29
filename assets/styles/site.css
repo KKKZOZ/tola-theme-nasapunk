@@ -67,7 +67,7 @@
   --font-mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Gothic SC", "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
   --font-body: var(--font-mono);
 
-  --measure: 760px;
+  --measure: 760px; /* set from `content-width` in templates/config.typ */
   --gutter: 16px;
 }
 
@@ -479,27 +479,8 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
 .toc-list a.is-done::before { background: var(--muted); border-color: var(--muted); }
 .toc-list a.is-active::before { background: var(--orange); border-color: var(--orange); }
 
-@media (min-width: 1320px) {
-  .toc {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: calc(100% + 48px);
-    width: 220px;
-    margin: 0;
-    padding: 0;
-    border: 0;
-  }
-  .toc-inner {
-    position: sticky;
-    top: 32px;
-    max-height: calc(100vh - 64px);
-    overflow-y: auto;
-    padding-top: 6px;
-    border-top: 1.5px solid;
-    border-image: linear-gradient(90deg, var(--orange) 0 32px, var(--rule) 32px) 1;
-  }
-}
+/* The floating layout: assets/styles/toc-float.css, loaded once the window
+   has room for it (layout.typ). */
 
 html { scroll-behavior: smooth; }
 :where(.prose) :is(h2, h3, h4) { scroll-margin-top: 24px; }
@@ -818,9 +799,47 @@ html { scroll-behavior: smooth; }
 .gallery-grid { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 12px; }
 .gallery-item .label { margin-top: 6px; }
 @media (min-width: 601px) and (max-width: 760px) { .channel-grid { columns: 2; } }
-@media (min-width: 1000px) {
-  .img-bleed { margin-inline: -80px; }
+/* Past the column by up to 80px a side, as far as the window allows. */
+.img-bleed { margin-inline: calc(-1 * clamp(0px, (100vw - var(--measure)) / 2 - var(--gutter), 80px)); }
+
+/* Click-to-enlarge (assets/scripts/zoom.js): the picture scaled to the
+   window over a veil of paper; a click anywhere closes it. */
+[data-zoom] { cursor: zoom-in; }
+/* Browsers ring a focused <svg> even after a click; keep the ring for the
+   keyboard only. */
+[data-zoom]:focus { outline: none; }
+[data-zoom]:focus-visible { outline: 1px solid var(--orange); outline-offset: 4px; }
+.zoom {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: color-mix(in srgb, var(--paper) 96%, transparent);
+  color: var(--ink);
+  cursor: zoom-out;
 }
+.zoom[open] { display: grid; place-items: center; animation: zoom-in .15s ease-out; }
+.zoom::backdrop { background: transparent; }
+.zoom > :is(img, svg) { display: block; max-width: none; }
+.zoom-close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 4px 8px;
+  border: .5px solid var(--rule);
+  background: var(--paper);
+  color: var(--muted);
+  cursor: pointer;
+}
+.zoom-close:hover { color: var(--orange); border-color: var(--orange); }
+@keyframes zoom-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .zoom[open] { animation: none; } }
+html:has(.zoom[open]) { overflow: hidden; }
 
 /* Cross-post links */
 .related { margin: 2em 0; }
@@ -937,4 +956,4 @@ code [style="color: #16718d"] { color: light-dark(#16718d, #5fb6d1) !important; 
 code [style="color: #1d6c76"] { color: light-dark(#1d6c76, #5bb7c2) !important; }
 
 /* Screenshots are mostly white pages: take the glare off at night. */
-:root[data-theme="dark"] :is(.img, .gallery) img { filter: brightness(.88); }
+:root[data-theme="dark"] :is(.img, .gallery, .zoom) img { filter: brightness(.88); }

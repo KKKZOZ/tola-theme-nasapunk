@@ -1,0 +1,24 @@
+/* Post table of contents floating in the right gutter, sticky while the text
+   scrolls. layout.typ loads this file only on windows wide enough for the
+   column (`content-width` in templates/config.typ) and the TOC side by side;
+   below that the TOC stays a box above the text (site.css). */
+
+.toc {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(100% + 48px);
+  width: 220px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.toc-inner {
+  position: sticky;
+  top: 32px;
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding-top: 6px;
+  border-top: 1.5px solid;
+  border-image: linear-gradient(90deg, var(--orange) 0 32px, var(--rule) 32px) 1;
+}

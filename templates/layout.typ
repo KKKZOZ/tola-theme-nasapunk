@@ -2,7 +2,7 @@
 // Import: #import "/templates/layout.typ" as layout
 
 #import "/templates/base.typ": palette
-#import "/templates/config.typ": head-extra, mission, social-image, social-links
+#import "/templates/config.typ": content-width, head-extra, mission, social-image, social-links
 #import "/templates/feeds.typ": feed-output, has-feed
 #import "/templates/util.typ": cls, social-tags
 #import "@tola/web:0.0.0": head-metadata
@@ -116,7 +116,12 @@
 // ============================================================================
 
 /// Scripts every page loads, deferred, in this order.
-#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js")
+#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js")
+
+/// Narrowest window, in CSS pixels, where a post's table of contents floats
+/// beside the column: the column, then on each side the 48px gap, the 220px
+/// TOC (assets/styles/toc-float.css) and 12px to spare.
+#let toc-float-at = content-width + 2 * (48 + 220 + 12)
 
 /// The preview image social.typ draws for `social-image: auto`.
 #let social-output = "social.png"
@@ -152,6 +157,12 @@
   if author != none { html.meta(name: "author", content: author) }
   html.link(rel: "icon", type: "image/svg+xml", href: asset-url("/assets/favicon.svg"))
   html.link(rel: "stylesheet", href: asset-url("/assets/styles/site.css"))
+  html.style(":root { --measure: " + str(content-width) + "px; }")
+  html.link(
+    rel: "stylesheet",
+    href: asset-url("/assets/styles/toc-float.css"),
+    media: "(min-width: " + str(toc-float-at) + "px)",
+  )
   for name in scripts { html.script("", src: asset-url("/assets/scripts/" + name), defer: true) }
   // Lets feed readers find the feed from any page.
   if has-feed {

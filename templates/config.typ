@@ -5,6 +5,11 @@
 /// for a personal series, e.g. "ABC-TN".
 #let doc-prefix = "TN"
 
+/// Width of the text column in CSS pixels, shared by the header, listings
+/// and post text. Wider posts float their table of contents beside the text
+/// only on windows with room for both (layout.typ `toc-float-at`).
+#let content-width = 760
+
 /// Optional orange code shown in the header next to the site title, e.g.
 /// "RESEARCH NOTES"; `none` hides it.
 #let mission = none

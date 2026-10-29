@@ -70,7 +70,7 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
     <td width="33%" valign="top">
       <img src="docs/features/figures.png" alt="A CeTZ figure"><br>
       <b>Typst figures</b><br>
-      <sub>CeTZ and diagrams as inline SVG, in theme colours.</sub>
+      <sub>CeTZ and diagrams as inline SVG, in theme colours; click any figure or image to enlarge it.</sub>
     </td>
     <td width="33%" valign="top">
       <img src="docs/features/callouts.png" alt="Callouts"><br>
@@ -155,6 +155,7 @@ Then make it yours:
 | Public address (for the RSS feed, sitemap and link previews) | `tola.toml` → `origin` |
 | Sub-path deployment, e.g. `/blog/` | `tola.toml` → `base-path` |
 | Document-number prefix (`TN` → `TN-001`) | `templates/config.typ` → `doc-prefix` |
+| Width of the text column (header, listings and posts) | `templates/config.typ` → `content-width` |
 | Orange code next to the site title | `templates/config.typ` → `mission` |
 | Footer links (GitHub, email, Mastodon, ...) | `templates/config.typ` → `social-links` |
 | Preview image for shared links: drawn (`auto`), your own file, or none | `templates/config.typ` → `social-image` |
@@ -250,7 +251,7 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ├── utils/                components for posts (see above)
 ├── assets/
 │   ├── styles/site.css   all styles; colour tokens at the top
-│   ├── scripts/          theme toggle, search, copy buttons, footnotes
+│   ├── scripts/          theme toggle, search, copy buttons, footnotes, zoom
 │   └── webfonts/         IBM Plex Mono and Rajdhani, Latin subsets
 ├── content/
 │   ├── posts/            example posts

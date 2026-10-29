@@ -70,7 +70,7 @@
     <td width="33%" valign="top">
       <img src="docs/features/figures.png" alt="一张 CeTZ 图"><br>
       <b>Typst 插图</b><br>
-      <sub>CeTZ 与流程图输出为内联 SVG，使用主题配色。</sub>
+      <sub>CeTZ 与流程图输出为内联 SVG，使用主题配色；点击插图或图片可放大查看。</sub>
     </td>
     <td width="33%" valign="top">
       <img src="docs/features/callouts.png" alt="提示框"><br>
@@ -155,6 +155,7 @@ tola dev
 | 站点公网地址（RSS、sitemap 和链接预览需要） | `tola.toml` → `origin` |
 | 部署在子路径下，例如 `/blog/` | `tola.toml` → `base-path` |
 | 文档编号前缀（`TN` → `TN-001`） | `templates/config.typ` → `doc-prefix` |
+| 正文栏宽度（页头、列表页与文章共用） | `templates/config.typ` → `content-width` |
 | 站点标题旁的橙色代号 | `templates/config.typ` → `mission` |
 | 页脚链接（GitHub、邮箱、Mastodon 等） | `templates/config.typ` → `social-links` |
 | 分享链接时的预览图：自动绘制（`auto`）、自己的图片或不用图 | `templates/config.typ` → `social-image` |
@@ -250,7 +251,7 @@ tola dev
 ├── utils/                文章里用的组件（见上文）
 ├── assets/
 │   ├── styles/site.css   全部样式；颜色变量在文件开头
-│   ├── scripts/          主题切换、搜索、复制按钮、脚注
+│   ├── scripts/          主题切换、搜索、复制按钮、脚注、图片放大
 │   └── webfonts/         IBM Plex Mono 与 Rajdhani 的拉丁字符子集
 ├── content/
 │   ├── posts/            示例文章
