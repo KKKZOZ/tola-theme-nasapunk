@@ -644,6 +644,28 @@ html { scroll-behavior: smooth; }
 }
 @media (hover: none) { .heading-anchor { opacity: .6; } }
 :where(.prose) h4 { font-size: 20px; }
+
+/* Copied formulas LaTeX has no counterpart for (assets/scripts/copy.js). */
+.latex-tip {
+  position: fixed;
+  z-index: 25;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  padding: 8px 12px 10px;
+  background: var(--paper);
+  border: .5px solid var(--rule);
+  border-top: 2px solid var(--orange);
+  box-shadow: 0 6px 20px var(--shadow);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  cursor: pointer;
+}
+.latex-tip[hidden] { display: none; }
+.latex-tip > .label { margin-bottom: 4px; }
+.latex-tip p { margin: 0; }
 :where(.prose) h5 { font-size: 17px; text-transform: uppercase; letter-spacing: .06em; }
 
 :where(.prose) strong { color: var(--emphasis); font-weight: 700; }
@@ -684,6 +706,8 @@ html { scroll-behavior: smooth; }
 :where(.prose) .code-block > pre { margin: 0; padding-top: 4px; border-left: 0; background: none; }
 .code-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; padding: 6px 10px 0 16px; }
 .code-lang { font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+/* Page text; Typst draws its SVG frames at the matching 12pt (base.typ). */
+.prose { font-size: 16px; }
 .code-copy {
   font: 500 11px/1 var(--font-mono);
   letter-spacing: .1em;
@@ -785,7 +809,7 @@ html { scroll-behavior: smooth; }
 .hint-rule-bottom span:nth-child(4) { order: 1; }
 .hint-main { display: grid; grid-template-columns: 30px 1fr; gap: 10px; padding: 6px 0; }
 .hint-mark svg { display: block; }
-.hint-body { font: italic 500 15px/1.65 var(--font-mono); }
+.hint-body { font: italic 500 16px/1.65 var(--font-mono); }
 .hint-body > :last-child { margin-bottom: 0; }
 .hint-body em, .hint-body strong { color: var(--hint-emphasis); }
 .hint-body em { color: var(--ink); }
@@ -825,6 +849,10 @@ html { scroll-behavior: smooth; }
 }
 .zoom[open] { display: grid; place-items: center; animation: zoom-in .15s ease-out; }
 .zoom::backdrop { background: transparent; }
+/* Formulas in the selection (assets/scripts/copy.js), which ::selection cannot reach. */
+[role="math"].is-selected svg { background: var(--tint); }
+/* An inline formula and the punctuation after it (assets/scripts/math.js). */
+.math-nobreak { white-space: nowrap; }
 .zoom > :is(img, svg) { display: block; max-width: none; }
 .zoom-close {
   position: fixed;

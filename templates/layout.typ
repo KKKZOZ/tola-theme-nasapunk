@@ -116,7 +116,7 @@
 // ============================================================================
 
 /// Scripts every page loads, deferred, in this order.
-#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js")
+#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js", "math.js")
 
 /// Narrowest window, in CSS pixels, where a post's table of contents floats
 /// beside the column: the column, then on each side the 48px gap, the 220px

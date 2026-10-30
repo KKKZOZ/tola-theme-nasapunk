@@ -141,6 +141,26 @@ tola dev
 
 打开 <http://127.0.0.1:5277>。`tola dev` 会在保存时自动重新构建；`tola build` 把完整站点（含搜索索引）输出到 `public/`。
 
+每次重新构建后，`tola dev` 还会报告 `math-check` hook 失败，列出六个无法复制为 LaTeX 的公式：
+
+```text
+error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` failed: the command exited with status 1
+ = stderr:
+   6 formulas cannot copy as LaTeX
+
+   warning: formula cannot copy as LaTeX
+      ┌─ content/posts/math.typ:35:1
+      │
+   35 │ $x + #box(stroke: .5pt, inset: 2pt)[$y$]$. Written with `mi` instead, the
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no LaTeX for box
+      │
+      = it copies as \text{[unsupported formula]}
+      = help: write it with `mi` / `mitex` to copy as written
+   ...
+```
+
+这是正常的。网页上复制公式时会得到 LaTeX，示例文章 `content/posts/math.typ` 故意放了这六个转不了的公式来演示。站点照常构建和更新，`tola build` 也不会运行这项检查。删掉示例文章后，报告只会列出你自己文章里的公式，并指出它在源文件中的行号。
+
 然后换成你自己的内容：
 
 1. 在 `tola.toml` 的 `[site]` 里填写站点标题、作者名、简介和语言。
@@ -211,6 +231,7 @@ tola dev
 | `utils/diagram.typ` | `flow`、`diagram`、`timeline` |
 | `utils/cetz.typ` | 在 HTML 导出时输出内联 SVG 的 `cetz` |
 | `utils/figure.typ` | 主题配色，以及绘制复杂 CeTZ 图用的辅助函数：`pill`、`arrow`、`curve-arrow`、`cells`、`seg`、`legend` 等 |
+| `utils/mitex.typ` | MiTeX 的 `mi` / `mitex`，用 LaTeX 写公式；网页上框选复制时得到你写的 LaTeX 原文（Typst 原生公式复制出等价的 LaTeX） |
 
 ```typst
 #import "/utils/ui.typ": callout, xref
@@ -223,7 +244,7 @@ tola dev
 完整的 CeTZ 示例见 #xref("cetz-figures")。
 ```
 
-示例文章里每个模块都有用到：`content/posts/theme-tour/` 演示提示框、脚注、流程图和时间线；`content/posts/figure-kit.typ` 逐个介绍 `utils/figure.typ` 里的函数，附效果图和函数签名；`content/posts/cetz-figures.typ` 是用这些函数画出的完整 CeTZ 图。
+示例文章里每个模块都有用到：`content/posts/theme-tour/` 演示提示框、脚注、流程图和时间线；`content/posts/figure-kit.typ` 逐个介绍 `utils/figure.typ` 里的函数，附效果图和函数签名；`content/posts/cetz-figures.typ` 是用这些函数画出的完整 CeTZ 图；`content/posts/math.typ` 介绍公式写法、`mi` / `mitex`，以及公式如何复制成 LaTeX。
 
 ## 部署
 
@@ -243,7 +264,7 @@ tola dev
 ├── site.typ              站点程序：生成所有页面
 ├── tola.toml             站点配置
 ├── typst-fonts/          插图使用的 IBM Plex Mono 与 Rajdhani
-├── scripts/              搜索索引构建 hook（Pagefind）
+├── scripts/              构建 hook：搜索索引（Pagefind）、tola dev 时的公式检查
 ├── templates/            页面布局、页眉页脚、列表页
 │   ├── config.typ        tola.toml 之外的站点设置
 │   ├── feeds.typ         RSS 订阅源、sitemap 与 robots.txt
@@ -251,7 +272,7 @@ tola dev
 ├── utils/                文章里用的组件（见上文）
 ├── assets/
 │   ├── styles/site.css   全部样式；颜色变量在文件开头
-│   ├── scripts/          主题切换、搜索、复制按钮、脚注、图片放大
+│   ├── scripts/          主题切换、搜索、复制按钮、脚注、图片放大、公式断行
 │   └── webfonts/         IBM Plex Mono 与 Rajdhani 的拉丁字符子集
 ├── content/
 │   ├── posts/            示例文章

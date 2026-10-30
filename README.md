@@ -141,6 +141,26 @@ tola dev
 
 Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
 
+After each rebuild, `tola dev` also reports the `math-check` hook as failed, listing six formulas that cannot copy as LaTeX:
+
+```text
+error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` failed: the command exited with status 1
+ = stderr:
+   6 formulas cannot copy as LaTeX
+
+   warning: formula cannot copy as LaTeX
+      ┌─ content/posts/math.typ:35:1
+      │
+   35 │ $x + #box(stroke: .5pt, inset: 2pt)[$y$]$. Written with `mi` instead, the
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no LaTeX for box
+      │
+      = it copies as \text{[unsupported formula]}
+      = help: write it with `mi` / `mitex` to copy as written
+   ...
+```
+
+This is expected. A copied formula comes out as LaTeX, and the example post `content/posts/math.typ` has these six on purpose to show the ones that cannot. The site still builds and updates, and `tola build` skips the check. Once the example posts are gone, the report lists only formulas in your own posts, at their line in the source.
+
 Then make it yours:
 
 1. Set your title, name, description and language under `[site]` in `tola.toml`.
@@ -211,6 +231,7 @@ Files under `content/lab/` use the post layout but stay out of the post list. Op
 | `utils/diagram.typ` | `flow`, `diagram`, `timeline` |
 | `utils/cetz.typ` | `cetz` that renders to inline SVG in HTML export |
 | `utils/figure.typ` | Theme colours and helpers for detailed CeTZ figures: `pill`, `arrow`, `curve-arrow`, `cells`, `seg`, `legend`, ... |
+| `utils/mitex.typ` | MiTeX's `mi` / `mitex` for LaTeX formulas, which copy as the LaTeX you wrote (Typst's own math copies as equivalent LaTeX) |
 
 ```typst
 #import "/utils/ui.typ": callout, xref
@@ -223,7 +244,7 @@ Files under `content/lab/` use the post layout but stay out of the post list. Op
 See #xref("cetz-figures") for a full CeTZ example.
 ```
 
-The example posts show each module in use: `content/posts/theme-tour/` for callouts, footnotes, flows and timelines, `content/posts/figure-kit.typ` for every helper in `utils/figure.typ` with its output and signature, and `content/posts/cetz-figures.typ` for complete CeTZ figures built with them.
+The example posts show each module in use: `content/posts/theme-tour/` for callouts, footnotes, flows and timelines, `content/posts/figure-kit.typ` for every helper in `utils/figure.typ` with its output and signature, `content/posts/cetz-figures.typ` for complete CeTZ figures built with them, and `content/posts/math.typ` for math, `mi` / `mitex`, and how formulas copy as LaTeX.
 
 ## Deployment
 
@@ -243,7 +264,7 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ├── site.typ              site program: emits every page
 ├── tola.toml             site settings
 ├── typst-fonts/          IBM Plex Mono and Rajdhani for figures
-├── scripts/              search index build hook (Pagefind)
+├── scripts/              build hooks: search index (Pagefind), formula check in tola dev
 ├── templates/            layouts, header and footer, listings
 │   ├── config.typ        settings tola.toml has no key for
 │   ├── feeds.typ         RSS feed, sitemap and robots.txt
@@ -251,7 +272,7 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ├── utils/                components for posts (see above)
 ├── assets/
 │   ├── styles/site.css   all styles; colour tokens at the top
-│   ├── scripts/          theme toggle, search, copy buttons, footnotes, zoom
+│   ├── scripts/          theme toggle, search, copy buttons, footnotes, zoom, formula line breaks
 │   └── webfonts/         IBM Plex Mono and Rajdhani, Latin subsets
 ├── content/
 │   ├── posts/            example posts

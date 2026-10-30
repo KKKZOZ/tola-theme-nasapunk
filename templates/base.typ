@@ -5,6 +5,7 @@
 #import "@tola/document:0.0.0": current-document
 #import "/templates/config.typ": cjk-font
 #import "/templates/data.typ": draft-index
+#import "/templates/latex.typ": probe, to-latex
 
 // Mirrors the day values of the `--*` tokens in assets/styles/site.css, for
 // Typst-side drawings (html.frame / cetz) that should match the page. The
@@ -31,15 +32,42 @@
 /// stylesheet's math-inline / math-block class; other targets get it as is.
 /// Tola 0.8.1 dropped `@tola/web`'s `math-svg`; Tola still aligns inline
 /// frames with the text baseline.
+///
+/// Formulas are drawn 1.15× the surrounding text (13.8pt ≈ 18.4px beside
+/// 16px prose), in the Book weight with a hairline stroke of the text colour,
+/// so they hold their own next to IBM Plex Mono. The size is set inside the
+/// frame: a frame measures itself in em of the text size where it is made,
+/// which the browser maps to the CSS font size.
+///
+/// `data-latex` holds the formula as LaTeX (templates/latex.typ), which
+/// assets/scripts/copy.js puts in a copied selection in place of the SVG;
+/// a formula it cannot convert holds a placeholder, and `data-latex-issues`
+/// names the parts that stopped it. A formula without `alt` has its LaTeX
+/// as the label screen readers read.
 #let math-svg(it) = context {
-  if target() != "html" { return it }
-  let attrs = (role: "math", class: if it.block { "math-block" } else { "math-inline" })
+  // Laid out only to be measured by latex.typ.
+  if it.at("alt", default: none) == probe { return it }
+  let body = {
+    set text(size: 1.15em, weight: 450, stroke: .2pt + text.fill)
+    it
+  }
+  if target() != "html" { return body }
+  let latex = to-latex(it.body)
+  let attrs = (
+    role: "math",
+    class: if it.block { "math-block" } else { "math-inline" },
+    data-latex: latex.latex,
+  )
+  if latex.issues.len() > 0 { attrs.insert("data-latex-issues", latex.issues.join(", ")) }
+  // Screen readers read the formula's `alt`, else its LaTeX.
   let alt = it.at("alt", default: math.equation.alt)
+  if alt == none and latex.issues.len() == 0 { alt = latex.latex }
   if alt != none { attrs.insert("aria-label", alt) }
   if it.block {
-    html.elem("div", attrs: attrs, html.frame(it))
+    html.elem("div", attrs: attrs, html.frame(body))
   } else {
-    html.elem("span", attrs: attrs, box(html.frame(it)))
+    // assets/scripts/math.js keeps it on one line with the punctuation after it.
+    html.elem("span", attrs: attrs, box(html.frame(body)))
   }
 }
 
@@ -106,9 +134,9 @@
   show math.equation: set text(font: "New Computer Modern Math")
   show math.equation: math-svg
 
-  // 11.25pt == 15px, the CSS body size, so SVG frames (math, cetz) keep true scale.
+  // 12pt == 16px, the CSS size of `.prose`, so SVG frames (math, cetz) keep true scale.
   // The fonts only affect text inside SVG frames; HTML text is styled by CSS.
-  set text(size: 11.25pt, font: body-font, fill: palette.ink)
+  set text(size: 12pt, font: body-font, fill: palette.ink)
 
   // Code blocks get a bar with the language and a copy button. The button
   // starts hidden and is revealed by assets/scripts/copy.js.

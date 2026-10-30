@@ -1,0 +1,93 @@
+// LaTeX for math symbols, by character, for copying Typst
+// formulas as LaTeX (templates/latex.typ). Generated once from the command
+// table of MiTeX 0.2.7 (Apache-2.0, https://github.com/mitex-rs/mitex):
+// each LaTeX symbol MiTeX maps to a Typst one, reversed. Where several
+// commands give one character, a standard LaTeX name was picked over KaTeX
+// shorthands, and Typst's `dot` (⋅) is \cdot. Greek capitals that LaTeX
+// writes as Latin letters map to them; ASCII and double-struck letters are
+// left to latex.typ.
+
+/// Character -> LaTeX: "≤" -> "\\leq".
+#let symbols = (
+  " ": "~", "£": "\\pounds", "¥": "\\yen", "§": "\\S", "©": "\\copyright", "¬": "\\neg",
+  "®": "\\circledR", "°": "^{\\circ}", "±": "\\pm", "¶": "\\P", "·": "\\cdot", "Æ": "\\AE",
+  "×": "\\times", "ß": "\\ss", "æ": "\\ae", "ð": "\\eth", "÷": "\\div", "ħ": "\\hbar",
+  "ı": "\\imath", "Œ": "\\OE", "œ": "\\oe", "ȷ": "\\jmath", "Α": "A", "Β": "B",
+  "Γ": "\\Gamma", "Δ": "\\Delta", "Ε": "E", "Ζ": "Z", "Η": "H", "Θ": "\\Theta",
+  "Ι": "I", "Κ": "K", "Λ": "\\Lambda", "Μ": "M", "Ν": "N", "Ξ": "\\Xi",
+  "Ο": "O", "Π": "\\Pi", "Ρ": "P", "Σ": "\\Sigma", "Τ": "T", "Υ": "\\Upsilon",
+  "Φ": "\\Phi", "Χ": "X", "Ψ": "\\Psi", "Ω": "\\Omega", "α": "\\alpha", "β": "\\beta",
+  "γ": "\\gamma", "δ": "\\delta", "ε": "\\varepsilon", "ζ": "\\zeta", "η": "\\eta", "θ": "\\theta",
+  "ι": "\\iota", "κ": "\\kappa", "λ": "\\lambda", "μ": "\\mu", "ν": "\\nu", "ξ": "\\xi",
+  "ο": "\\omicron", "π": "\\pi", "ρ": "\\rho", "ς": "\\varsigma", "σ": "\\sigma", "τ": "\\tau",
+  "υ": "\\upsilon", "φ": "\\varphi", "χ": "\\chi", "ψ": "\\psi", "ω": "\\omega", "ϐ": "\\varbeta",
+  "ϑ": "\\vartheta", "ϕ": "\\phi", "ϖ": "\\varpi", "ϝ": "\\digamma", "ϰ": "\\varkappa", "ϱ": "\\varrho",
+  "ϵ": "\\epsilon", "א": "\\aleph", "ב": "\\beth", "ג": "\\gimel", "‖": "\\Vert", "‘": "\\lq",
+  "’": "\\textquoteright", "“": "\\textquotedblleft", "”": "\\textquotedblright", "†": "\\dagger", "‡": "\\ddagger", "•": "\\bullet",
+  "…": "\\ldots", "′": "\\prime", "‵": "\\backprime", "ℑ": "\\Im", "ℓ": "\\ell", "℘": "\\wp",
+  "ℜ": "\\Re", "℧": "\\mho", "Ⅎ": "\\Finv", "ℸ": "\\daleth", "⅁": "\\Game", "←": "\\leftarrow",
+  "↑": "\\uparrow", "→": "\\to", "↓": "\\downarrow", "↔": "\\leftrightarrow", "↕": "\\updownarrow", "↖": "\\nwarrow",
+  "↗": "\\nearrow", "↘": "\\searrow", "↙": "\\swarrow", "↚": "\\nleftarrow", "↛": "\\nrightarrow", "↞": "\\twoheadleftarrow",
+  "↠": "\\twoheadrightarrow", "↢": "\\leftarrowtail", "↣": "\\rightarrowtail", "↦": "\\mapsto", "↩": "\\hookleftarrow", "↪": "\\hookrightarrow",
+  "↫": "\\looparrowleft", "↬": "\\looparrowright", "↭": "\\leftrightsquigarrow", "↮": "\\nleftrightarrow", "↰": "\\Lsh", "↱": "\\Rsh",
+  "↶": "\\curvearrowleft", "↷": "\\curvearrowright", "↺": "\\circlearrowleft", "↻": "\\circlearrowright", "↼": "\\leftharpoonup", "↽": "\\leftharpoondown",
+  "↾": "\\upharpoonright", "↿": "\\upharpoonleft", "⇀": "\\rightharpoonup", "⇁": "\\rightharpoondown", "⇂": "\\downharpoonright", "⇃": "\\downharpoonleft",
+  "⇄": "\\rightleftarrows", "⇆": "\\leftrightarrows", "⇇": "\\leftleftarrows", "⇈": "\\upuparrows", "⇉": "\\rightrightarrows", "⇊": "\\downdownarrows",
+  "⇋": "\\leftrightharpoons", "⇌": "\\rightleftharpoons", "⇍": "\\nLeftarrow", "⇎": "\\nLeftrightarrow", "⇏": "\\nRightarrow", "⇐": "\\Leftarrow",
+  "⇑": "\\Uparrow", "⇒": "\\Rightarrow", "⇓": "\\Downarrow", "⇔": "\\Leftrightarrow", "⇕": "\\Updownarrow", "⇚": "\\Lleftarrow",
+  "⇛": "\\Rrightarrow", "⇝": "\\rightsquigarrow", "∀": "\\forall", "∁": "\\complement", "∂": "\\partial", "∃": "\\exists",
+  "∄": "\\nexists", "∅": "\\emptyset", "∇": "\\nabla", "∈": "\\in", "∉": "\\notin", "∋": "\\ni",
+  "∌": "\\notni", "∍": "\\backepsilon", "∎": "\\blacksquare", "∏": "\\prod", "∐": "\\coprod", "∑": "\\sum",
+  "∓": "\\mp", "∔": "\\dotplus", "∖": "\\setminus", "∗": "\\ast", "∘": "\\circ", "√": "\\surd",
+  "∝": "\\propto", "∞": "\\infty", "∠": "\\angle", "∡": "\\measuredangle", "∢": "\\sphericalangle", "∣": "\\mid",
+  "∤": "\\nmid", "∥": "\\parallel", "∦": "\\nparallel", "∧": "\\wedge", "∨": "\\vee", "∩": "\\cap",
+  "∪": "\\cup", "∫": "\\int", "∬": "\\iint", "∭": "\\iiint", "∮": "\\oint", "∯": "\\oiint",
+  "∰": "\\oiiint", "∴": "\\therefore", "∵": "\\because", "∹": "\\eqcolon", "∼": "\\sim", "∽": "\\backsim",
+  "≀": "\\wr", "≁": "\\nsim", "≂": "\\eqsim", "≃": "\\simeq", "≅": "\\cong", "≇": "\\ncong",
+  "≈": "\\approx", "≊": "\\approxeq", "≍": "\\asymp", "≎": "\\Bumpeq", "≏": "\\bumpeq", "≐": "\\doteq",
+  "≑": "\\doteqdot", "≒": "\\fallingdotseq", "≓": "\\risingdotseq", "≔": "\\coloneqq", "≕": "\\eqqcolon", "≖": "\\eqcirc",
+  "≗": "\\circeq", "≜": "\\triangleq", "≠": "\\neq", "≡": "\\equiv", "≤": "\\leq", "≥": "\\geq",
+  "≦": "\\leqq", "≧": "\\geqq", "≨": "\\lneqq", "≩": "\\gneqq", "≪": "\\ll", "≫": "\\gg",
+  "≬": "\\between", "≮": "\\nless", "≯": "\\ngtr", "≰": "\\nleq", "≱": "\\ngeq", "≲": "\\lesssim",
+  "≳": "\\gtrsim", "≶": "\\lessgtr", "≷": "\\gtrless", "≺": "\\prec", "≻": "\\succ", "≾": "\\precsim",
+  "≿": "\\succsim", "⊀": "\\nprec", "⊁": "\\nsucc", "⊂": "\\subset", "⊃": "\\supset", "⊆": "\\subseteq",
+  "⊇": "\\supseteq", "⊈": "\\nsubseteq", "⊉": "\\nsupseteq", "⊊": "\\subsetneq", "⊋": "\\supsetneq", "⊎": "\\uplus",
+  "⊏": "\\sqsubset", "⊐": "\\sqsupset", "⊑": "\\sqsubseteq", "⊒": "\\sqsupseteq", "⊓": "\\sqcap", "⊔": "\\sqcup",
+  "⊕": "\\oplus", "⊖": "\\ominus", "⊗": "\\otimes", "⊘": "\\oslash", "⊙": "\\odot", "⊚": "\\circledcirc",
+  "⊛": "\\circledast", "⊝": "\\circleddash", "⊞": "\\boxplus", "⊟": "\\boxminus", "⊠": "\\boxtimes", "⊡": "\\boxdot",
+  "⊢": "\\vdash", "⊣": "\\dashv", "⊤": "\\top", "⊥": "\\bot", "⊧": "\\models", "⊨": "\\vDash",
+  "⊩": "\\Vdash", "⊪": "\\Vvdash", "⊬": "\\nvdash", "⊭": "\\nvDash", "⊮": "\\nVdash", "⊯": "\\nVDash",
+  "⊲": "\\vartriangleleft", "⊳": "\\vartriangleright", "⊴": "\\trianglelefteq", "⊵": "\\trianglerighteq", "⊶": "\\origof", "⊷": "\\imageof",
+  "⊸": "\\multimap", "⊺": "\\intercal", "⊻": "\\veebar", "⊼": "\\barwedge", "⋀": "\\bigwedge", "⋁": "\\bigvee",
+  "⋂": "\\bigcap", "⋃": "\\bigcup", "⋄": "\\diamond", "⋅": "\\cdot", "⋆": "\\star", "⋇": "\\divideontimes",
+  "⋈": "\\bowtie", "⋉": "\\ltimes", "⋊": "\\rtimes", "⋋": "\\leftthreetimes", "⋌": "\\rightthreetimes", "⋍": "\\backsimeq",
+  "⋎": "\\curlyvee", "⋏": "\\curlywedge", "⋐": "\\Subset", "⋑": "\\Supset", "⋒": "\\Cap", "⋓": "\\Cup",
+  "⋔": "\\pitchfork", "⋖": "\\lessdot", "⋗": "\\gtrdot", "⋘": "\\lll", "⋙": "\\ggg", "⋚": "\\lesseqgtr",
+  "⋛": "\\gtreqless", "⋞": "\\curlyeqprec", "⋟": "\\curlyeqsucc", "⋠": "\\npreceq", "⋡": "\\nsucceq", "⋦": "\\lnsim",
+  "⋧": "\\gnsim", "⋨": "\\precnsim", "⋩": "\\succnsim", "⋪": "\\ntriangleleft", "⋫": "\\ntriangleright", "⋬": "\\ntrianglelefteq",
+  "⋭": "\\ntrianglerighteq", "⋮": "\\vdots", "⋯": "\\cdots", "⋱": "\\ddots", "⌈": "\\lceil", "⌉": "\\rceil",
+  "⌊": "\\lfloor", "⌋": "\\rfloor", "⌜": "\\ulcorner", "⌝": "\\urcorner", "⌞": "\\llcorner", "⌟": "\\lrcorner",
+  "⌢": "\\frown", "⌣": "\\smile", "⎱": "\\rmoustache", "Ⓢ": "\\circledS", "╱": "\\diagup", "╲": "\\diagdown",
+  "□": "\\square", "▲": "\\blacktriangle", "△": "\\triangle", "▵": "\\vartriangle", "▶": "\\blacktriangleright", "▷": "\\rhd",
+  "▹": "\\triangleright", "▼": "\\blacktriangledown", "▽": "\\bigtriangledown", "▿": "\\triangledown", "◀": "\\blacktriangleleft", "◁": "\\lhd",
+  "◃": "\\triangleleft", "◇": "\\Diamond", "◊": "\\lozenge", "◯": "\\bigcirc", "☆": "\\bigstar", "☐": "\\Box",
+  "♠": "\\spadesuit", "♡": "\\heartsuit", "♣": "\\clubsuit", "♭": "\\flat", "♮": "\\natural", "♯": "\\sharp",
+  "✓": "\\checkmark", "✠": "\\maltese", "⟂": "\\perp", "⟦": "\\llbracket", "⟧": "\\rrbracket", "⟨": "\\langle",
+  "⟩": "\\rangle", "⟮": "\\lgroup", "⟯": "\\rgroup", "⟵": "\\longleftarrow", "⟶": "\\longrightarrow", "⟷": "\\longleftrightarrow",
+  "⟸": "\\Longleftarrow", "⟹": "\\Longrightarrow", "⟺": "\\Longleftrightarrow", "⟼": "\\longmapsto", "⦃": "\\lBrace", "⦄": "\\rBrace",
+  "⦵": "\\minuso", "⧫": "\\blacklozenge", "⨀": "\\bigodot", "⨁": "\\bigoplus", "⨂": "\\bigotimes", "⨄": "\\biguplus",
+  "⨆": "\\bigsqcup", "⨝": "\\Join", "⩞": "\\doublebarwedge", "⩴": "\\Coloneqq", "⩽": "\\leqslant", "⩾": "\\geqslant",
+  "⪅": "\\lessapprox", "⪆": "\\gtrapprox", "⪇": "\\lneq", "⪈": "\\gneq", "⪉": "\\lnapprox", "⪊": "\\gnapprox",
+  "⪋": "\\lesseqqgtr", "⪌": "\\gtreqqless", "⪕": "\\eqslantless", "⪖": "\\eqslantgtr", "⪯": "\\preceq", "⪰": "\\succeq",
+  "⪵": "\\precneqq", "⪶": "\\succneqq", "⪷": "\\precapprox", "⪸": "\\succapprox", "⪹": "\\precnapprox", "⪺": "\\succnapprox",
+  "⫅": "\\subseteqq", "⫆": "\\supseteqq", "⫋": "\\subsetneqq", "⫌": "\\supsetneqq",
+)
+
+/// Operators standard LaTeX has a command for (\sin, \lim, ...); others
+/// become \operatorname{...}.
+#let operators = (
+  "Pr", "arccos", "arcsin", "arctan", "arg", "cos", "cosh", "cot", "coth", "csc",
+  "deg", "det", "dim", "exp", "gcd", "hom", "inf", "injlim", "ker", "lg",
+  "lim", "liminf", "limsup", "ln", "log", "max", "min", "projlim", "sec", "sin",
+  "sinh", "sup", "tan", "tanh",
+)

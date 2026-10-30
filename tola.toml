@@ -39,6 +39,16 @@ dev = "skip"
 rerun-on = ["scripts/search-index.mjs", "package.json", "package-lock.json"]
 outputs = [{ tree = "pagefind" }]
 
+# Lists formulas that cannot copy as LaTeX, compiler style, while `tola dev`
+# runs (scripts/math-check.mjs). Tola shows the list as a failed hook, but the
+# site still updates. `tola build` skips it, so a deployment is never held up.
+[[build.hooks.after-publish]]
+enable = true
+name = "math-check"
+command = ["node", "scripts/math-check.mjs"]
+dev = "run"
+rerun-on = ["scripts/math-check.mjs"]
+
 # tola help "[typst.fonts]"
 # Compiler fonts for SVG frames (math, cetz) and the preview image: IBM Plex
 # Mono and Rajdhani ship in typst-fonts/. System fonts stay on for CJK text,
