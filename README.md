@@ -265,7 +265,7 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ├── site.typ              site program: emits every page
 ├── tola.toml             site settings
 ├── typst-fonts/          IBM Plex Mono and Rajdhani for figures
-├── scripts/              build hooks: search index (Pagefind), formula check in tola dev
+├── scripts/              build hooks: search index (Pagefind), formula check in tola dev; test runner
 ├── templates/            layouts, header and footer, listings
 │   ├── config.typ        settings tola.toml has no key for
 │   ├── feeds.typ         RSS feed, sitemap and robots.txt
@@ -278,7 +278,8 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 ├── content/
 │   ├── posts/            example posts
 │   └── about.typ
-└── .github/workflows/    build check and GitHub Pages deployment
+├── tests/latex.typ       cases for formulas copied as LaTeX: `npm test`, needs the Typst CLI
+└── .github/workflows/    build check, tests and GitHub Pages deployment
 ```
 
 ## Fonts

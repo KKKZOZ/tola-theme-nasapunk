@@ -129,3 +129,17 @@ jobs:
 
       - name: Build
         run: tola build
+
+  # tests/latex.typ: the LaTeX copied formulas carry. Typst at the version
+  # the newest supported Tola release builds with.
+  latex:
+    name: LaTeX copy tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: typst-community/setup-typst@v5
+        with:
+          typst-version: 0.15.1
+
+      - run: npm test

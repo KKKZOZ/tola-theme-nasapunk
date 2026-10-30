@@ -2,7 +2,8 @@
   "private": true,
   "description": "Build helpers: Tola renders the site, Pagefind indexes it for /search/.",
   "scripts": {
-    "build": "tola build"
+    "build": "tola build",
+    "test": "node scripts/test-latex.mjs"
   },
   "devDependencies": {
     "pagefind": "1.5.2"

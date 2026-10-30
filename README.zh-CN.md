@@ -265,7 +265,7 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 ├── site.typ              站点程序：生成所有页面
 ├── tola.toml             站点配置
 ├── typst-fonts/          插图使用的 IBM Plex Mono 与 Rajdhani
-├── scripts/              构建 hook：搜索索引（Pagefind）、tola dev 时的公式检查
+├── scripts/              构建 hook：搜索索引（Pagefind）、tola dev 时的公式检查；测试脚本
 ├── templates/            页面布局、页眉页脚、列表页
 │   ├── config.typ        tola.toml 之外的站点设置
 │   ├── feeds.typ         RSS 订阅源、sitemap 与 robots.txt
@@ -278,7 +278,8 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 ├── content/
 │   ├── posts/            示例文章
 │   └── about.typ
-└── .github/workflows/    构建检查与 GitHub Pages 部署
+├── tests/latex.typ       公式复制为 LaTeX 的测试用例：`npm test`，需要 Typst CLI
+└── .github/workflows/    构建检查、测试与 GitHub Pages 部署
 ```
 
 ## 字体
