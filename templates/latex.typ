@@ -175,6 +175,25 @@
   auto
 }
 
+/// The name in `op(...)` as plain text, or none when it holds more than
+/// text: MiTeX writes `\operatorname{rank}` as `op(upright(r a n k))`, which
+/// should copy as `\operatorname{rank}`, not `\mathrm{r a n k}` inside it.
+/// Spaces drop out as \operatorname drops them; spacing such as `\,` stays.
+#let _op-name(node, conv) = {
+  if type(node) == str { return node }
+  if node.has("text") and type(node.text) == str { return node.text }
+  let f = node.func()
+  if f == _space { return "" }
+  if f == h { return conv(node) }
+  if f == _sequence {
+    let parts = node.children.map(k => _op-name(k, conv))
+    return if none in parts { none } else { _join(parts) }
+  }
+  // \operatorname sets its name upright already.
+  if f == _styled and _style-of(node) in (none, "\\mathrm") { return _op-name(node.child, conv) }
+  none
+}
+
 // ============================================================================
 // Delimiters
 // ============================================================================
@@ -254,17 +273,27 @@
     let kids = node.children
     let spaced(i) = i >= 0 and i < kids.len() and kids.at(i).func() == _space
     let ordinary(i) = {
-      if i < 0 or i >= kids.len() { return false }
+      // Past the edge of a nested sequence (MiTeX's `\text{ if }`), what
+      // the space separates is not known here: it stays.
+      if i < 0 or i >= kids.len() { return true }
       let k = kids.at(i)
+      // A column or row starts afresh: `0 & "otherwise"`.
+      if k.func() in (_align-point, linebreak) { return false }
       not (k.has("text") and type(k.text) == str and k.text.clusters().len() == 1
         and k.text.match(regex("^[\\p{L}\\p{N}]$")) == none)
     }
+    // MiTeX puts a space after every token (`\(A \)`), which would copy
+    // as `(A )`: none inside brackets or before a comma.
+    let one-of(i, chars) = (i >= 0 and i < kids.len() and kids.at(i).has("text")
+      and type(kids.at(i).text) == str and kids.at(i).text in chars)
+    let tight(i) = one-of(i - 1, "([{⟨⌊⌈".clusters()) or one-of(i + 1, ")]}⟩⌋⌉,;".clusters())
     return _join(kids.enumerate().map(((i, k)) => {
+      if k.func() == _space and tight(i) { return "" }
       if not _quoted(k) { return conv(k) }
       let before = if spaced(i - 1) and ordinary(i - 2) { " " } else { "" }
       let after = if spaced(i + 1) and ordinary(i + 2) { " " } else { "" }
       _in-text(before + k.text + after)
-    }))
+    })).trim()
   }
   if f == _space { return " " }
   if f == math.equation { return conv(node.body) }
@@ -397,7 +426,8 @@
   }
 
   if f == math.op {
-    let name = if node.text.has("text") { node.text.text } else { conv(node.text) }
+    let name = _op-name(node.text, conv)
+    if name == none { name = conv(node.text) }
     if name == "mod" { return "\\bmod" }
     if name in operators { return "\\" + name }
     return if node.at("limits", default: false) { "\\operatorname*{" } else { "\\operatorname{" } + name + "}"
