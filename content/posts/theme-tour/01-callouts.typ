@@ -1,3 +1,4 @@
+#import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
 #import "/utils/ui.typ": callout
 
@@ -11,7 +12,7 @@
 
 The Theme Tour posts form a series. The box above shows this post's place
 in it, links to the parts before and after it, and folds away the full list.
-Its head leads to the #link("/series/")[series index], which lists every
+Its head leads to the #link(output-url("series/index.html"))[series index], which lists every
 series on the site.
 
 = Series
