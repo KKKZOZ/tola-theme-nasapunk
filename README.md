@@ -65,7 +65,7 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
     <td width="33%" valign="top">
       <img src="docs/features/series.png" alt="Series navigation box"><br>
       <b>Series</b><br>
-      <sub>Posts sharing a <code>series</code> name link up.</sub>
+      <sub>Posts sharing a <code>series</code> name link up; <code>/series/</code> lists every series.</sub>
     </td>
     <td width="33%" valign="top">
       <img src="docs/features/figures.png" alt="A CeTZ figure"><br>
@@ -218,10 +218,11 @@ Every `.typ` file under `content/posts/` is a post, published at the URL its pat
 | `summary` | string | Post list, search results, Open Graph. |
 | `tags` | string or array | Shown as chips; collected on `/tags/`. |
 | `weight` | integer | Home page order: lower comes first, posts with equal weight newest first. The default is 100 (0, which Hugo treats as unset, counts as 100 too), so `weight: 1` pins a post to the top and `weight: 200` sinks it. Other listings stay in date order. |
-| `series` | string | Posts with the same name form a series, ordered by date. |
+| `series` | string | Posts with the same name form a series. Each part gets a series box under the title (part n of m, the parts before and after it, and the full list), and `/series/` lists every series. A series needs two parts before the box appears. Parts run oldest first unless numbered with `part`; a leading tag such as `[Tour 01]` is dropped from titles in the box and on `/series/`. |
+| `part` | integer | Position in the series: numbered parts come first, in number order, then the rest by date. The numbers need not be consecutive. |
 | `draft` | bool | Drafts are not published; links to them render as plain text. |
 
-Files under `content/lab/` use the post layout but stay out of the post list. Open `/lab/style-reference/` for every element the theme styles.
+Files under `content/lab/` use the post layout but stay out of the post list, for test pages. The example post `/posts/style-reference/` shows every element the theme styles.
 
 ## Components
 
@@ -230,8 +231,8 @@ Files under `content/lab/` use the post layout but stay out of the post list. Op
 | `utils/ui.typ` | `callout`, `hint`, `img`, `gallery`, `xref`, `related` |
 | `utils/diagram.typ` | `flow`, `diagram`, `timeline` |
 | `utils/cetz.typ` | `cetz` that renders to inline SVG in HTML export |
-| `utils/figure.typ` | Theme colours and helpers for detailed CeTZ figures: `pill`, `arrow`, `curve-arrow`, `cells`, `seg`, `legend`, ... |
 | `utils/mitex.typ` | MiTeX's `mi` / `mitex` for LaTeX formulas, which copy as the LaTeX you wrote (Typst's own math copies as equivalent LaTeX) |
+| `utils/figure.typ` | Theme colours and helpers for detailed CeTZ figures: `pill`, `arrow`, `curve-arrow`, `cells`, `seg`, `legend`, ... |
 
 ```typst
 #import "/utils/ui.typ": callout, xref
@@ -276,7 +277,6 @@ The workflow asks GitHub for the site's address and passes it to `tola build`, s
 │   └── webfonts/         IBM Plex Mono and Rajdhani, Latin subsets
 ├── content/
 │   ├── posts/            example posts
-│   ├── lab/              test pages, kept out of the post list
 │   └── about.typ
 └── .github/workflows/    build check and GitHub Pages deployment
 ```

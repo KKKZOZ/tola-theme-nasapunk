@@ -65,7 +65,7 @@
     <td width="33%" valign="top">
       <img src="docs/features/series.png" alt="系列导航框"><br>
       <b>系列文章</b><br>
-      <sub><code>series</code> 相同的文章自动互相导航。</sub>
+      <sub><code>series</code> 相同的文章自动互相导航，<code>/series/</code> 列出所有系列。</sub>
     </td>
     <td width="33%" valign="top">
       <img src="docs/features/figures.png" alt="一张 CeTZ 图"><br>
@@ -218,10 +218,11 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 | `summary` | 字符串 | 用于文章列表、搜索结果和 Open Graph。 |
 | `tags` | 字符串或数组 | 显示为标签，并汇总到 `/tags/`。 |
 | `weight` | 整数 | 首页排序：数值小的在前，相同的按日期从新到旧。默认值是 100（Hugo 视为未设置的 0 也按 100 算），所以 `weight: 1` 可以置顶，`weight: 200` 可以沉底。其他列表仍按日期排序。 |
-| `series` | 字符串 | 同名的文章组成一个系列，按日期排序。 |
+| `series` | 字符串 | 同名的文章组成一个系列。每篇正文前有系列导航框（第几篇 / 共几篇、前后两篇、全部篇目），`/series/` 页列出所有系列。系列至少有两篇才显示导航框。默认按日期从早到晚排列，可以用 `part` 指定顺序；导航框和 `/series/` 里会去掉标题开头的 `[Tour 01]` 这类标记。 |
+| `part` | 整数 | 在系列中的位置：写了 `part` 的文章排在前面，按数字从小到大，其余按日期。数字不必连续。 |
 | `draft` | 布尔值 | 草稿不会发布；指向草稿的链接显示为纯文本。 |
 
-`content/lab/` 下的文件使用文章布局，但不进文章列表。打开 `/lab/style-reference/` 可以看到主题支持的所有元素。
+`content/lab/` 下的文件使用文章布局，但不进文章列表，适合放测试页面。示例文章 `/posts/style-reference/` 展示了主题支持的所有元素。
 
 ## 组件
 
@@ -230,8 +231,8 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 | `utils/ui.typ` | `callout`、`hint`、`img`、`gallery`、`xref`、`related` |
 | `utils/diagram.typ` | `flow`、`diagram`、`timeline` |
 | `utils/cetz.typ` | 在 HTML 导出时输出内联 SVG 的 `cetz` |
-| `utils/figure.typ` | 主题配色，以及绘制复杂 CeTZ 图用的辅助函数：`pill`、`arrow`、`curve-arrow`、`cells`、`seg`、`legend` 等 |
 | `utils/mitex.typ` | MiTeX 的 `mi` / `mitex`，用 LaTeX 写公式；网页上框选复制时得到你写的 LaTeX 原文（Typst 原生公式复制出等价的 LaTeX） |
+| `utils/figure.typ` | 主题配色，以及绘制复杂 CeTZ 图用的辅助函数：`pill`、`arrow`、`curve-arrow`、`cells`、`seg`、`legend` 等 |
 
 ```typst
 #import "/utils/ui.typ": callout, xref
@@ -276,7 +277,6 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 │   └── webfonts/         IBM Plex Mono 与 Rajdhani 的拉丁字符子集
 ├── content/
 │   ├── posts/            示例文章
-│   ├── lab/              测试页面，不进文章列表
 │   └── about.typ
 └── .github/workflows/    构建检查与 GitHub Pages 部署
 ```

@@ -9,9 +9,28 @@
   series: "Theme Tour",
 ))
 
-This post and the next one form a series. Posts that share a `series` name
-get a series box under the title, ordered by date; a leading `[Tour 01]` tag is
-dropped from the titles listed there.
+The Theme Tour posts form a series. The box above shows this post's place
+in it, links to the parts before and after it, and folds away the full list.
+Its head leads to the #link("/series/")[series index], which lists every
+series on the site.
+
+= Series
+
+```typst
+#tola-meta((
+  title: "[Tour 01] Callouts and Footnotes",
+  date: "2025-03-12",
+  series: "Theme Tour",
+  part: 1,   // optional
+))
+```
+
+- Posts that share a `series` name form a series. The box appears once a
+  series has two parts.
+- Parts run oldest first. To choose the order instead, number them with
+  `part`: numbered parts come first, in number order, then the rest by date.
+- A leading tag such as `[Tour 01]` is dropped from titles in the box and on
+  `/series/`, which name the series already.
 
 = Checklist
 

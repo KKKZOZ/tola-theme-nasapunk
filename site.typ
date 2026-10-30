@@ -37,6 +37,7 @@
 #pages.home(posts)
 #pages.archive(posts)
 #pages.tags(posts)
+#pages.series(posts)
 #pages.search()
 #pages.not-found()
 

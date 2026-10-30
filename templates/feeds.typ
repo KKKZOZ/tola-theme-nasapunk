@@ -42,7 +42,7 @@
 
   // Listings and pages written as sources; lab/ test pages stay out.
   let dates = posts.map(p => (p.output, if p.updated != none { p.updated } else { p.date })).to-dict()
-  let outputs = ("index.html", "archive/index.html", "tags/index.html")
+  let outputs = ("index.html", "archive/index.html", "tags/index.html", "series/index.html")
   outputs += pages.filter(page => not page.source.id.starts-with("lab/")).map(page => page.output)
   sitemap(targets: outputs.map(output => {
     if output in dates { (target: output, lastmod: dates.at(output)) } else { output }

@@ -1,5 +1,5 @@
 // Page metadata and the published post list.
-// Import: #import "/templates/data.typ": select-pages, post-records, post-index, draft-urls, draft-index
+// Import: #import "/templates/data.typ": select-pages, post-records, series-parts, post-index, draft-urls, draft-index
 
 #import "@tola/address:0.0.0": join-route, output-of, output-url, slugify
 #import "@tola/schema:0.0.0": date, nullable, one-or-many, optional, schema
@@ -16,6 +16,9 @@
   // `series: "Name"` or `("Name",)`, as Hugo front matter writes it;
   // only the first entry counts.
   series: optional(nullable(one-or-many(str)), default: none),
+  // Position in the series (`series-parts`): numbered parts first, in
+  // number order, then the rest by date.
+  part: optional(nullable(int), default: none),
   // Home page order, as Hugo's `weight`: lower first, ties newest first.
   // Posts without one, or with Hugo's "unset" 0, weigh 100, so `weight: 1`
   // pins a post to the top and `weight: 200` sinks it.
@@ -44,7 +47,8 @@
 }
 
 /// Dated pages under posts/, newest first, as flat records the templates
-/// read: title, date, updated, summary, tags, series, weight, permalink, output.
+/// read: title, date, updated, summary, tags, series, part, weight,
+/// permalink, output.
 #let post-records(pages) = {
   pages
     .filter(page => page.source.id.starts-with("posts/") and page.source.meta.date != none)
@@ -57,6 +61,7 @@
         summary: m.summary,
         tags: m.tags,
         series: if m.series != none { m.series.at(0, default: none) },
+        part: m.part,
         weight: if m.weight == 0 { 100 } else { m.weight },
         permalink: output-url(page.output),
         output: page.output,
@@ -64,6 +69,15 @@
     })
     .sorted(key: post => post.date)
     .rev()
+}
+
+/// The parts of the series `name`, in order: those with a `part` number by
+/// it, then the rest oldest first; ties by date, then by title, so
+/// "[DDIA 02]" precedes "[DDIA 03]".
+#let series-parts(posts, name) = {
+  posts
+    .filter(p => p.series == name)
+    .sorted(key: p => (if p.part == none { 1 } else { 0 }, if p.part == none { 0 } else { p.part }, p.date, p.title))
 }
 
 /// The post records, for helpers that run inside a source's body (`xref`,

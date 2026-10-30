@@ -314,8 +314,31 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
 .index-code { white-space: nowrap; }
 .index-list a:hover .index-code { color: var(--orange); }
 
+/* Readouts (archive months, tag channels, series stages): a link carries a
+   line about what it leads to, drawn over its container's idle line while
+   the link is pointed at or focused. Nothing between the two may be
+   positioned or transformed, so the container places the readout. */
+.has-readout { position: relative; }
+.readout, .readout-idle { font: 500 11px/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+.readout {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  color: var(--ink);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  visibility: hidden;
+}
+.readout .accent { color: var(--orange); }
+a:is(:hover, :focus-visible) > .readout { visibility: visible; }
+.readout-idle { color: var(--muted); }
+.has-readout:has(a:is(:hover, :focus-visible) > .readout) .readout-idle { visibility: hidden; }
+
 /* Archive: posts-per-month density, one row per year (pages.typ `archive`).
-   Bars are stacks of 3px segments, `--steps` of them. */
+   Bars are stacks of 3px segments, `--steps` of them; a month with posts is
+   a link, inked while pointed at, and the other years fade. */
 .density { margin: 2px 0 8px; }
 .density-row {
   display: grid;
@@ -323,21 +346,29 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
   gap: 12px;
   align-items: end;
   padding: 6px 0;
-  color: var(--ink);
-  text-decoration: none;
   border-bottom: .5px solid var(--rule);
+  transition: opacity .15s;
 }
 .density-year, .density-count { font: 500 12px/1 var(--font-mono); letter-spacing: .06em; }
+.density-year { color: var(--ink); text-decoration: none; }
+.density-year:hover { color: var(--orange); }
 .density-count { text-align: right; color: var(--orange); font-variant-numeric: tabular-nums; }
 .density-bars { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
 .density-bar {
+  --fill: var(--orange);
   height: calc(4px * 8);
+  outline: none;
   background:
-    repeating-linear-gradient(to top, transparent 0 1px, var(--orange) 1px 4px) bottom / 100% calc(var(--steps) * 4px) no-repeat,
+    repeating-linear-gradient(to top, transparent 0 1px, var(--fill) 1px 4px) bottom / 100% calc(var(--steps) * 4px) no-repeat,
     linear-gradient(var(--rule) 0 0) bottom / 100% 1px no-repeat;
 }
-.density-row:hover .density-year { color: var(--orange); }
 .density-row:hover .density-bar { --rule: var(--muted); }
+a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink); }
+.density:has(a.density-bar:is(:hover, :focus-visible)) .density-row:not(.density-axis, :has(a.density-bar:is(:hover, :focus-visible))) { opacity: .45; }
+.density > .readout-idle { padding-top: 6px; }
+/* The newest post of the month a chart link lands on. */
+.index-list li:target { background: var(--tint); box-shadow: inset 3px 0 var(--orange); scroll-margin-top: 24px; }
+.index-list li:target a { padding-left: 10px; }
 .density-axis { border-bottom: 0; padding-top: 4px; }
 .density-axis .density-bars span { font: 500 10px/1 var(--font-mono); color: var(--muted); text-align: center; }
 
@@ -376,6 +407,11 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
 .channel-count { color: var(--orange); font-variant-numeric: tabular-nums; }
 .channel:hover .channel-name { color: var(--orange); }
 .channel:hover .channel-code { color: var(--ink); }
+.channel { transition: opacity .15s; }
+.channel-grid:has(.channel:is(:hover, :focus-visible)) .channel:not(:hover, :focus-visible) { opacity: .4; }
+.channel:focus-visible { outline: none; }
+.channel:focus-visible .channel-name { color: var(--orange); }
+.channel-board > .readout-idle { padding-top: 6px; }
 
 /* Tag sections open on a channel bar; the one a post's tag link lands on
    lights up in ink. */
@@ -401,6 +437,54 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
 .index-heading.is-code:target .index-heading-code,
 .index-heading.is-code:target > .label { color: var(--dark-strong); }
 .index-heading.is-code + .index-list { margin-top: 2px; }
+
+/* Series: mission programs (pages.typ `series`). Each card draws its parts as
+   the stages of a track, one link per part: the one pointed at (or focused)
+   lifts in ink, and reads out its title over the dates on the last line. */
+.program-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 10px 0 8px;
+  padding: 0;
+}
+.program-grid li { margin: 0; padding: 0; }
+.program {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  padding: 10px 12px 12px;
+  border: .5px solid var(--rule);
+  border-top: 2px solid var(--ink);
+  transition: border-color .15s;
+}
+.program:hover { border-top-color: var(--orange); }
+.program-head { font: 500 11px/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; }
+.program-head { display: flex; justify-content: space-between; gap: 12px; }
+.program-code { color: var(--muted); }
+.program-count { color: var(--orange); font-variant-numeric: tabular-nums; }
+.program-name a { font: 700 20px/1.2 var(--font-title); color: var(--ink); text-decoration: none; transition: color .15s; }
+.program-name a:hover { color: var(--orange); }
+.program-track { display: flex; gap: 3px; margin-top: auto; }
+/* The link's padding widens the target; the segment is its ::before, which
+   transforms without becoming the readout's containing block. */
+.program-track a { flex: 1; padding: 5px 0; outline: none; }
+.program-track a::before {
+  content: "";
+  display: block;
+  height: 6px;
+  background: var(--orange);
+  transition: background-color .15s, transform .15s;
+}
+.program-track a:is(:hover, :focus-visible)::before { background: var(--ink); transform: scaleY(1.6); }
+.program-foot { display: flex; justify-content: space-between; gap: 12px; }
+.program-foot a { color: var(--orange); text-decoration: none; }
+.program-foot a:hover { color: var(--ink); }
+.program > .program-track .readout { left: 12px; right: 12px; bottom: 12px; }
+.index-empty { color: var(--muted); }
 
 /* ========================================================================== */
 /* Post                                                                       */
@@ -513,6 +597,8 @@ html { scroll-behavior: smooth; }
   text-transform: uppercase;
 }
 .series-head span:last-child { flex: none; color: var(--dark-strong); }
+.series-head a { color: inherit; text-decoration: none; }
+.series-head a:hover { color: var(--dark-strong); }
 .series-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px 12px 4px; font-size: 13px; line-height: 1.45; }
 .series-nav a { color: var(--ink); text-decoration: none; }
 .series-nav a:hover { color: var(--orange); }
@@ -558,6 +644,28 @@ html { scroll-behavior: smooth; }
 .fn-tip a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 3px; }
 .fn-tip code { font: .93em var(--font-mono); background: var(--code-bg); color: var(--blue); padding: .1em .35em; }
 .fn-tip p { margin: 0 0 .4em; }
+
+/* Copied formulas LaTeX has no counterpart for (assets/scripts/copy.js). */
+.latex-tip {
+  position: fixed;
+  z-index: 25;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  padding: 8px 12px 10px;
+  background: var(--paper);
+  border: .5px solid var(--rule);
+  border-top: 2px solid var(--orange);
+  box-shadow: 0 6px 20px var(--shadow);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink);
+  cursor: pointer;
+}
+.latex-tip[hidden] { display: none; }
+.latex-tip > .label { margin-bottom: 4px; }
+.latex-tip p { margin: 0; }
 .fn-tip > :last-child { margin-bottom: 0; }
 
 /* Search (content/search.typ + search.js). */
@@ -598,6 +706,8 @@ html { scroll-behavior: smooth; }
 
 /* :where() keeps prose rules at zero specificity so components override them. */
 
+/* Page text; Typst draws its SVG frames at the matching 12pt (base.typ). */
+.prose { font-size: 16px; }
 :where(.prose > :first-child) { margin-top: 0; }
 
 :where(.prose) p, :where(.prose) ul, :where(.prose) ol, :where(.prose) blockquote, :where(.prose) table, :where(.prose) pre { margin: 0 0 1.1em; }
@@ -644,28 +754,6 @@ html { scroll-behavior: smooth; }
 }
 @media (hover: none) { .heading-anchor { opacity: .6; } }
 :where(.prose) h4 { font-size: 20px; }
-
-/* Copied formulas LaTeX has no counterpart for (assets/scripts/copy.js). */
-.latex-tip {
-  position: fixed;
-  z-index: 25;
-  bottom: 16px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(420px, calc(100vw - 32px));
-  padding: 8px 12px 10px;
-  background: var(--paper);
-  border: .5px solid var(--rule);
-  border-top: 2px solid var(--orange);
-  box-shadow: 0 6px 20px var(--shadow);
-  font-size: 13px;
-  line-height: 1.6;
-  color: var(--ink);
-  cursor: pointer;
-}
-.latex-tip[hidden] { display: none; }
-.latex-tip > .label { margin-bottom: 4px; }
-.latex-tip p { margin: 0; }
 :where(.prose) h5 { font-size: 17px; text-transform: uppercase; letter-spacing: .06em; }
 
 :where(.prose) strong { color: var(--emphasis); font-weight: 700; }
@@ -706,8 +794,6 @@ html { scroll-behavior: smooth; }
 :where(.prose) .code-block > pre { margin: 0; padding-top: 4px; border-left: 0; background: none; }
 .code-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; padding: 6px 10px 0 16px; }
 .code-lang { font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-/* Page text; Typst draws its SVG frames at the matching 12pt (base.typ). */
-.prose { font-size: 16px; }
 .code-copy {
   font: 500 11px/1 var(--font-mono);
   letter-spacing: .1em;
@@ -723,8 +809,11 @@ html { scroll-behavior: smooth; }
 .code-copy.is-copied { color: var(--success); border-color: var(--success); }
 
 /* Tables: ink header with orange rule, zebra rows, tinted first column. */
+/* A block so a wide table scrolls sideways; as wide as its cells, centered. */
 :where(.prose) table {
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
   border-collapse: collapse;
   display: block;
   overflow-x: auto;
@@ -760,6 +849,10 @@ html { scroll-behavior: smooth; }
 .math-block { margin: 1.2em 0; text-align: center; overflow-x: auto; }
 .math-block > svg { margin-inline: auto; }
 .math-inline svg { overflow: visible; }
+/* Formulas in the selection (assets/scripts/copy.js), which ::selection cannot reach. */
+[role="math"].is-selected svg { background: var(--tint); }
+/* An inline formula and the punctuation after it (assets/scripts/math.js). */
+.math-nobreak { white-space: nowrap; }
 .svg-frame svg, .cetz svg, :where(.prose) figure svg { max-width: 100%; height: auto !important; }
 /* Typst 0.15 writes frames as display: block; keep them inline so the
    wrapper's text-align places them, as before. */
@@ -849,10 +942,6 @@ html { scroll-behavior: smooth; }
 }
 .zoom[open] { display: grid; place-items: center; animation: zoom-in .15s ease-out; }
 .zoom::backdrop { background: transparent; }
-/* Formulas in the selection (assets/scripts/copy.js), which ::selection cannot reach. */
-[role="math"].is-selected svg { background: var(--tint); }
-/* An inline formula and the punctuation after it (assets/scripts/math.js). */
-.math-nobreak { white-space: nowrap; }
 .zoom > :is(img, svg) { display: block; max-width: none; }
 .zoom-close {
   position: fixed;
@@ -893,6 +982,7 @@ html:has(.zoom[open]) { overflow: hidden; }
 
 @media (max-width: 600px) {
   .header-bar { flex-direction: column; align-items: flex-start; }
+  .site-nav { flex-wrap: wrap; gap: 8px 16px; }
   .hero { grid-template-columns: 1fr; margin: 32px 0 28px; }
   .hero-mark { display: none; }
   .lost { grid-template-columns: 1fr; margin-top: 36px; }

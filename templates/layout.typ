@@ -19,6 +19,7 @@
   ("Home", "index.html"),
   ("Archive", "archive/index.html"),
   ("Tags", "tags/index.html"),
+  ("Series", "series/index.html"),
   ("Search", "search/index.html"),
   ("About", "about/index.html"),
 )
@@ -34,9 +35,10 @@
   if d == none { none } else if type(d) == datetime { d.display("[year]-[month]-[day]") } else { str(d).split("T").at(0) }
 }
 
-/// Anchor id for a tag on the /tags/ page.
+/// Anchor id for a tag on the /tags/ page, or a series on /series/.
 #let tag-slug(t) = lower(t).replace(regex("[^\p{L}\p{N}]+"), "-").trim("-")
 #let tag-href(t) = output-url("tags/index.html") + "#" + tag-slug(t)
+#let series-href(s) = output-url("series/index.html") + "#" + tag-slug(s)
 
 /// (tag, posts) pairs, most used first, then alphabetical. Spellings that
 /// share a slug ("LLM-Serving", "llm-serving") are one tag, named by the
@@ -271,9 +273,11 @@
 })
 
 /// Compact one-line rows: date + title, and `code(p)` (a document number)
-/// on the right when given.
-#let index-rows(posts, date-format: d => fmt-date(d), code: none) = html.ol(class: cls("index-list", if code != none { "has-code" }), for p in posts {
-  html.li(html.a(href: p.permalink, {
+/// on the right when given. `id(p, i)` gives a row an anchor id (none for
+/// no id).
+#let index-rows(posts, date-format: d => fmt-date(d), code: none, id: (p, i) => none) = html.ol(class: cls("index-list", if code != none { "has-code" }), for (i, p) in posts.enumerate() {
+  let anchor = id(p, i)
+  html.elem("li", attrs: if anchor != none { (id: anchor) } else { (:) }, html.a(href: p.permalink, {
     label(date-format(p.date))
     html.div(class: "index-title", p.title)
     if code != none { label(code(p), class: "index-code") }
@@ -289,11 +293,11 @@
     if code != none { html.span(class: "index-heading-code", code) }
     html.span(class: "index-heading-title", title)
     html.span(class: "label accent", str(count))
-    if back != none { html.a(class: "index-heading-back label", href: back, aria-label: "Back to the channel index", "↑") }
+    if back != none { html.a(class: "index-heading-back label", href: back, aria-label: "Back to the index", "↑") }
   })
 }
 
-/// Page title block shared by archive / tags / about.
+/// Page title block shared by archive / tags / series / about.
 #let page-head(title, sub: none) = html.header(class: "post-head", {
   if sub != none { label(sub, class: "accent") }
   html.h1(class: "post-title", title)

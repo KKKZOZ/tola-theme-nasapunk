@@ -4,10 +4,11 @@
 #import "/utils/ui.typ": callout, xref
 
 #tola-meta((
-  title: "The Figure Kit",
+  title: "[Tour 04] The Figure Kit",
   date: "2026-03-08",
   summary: "Every helper in utils/figure.typ, with what it draws and how to call it.",
-  tags: ("guide", "cetz", "diagram"),
+  tags: ("guide", "series", "cetz", "diagram"),
+  series: "Theme Tour",
 ))
 
 // Each example is shown as source, then evaluated to draw it, so the code

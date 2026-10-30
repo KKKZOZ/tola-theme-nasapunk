@@ -1,10 +1,13 @@
 #import "@tola/source:0.0.0": tola-meta
 #import "/utils/ui.typ": callout, gallery, hint, img, related, xref
+#import "/utils/mitex.typ": mi, mitex
 
 #tola-meta((
-  title: "Style Reference",
+  title: "[Tour 05] Style Reference",
   date: "2026-10-18",
   summary: "Every element the template styles, on one page.",
+  tags: ("example", "series"),
+  series: "Theme Tour",
 ))
 
 = Typography
@@ -25,9 +28,28 @@ Links look like #link("https://typst.app")[this], inline code like `tola serve`.
 
 == Math
 
-Inline $a^2 + b^2 = c^2$ sits on the baseline, and display math is centered:
+Write formulas in LaTeX with `mi` (inline) and `mitex` (display) from
+`utils/mitex.typ`. Inline #mi(`a^2 + b^2 = c^2`) sits on the baseline, and
+display math is centered:
 
-$ sum_(i=1)^n |m_i| >= |union.big_(i=1)^n m_i| $
+#mitex(`\sum_{i=1}^n \lvert m_i \rvert \geq \left| \bigcup_{i=1}^n m_i \right|`)
+
+```typst
+#import "/utils/mitex.typ": mi, mitex
+
+Inline #mi(`a^2 + b^2 = c^2`) sits on the baseline.
+#mitex(`\sum_{i=1}^n \lvert m_i \rvert \geq \left| \bigcup_{i=1}^n m_i \right|`)
+```
+
+#callout(kind: "info", title: [WRITE MATH WITH MI / MITEX])[Select text
+around a formula and copy, and the formula comes out as LaTeX: `$...$`
+inline, `$$...$$` display. Written with `mi` or `mitex`, it is your LaTeX
+exactly as typed. Typst's own math such as $sum_(i=1)^n x_i$ copies too, but
+its source is gone by the time the page is built, so the theme rebuilds
+equivalent LaTeX from the formula (`\sum_{i=1}^n x_i`): same maths, not
+necessarily the same text. A formula with parts LaTeX has no counterpart
+for copies as `\text{[unsupported formula]}`, and a tip says which parts.
+#xref("math") has examples of both.]
 
 = Blocks
 
@@ -49,18 +71,18 @@ def union(masks):
 = Links Between Posts
 
 Plain Typst links work with any site path; relative ones such as
-#link("../../posts/hello-world/")[the first post] also survive a `base-path`. To link a post by its title,
-use `xref` with a permalink or the last segment of one: #xref("hello-world"). Override the
-text with `body`: #xref("hello-world", body: [this post]).
+#link("../getting-started/")[the getting-started guide] also survive a `base-path`. To link a post by its title,
+use `xref` with a permalink or the last segment of one: #xref("cetz-figures"). Override the
+text with `body`: #xref("cetz-figures", body: [this post]).
 Tola checks these links at build time, and `xref` fails loudly if the post is missing.
 
 ```typst
 #import "/utils/ui.typ": xref, related
-#xref("hello-world")
-#related("hello-world", "/posts/getting-started/")
+#xref("cetz-figures")
+#related("cetz-figures", "/posts/getting-started/")
 ```
 
-#related("hello-world", "getting-started")
+#related("cetz-figures", "getting-started")
 
 = Images
 

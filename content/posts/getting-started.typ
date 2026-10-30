@@ -7,6 +7,7 @@
   updated: "2026-10-25",
   summary: "Install the theme, set your site identity, and write the first post.",
   tags: ("guide", "theme"),
+  weight: 1,
 ))
 
 = Requirements
@@ -66,8 +67,8 @@ URL follows the file path: `content/posts/foo/bar.typ` publishes at
 `/posts/foo/bar/`.
 
 #callout(kind: "info")[Files under `content/lab/` get the post layout but stay
-out of the post list. Use them for test pages, such as the
-#link("../../lab/style-reference/")[style reference].]
+out of the post list. Use them for test pages. The
+#link("../style-reference/")[style reference] shows every element the theme styles.]
 
 = Components
 

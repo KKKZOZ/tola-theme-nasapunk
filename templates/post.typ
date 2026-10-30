@@ -8,7 +8,8 @@
 #import "@tola/address:0.0.0": slugify
 #import "/templates/base.typ": doc-query, endnotes
 #import "/templates/config.typ": doc-prefix
-#import "/templates/layout.typ" as layout: fmt-date, label
+#import "/templates/data.typ": series-parts
+#import "/templates/layout.typ" as layout: fmt-date, label, series-href
 #import "/templates/page.typ": html-document
 #import "/templates/util.typ": to-string
 
@@ -78,21 +79,22 @@
 // Series
 // ============================================================================
 // A post joins a series with `series: "Name"` (or `("Name",)`, as Hugo
-// front matter writes it; only the first entry counts). Parts run
-// oldest first, then by title, so "[DDIA 02]" precedes "[DDIA 03]".
+// front matter writes it; only the first entry counts). Parts run in the
+// order of data.typ `series-parts`: `part` numbers, then dates. The head
+// links to the series on /series/.
 
 /// "[DDIA 02] Chapter 2 ..." -> "Chapter 2 ...": the series box names the series.
 #let part-title(p) = p.title.replace(regex("^\[[^\]]*\]\s*"), "")
 
 #let series-box(name, posts, output) = {
   if name == none { return }
-  let parts = posts.filter(p => p.series == name).sorted(key: p => (p.date, p.title))
+  let parts = series-parts(posts, name)
   let i = parts.position(p => p.output == output)
   if i == none or parts.len() < 2 { return }
   let (older, newer) = (if i > 0 { parts.at(i - 1) }, parts.at(i + 1, default: none))
   html.nav(class: "series", aria-label: "Series", {
     html.div(class: "series-head", {
-      html.span("Series / " + name)
+      html.a(href: series-href(name), "Series / " + name)
       html.span("Part " + str(i + 1) + " of " + str(parts.len()))
     })
     html.div(class: "series-nav", {

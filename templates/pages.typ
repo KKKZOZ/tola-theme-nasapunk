@@ -1,12 +1,13 @@
 // Pages built from the post list rather than written as sources: home,
-// archive, tags, search and the 404 page. site.typ emits each one.
+// archive, tags, series, search and the 404 page. site.typ emits each one.
 // Import: #import "/templates/pages.typ" as pages
 
 #import "@tola/address:0.0.0": asset-url, output-url
 #import "@tola/site:0.0.0": site
+#import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout
 #import "/templates/page.typ": page
-#import "/templates/post.typ": doc-number, pad
+#import "/templates/post.typ": doc-number, pad, part-title
 
 /// Posts per home page; the rest go on /page/2/, /page/3/, ...
 #let shown = 10
@@ -53,13 +54,17 @@
 #let density-steps = 8
 
 /// The archive as a flight log: a summary, a posts-per-month density chart
-/// (one row per year, linking to its section), then the years, numbered
-/// in mission time from the first post's year (T+00).
+/// (one row per year), then the years, numbered in mission time from the
+/// first post's year (T+00). Pointing at a month of the chart reads out its
+/// posts under the chart, and a click lands on them in the year's list.
 #let archive(posts) = page("archive/index.html", "Archive", posts: posts, {
   let years = layout.posts-by-year(posts)
   let month-of(p) = int(layout.fmt-date(p.date).slice(5, 7))
-  let counts = years.map(((year, items)) => range(1, 13).map(m => items.filter(p => month-of(p) == m).len()))
+  let by-month = years.map(((year, items)) => range(1, 13).map(m => items.filter(p => month-of(p) == m)))
+  let counts = by-month.map(months => months.map(ps => ps.len()))
   let peak = calc.max(1, ..counts.flatten())
+  let month-id(year, m) = "m" + year + "-" + pad(m, 2)
+  let posts-word(n) = str(n) + if n == 1 { " post" } else { " posts" }
   let first-year = int(years.at(-1, default: ("0", ())).at(0))
   let mission-time(year) = "T+" + pad(int(year) - first-year, 2)
   layout.page-head("Archive", sub: "All posts")
@@ -70,17 +75,22 @@
     ("Latest entry", if posts.len() > 0 { layout.fmt-date(posts.at(0).date) } else { "—" }),
   ))
   html.div(class: "section-label", id: "log", layout.label(class: "accent")[Density / posts per month])
-  html.div(class: "density", {
-    for ((year, items), months) in years.zip(counts) {
-      html.a(class: "density-row", href: "#y" + year, {
-        html.span(class: "density-year", year)
-        html.span(class: "density-bars", for (m, n) in months.enumerate() {
+  html.div(class: "density has-readout", {
+    for ((year, items), months) in years.zip(by-month) {
+      html.div(class: "density-row", {
+        html.a(class: "density-year", href: "#y" + year, year)
+        html.span(class: "density-bars", for (m, ps) in months.enumerate() {
+          let n = ps.len()
           let steps = if n == 0 { 0 } else { calc.max(1, calc.round(n / peak * density-steps)) }
-          html.span(
-            class: "density-bar",
-            style: "--steps: " + str(steps),
-            title: year + "-" + pad(m + 1, 2) + " · " + str(n) + if n == 1 { " post" } else { " posts" },
-          )
+          let style = "--steps: " + str(steps)
+          if n == 0 {
+            html.span(class: "density-bar", style: style)
+          } else {
+            let label = year + "-" + pad(m + 1, 2) + " / " + posts-word(n)
+            html.a(class: "density-bar", style: style, href: "#" + month-id(year, m + 1), aria-label: label, {
+              html.span(class: "readout", { html.span(class: "accent", label); " " + ps.map(p => p.title).join(" / ") })
+            })
+          }
         })
         html.span(class: "density-count", str(items.len()))
       })
@@ -90,18 +100,22 @@
       html.span(class: "density-bars", for m in "JFMAMJJASOND".clusters() { html.span(m) })
       html.span()
     })
+    html.div(class: "readout-idle", "Point at a month to read its log")
   })
   for (year, items) in years {
     html.section(class: "index-section", {
       layout.index-heading(year, items.len(), id: "y" + year, code: mission-time(year), back: "#log")
-      layout.index-rows(items, date-format: d => layout.fmt-date(d).slice(5), code: p => doc-number(posts, p.output))
+      // The newest post of each month anchors the chart's link to it.
+      let first-of-month(p, i) = if i == 0 or month-of(items.at(i - 1)) != month-of(p) { month-id(year, month-of(p)) }
+      layout.index-rows(items, date-format: d => layout.fmt-date(d).slice(5), code: p => doc-number(posts, p.output), id: first-of-month)
     })
   }
 })
 
 /// Tags as a telemetry channel index: a traffic summary, a directory with a
 /// level meter per tag (scaled to the busiest one), then one section per
-/// tag, its posts listed with their document numbers.
+/// tag, its posts listed with their document numbers. Pointing at a channel
+/// dims the others and reads it out under the directory.
 #let tags(posts) = page("tags/index.html", "Tags", posts: posts, {
   let groups = layout.posts-by-tag(posts)
   let channel(i) = "CH-" + pad(i + 1, 2)
@@ -114,18 +128,96 @@
     ("Peak", if peak > 0 { groups.at(0).at(0) } else { "—" }),
   ))
   html.div(class: "section-label", id: "channels", layout.label(class: "accent")[Directory / by traffic])
-  html.ol(class: "channel-grid", for (i, (tag, items)) in groups.enumerate() {
-    let level = str(calc.round(items.len() / peak * 100, digits: 1)) + "%"
-    html.li(html.a(class: "channel", href: layout.tag-href(tag), title: tag, style: "--level: " + level, {
-      html.span(class: "channel-code", channel(i))
-      html.span(class: "channel-name", tag)
-      html.span(class: "channel-count", str(items.len()))
-    }))
+  html.div(class: "channel-board has-readout", {
+    html.ol(class: "channel-grid", for (i, (tag, items)) in groups.enumerate() {
+      let level = str(calc.round(items.len() / peak * 100, digits: 1)) + "%"
+      let n = items.len()
+      html.li(html.a(class: "channel", href: layout.tag-href(tag), style: "--level: " + level, {
+        html.span(class: "channel-code", channel(i))
+        html.span(class: "channel-name", tag)
+        html.span(class: "channel-count", str(n))
+        html.span(class: "readout", {
+          html.span(class: "accent", channel(i) + " / " + tag + " / " + str(n) + if n == 1 { " post" } else { " posts" })
+          " Latest: " + items.at(0).title
+        })
+      }))
+    })
+    html.div(class: "readout-idle", "Point at a channel to read it")
   })
   for (i, (tag, items)) in groups.enumerate() {
     html.section(class: "index-section", {
       layout.index-heading(tag, items.len(), id: layout.tag-slug(tag), code: channel(i), back: "#channels")
       layout.index-rows(items, code: p => doc-number(posts, p.output))
+    })
+  }
+})
+
+/// Series as a mission manifest: a summary, a directory with one card per
+/// program, then one section per series, its parts in order (data.typ
+/// `series-parts`). The program flown most recently comes first. A card's
+/// track has one segment per part: pointing at one reads out the part on the
+/// card's last line, and a click opens it.
+#let series(posts) = page("series/index.html", "Series", posts: posts, {
+  let programs = posts
+    .map(p => p.series)
+    .filter(s => s != none)
+    .dedup()
+    .map(name => {
+      let parts = series-parts(posts, name)
+      (name: name, parts: parts, dates: parts.map(p => p.date).sorted())
+    })
+    .sorted(key: s => s.dates.last())
+    .rev()
+  let code(i) = "PRG-" + pad(i + 1, 2)
+  let staged = programs.map(s => s.parts.len()).sum(default: 0)
+  let longest = programs.sorted(key: s => s.parts.len()).at(-1, default: none)
+  let month(d) = layout.fmt-date(d).slice(0, 7)
+  layout.page-head("Series", sub: "Mission programs")
+  index-stats((
+    ("Programs", str(programs.len())),
+    ("Stages", str(staged)),
+    ("Coverage", str(staged) + " / " + str(posts.len()) + " posts"),
+    ("Longest", if longest != none { longest.name } else { "—" }),
+  ))
+  html.div(class: "section-label", id: "programs", layout.label(class: "accent")[Directory / by last flight])
+  if programs.len() == 0 {
+    html.p(class: "index-empty", "No series yet: posts that share a series name are listed here.")
+  }
+  html.ol(class: "program-grid", for (i, s) in programs.enumerate() {
+    let n = s.parts.len()
+    // Children are blocks or all inline: Typst wraps a lone inline element
+    // beside a block in <p>.
+    html.li(html.div(class: "program has-readout", {
+      html.div(class: "program-head", {
+        html.span(class: "program-code", code(i))
+        html.span(class: "program-count", str(n) + if n == 1 { " stage" } else { " stages" })
+      })
+      html.div(class: "program-name", html.a(href: "#" + layout.tag-slug(s.name), s.name))
+      html.div(class: "program-track", for (j, p) in s.parts.enumerate() {
+        let stage = "Stage " + pad(j + 1, 2)
+        html.a(href: p.permalink, aria-label: stage + ": " + part-title(p), {
+          html.span(class: "readout", { html.span(class: "accent", stage); " " + part-title(p) })
+        })
+      })
+      html.div(class: "program-foot readout-idle", {
+        html.span({
+          let (first, last) = (month(s.dates.first()), month(s.dates.last()))
+          if first == last { first } else { first + " → " + last }
+        })
+        html.a(href: s.parts.first().permalink, "Start →")
+      })
+    }))
+  })
+  for (i, s) in programs.enumerate() {
+    html.section(class: "index-section", {
+      layout.index-heading(s.name, s.parts.len(), id: layout.tag-slug(s.name), code: code(i), back: "#programs")
+      html.ol(class: "index-list has-code", for (j, p) in s.parts.enumerate() {
+        html.li(html.a(href: p.permalink, {
+          layout.label("Stage " + pad(j + 1, 2), class: "accent")
+          html.div(class: "index-title", part-title(p))
+          layout.label(layout.fmt-date(p.date), class: "index-code")
+        }))
+      })
     })
   }
 })

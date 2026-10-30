@@ -4,10 +4,11 @@
 #import "/utils/ui.typ": hint
 
 #tola-meta((
-  title: "Figures with CeTZ",
+  title: "[Tour 03] Figures with CeTZ",
   date: "2026-02-14",
   summary: "Detailed CeTZ drawings, rendered to inline SVG and themed for day and night.",
-  tags: ("example", "cetz", "diagram"),
+  tags: ("example", "series", "cetz", "diagram"),
+  series: "Theme Tour",
 ))
 
 #let fig-transfer() = cetz.canvas(length: 1pt, {
