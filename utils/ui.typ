@@ -62,32 +62,39 @@
   html.elem("img", attrs: (src: url, alt: alt, loading: "lazy", decoding: "async"))
 }
 
+// Both are native figures of kind image, numbered with the page's other
+// figures; `numbering: none` leaves one out. A label after one makes it a
+// target for `@label`, e.g. `#img(...) <fig-telemetry>`. The class (and
+// width) sit on a wrapper inside the <figure>; the stylesheet reaches the
+// figure through `:has()`.
+#let _figure(caption, numbering, body) = figure(
+  kind: image,
+  ..if caption != none { (caption: caption) },
+  ..if numbering != auto { (numbering: numbering) },
+  body,
+)
+
 /// Single image with optional caption.
 /// - `width`: CSS width of the figure, e.g. "60%" or "320px"; none = full column.
 /// - `bleed`: let the figure extend past the text column on wide screens.
-#let img(src, alt: "", caption: none, width: none, bleed: false) = {
+/// - `numbering`: `none` leaves the figure unnumbered.
+#let img(src, alt: "", caption: none, width: none, bleed: false, numbering: auto) = {
   let attrs = (class: if bleed { "img img-bleed" } else { "img" })
   if width != none { attrs.insert("style", "width: " + width) }
-  html.figure(..attrs, {
-    _img-tag(src, alt)
-    if caption != none { html.figcaption(caption) }
-  })
+  _figure(caption, numbering, html.div(..attrs, _img-tag(src, alt)))
 }
 
 /// Images side by side; each item is a src string or (src, caption).
-#let gallery(columns: 2, caption: none, ..items) = html.figure(
-  class: "gallery",
-  style: "--cols: " + str(columns),
-  {
-    html.div(class: "gallery-grid", for item in items.pos() {
-      let (src, sub) = if type(item) == array { item } else { (item, none) }
-      html.div(class: "gallery-item", {
-        _img-tag(src, if sub != none { sub } else { "" })
-        if sub != none { label(sub) }
-      })
+#let gallery(columns: 2, caption: none, numbering: auto, ..items) = _figure(
+  caption,
+  numbering,
+  html.div(class: "gallery", style: "--cols: " + str(columns), for item in items.pos() {
+    let (src, sub) = if type(item) == array { item } else { (item, none) }
+    html.div(class: "gallery-item", {
+      _img-tag(src, if sub != none { sub } else { "" })
+      if sub != none { label(sub) }
     })
-    if caption != none { html.figcaption(caption) }
-  },
+  }),
 )
 
 // ============================================================================

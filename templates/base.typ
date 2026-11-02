@@ -122,12 +122,50 @@
   }
 }
 
+// Figures are Typst's own: in HTML export a `figure` is a <figure> whose id
+// is its label, numbered per kind, so `@fig-x` reads "Figure 2" (图 2 in
+// Chinese) and links to `#fig-x`. A label that is not a valid HTML id, such
+// as `<fig:x>`, gets a generated `loc-N` instead. `img` / `gallery`
+// (utils/ui.typ) are figures of kind image.
+//
+// Every figure is numbered, a caption or not: the caption defaults to empty,
+// which shows the number alone. A table outside a figure is put in one, so
+// it is numbered too; to cite it, write the figure yourself, as
+// `#figure(table(...), caption: [...]) <tab-x>`, since Typst cannot
+// reference a bare table. `#figure(numbering: none, ...)` opts out.
+
+/// Whether the current position is inside a figure; set by `base`.
+#let in-figure = state("nasapunk-in-figure", false)
+
+/// A caption that leads with the numbered supplement: "FIGURE 2 — body",
+/// or "FIGURE 2" for an empty caption. Unnumbered and empty, it is left out.
+#let figure-caption(it) = {
+  let empty = it.body in (none, [], [ ])
+  if it.numbering == none and empty { return }
+  html.figcaption({
+    if it.numbering != none {
+      let num = it.counter.display(it.numbering)
+      html.span(class: "figure-num", if it.supplement in (none, []) { num } else [#it.supplement #num])
+      if not empty [ — ]
+    }
+    it.body
+  })
+}
+
 #let base(body) = {
   show link: site-link
 
-  // Figures keep the `figure` class the stylesheet targets.
-  show figure: it => context {
-    if target() == "html" { html.figure(class: "figure", it) } else { it }
+  // Figures and tables are numbered by default (see `figure-caption`).
+  set figure(caption: [])
+  show figure: it => { in-figure.update(true); it; in-figure.update(false) }
+  show table: it => context if in-figure.get() { it } else { figure(it) }
+  // Tables carry their caption above, as is usual for tables.
+  show figure.where(kind: table): set figure.caption(position: top)
+  show figure.caption: it => context if target() == "html" { figure-caption(it) } else { it }
+  // The site is one Bundle, so counters run on from page to page: restart
+  // each figure kind's count on every page.
+  context for kind in doc-query(figure).map(f => f.kind).dedup() {
+    counter(figure.where(kind: kind)).update(0)
   }
 
   // Equations render as SVG (see `math-svg`).

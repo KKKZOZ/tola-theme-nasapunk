@@ -89,11 +89,20 @@ Tola checks these links at build time, and `xref` fails loudly if the post is mi
 Put files under `assets/images/` and reference them site-absolute. `img`
 emits a real `<img>` tag; Typst's own `image()` would inline the file as base64.
 
+`img` and `gallery` are figures: each is numbered with the page's other
+figures, a caption or not, and a label after it lets the text point at it.
+@fig-telemetry below is `#img(...) <fig-telemetry>`, cited as
+`@fig-telemetry`; the link jumps to `#fig-telemetry`. Plain `#figure(...)`
+(a CeTZ drawing, code) is numbered and captioned the same way, and
+`numbering: none` on any of them leaves it unnumbered. Typst only uses a
+label as the anchor when it is a valid HTML id, so write `<fig-x>` rather
+than `<fig:x>`, which still links but as `#loc-3`.
+
 #img(
   "/assets/images/telemetry.png",
   alt: "Three decaying telemetry curves on a dark grid",
   caption: [Full column width with a caption.],
-)
+) <fig-telemetry>
 
 #img("/assets/images/telemetry.png", alt: "Telemetry curves", width: "55%", caption: [`width: "55%"` centers a smaller figure.])
 
@@ -108,16 +117,40 @@ emits a real `<img>` tag; Typst's own `image()` would inline the file as base64.
 
 ```typst
 #import "/utils/ui.typ": img, gallery
-#img("/assets/images/x.png", alt: "...", caption: [...], width: "60%")
+#img("/assets/images/x.png", alt: "...", caption: [...], width: "60%") <fig-x>
 #gallery(columns: 3, "/assets/images/a.png", ("/assets/images/b.png", "Label"))
+#figure(cetz.canvas(...), caption: [...]) <fig-y>
+#img("/assets/images/logo.png", numbering: none)   // no number
+As @fig-x and @fig-y show, ...
 ```
 
 = Table
 
+Tables are numbered on their own count, with the caption above. A bare
+`#table(...)` gets its number with no caption; put it in a `figure` to give
+it one, and label the figure to cite it, as @tab-strategies is: Typst cannot
+reference a bare table.
+
+#figure(
+  table(
+    columns: 3,
+    table.header[Strategy][Neurons][Note],
+    [Independent], [4], [Each token picks freely],
+    [Aligned], [3], [Shares flexible slots],
+    [Oracle], [2], [_Lower bound_],
+  ),
+  caption: [Neurons each routing strategy needs.],
+) <tab-strategies>
+
 #table(
-  columns: 3,
-  table.header[Strategy][Neurons][Note],
-  [Independent], [4], [Each token picks freely],
-  [Aligned], [3], [Shares flexible slots],
-  [Oracle], [2], [_Lower bound_],
+  columns: 2,
+  table.header[Channel][Rate],
+  [A], [1 Hz],
+  [B], [10 Hz],
 )
+
+```typst
+#figure(table(...), caption: [...]) <tab-x>   // numbered, captioned, citable
+#table(...)                                   // numbered, no caption
+#figure(numbering: none, table(...))          // neither
+```

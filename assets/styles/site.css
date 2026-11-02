@@ -846,6 +846,14 @@ html { scroll-behavior: smooth; }
 /* Figures, math and SVG frames (cetz etc.) */
 :where(.prose) figure { margin: 1.8em 0; text-align: center; }
 :where(.prose) figcaption { margin-top: 8px; font: 500 12px/1.5 var(--font-mono); letter-spacing: .05em; color: var(--muted); }
+/* Typst's figures: the label is the id @refs jump to; the caption
+   (figure-caption in templates/base.typ) reads "FIGURE 2 — body", above a
+   table and below the rest. */
+:where(.prose) figure { scroll-margin-top: 24px; }
+:where(.prose) figure:target > figcaption { color: var(--ink); }
+:where(.prose) figcaption:first-child { margin: 0 0 8px; }
+:where(.prose) figure > table { margin-bottom: 0; }
+.figure-num { color: var(--orange); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
 .math-block { margin: 1.2em 0; text-align: center; overflow-x: auto; }
 .math-block > svg { margin-inline: auto; }
 .math-inline svg { overflow: visible; }
@@ -909,15 +917,17 @@ html { scroll-behavior: smooth; }
 .hint-body strong em, .hint-body em strong { color: var(--hint-emphasis); }
 
 /* Images */
-.img, .gallery { margin: 1.8em auto; }
+/* `img` and `gallery` (utils/ui.typ): a wrapper inside a Typst figure. */
+.img { margin-inline: auto; }
 .img img, .gallery img { display: block; width: 100%; height: auto; }
-.img figcaption, .gallery figcaption { text-align: left; }
-.img figcaption::before, .gallery figcaption::before { content: "FIG — "; color: var(--orange); }
-.gallery-grid { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 12px; }
+figure:has(> :is(.img, .gallery)) > figcaption { text-align: left; }
+/* A narrower image keeps its caption centered beneath it. */
+figure:has(> .img[style]) > figcaption { text-align: center; }
+.gallery { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 12px; }
 .gallery-item .label { margin-top: 6px; }
 @media (min-width: 601px) and (max-width: 760px) { .channel-grid { columns: 2; } }
 /* Past the column by up to 80px a side, as far as the window allows. */
-.img-bleed { margin-inline: calc(-1 * clamp(0px, (100vw - var(--measure)) / 2 - var(--gutter), 80px)); }
+figure:has(> .img-bleed) { margin-inline: calc(-1 * clamp(0px, (100vw - var(--measure)) / 2 - var(--gutter), 80px)); }
 
 /* Click-to-enlarge (assets/scripts/zoom.js): the picture scaled to the
    window over a veil of paper; a click anywhere closes it. */
