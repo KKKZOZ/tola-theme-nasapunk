@@ -1,13 +1,13 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, demo
+#import "/utils/ui.typ": callout, demo, hint, term
 
-#let demo = demo.with(scope: (callout: callout))
+#let demo = demo.with(scope: (callout: callout, hint: hint, term: term))
 
 #tola-meta((
-  title: "[Tour 01] Callouts and Footnotes",
+  title: "[Tour 01] Callouts, Hints, Notes and Terms",
   date: "2025-03-12",
-  summary: "Part one of a sample series: checklists, callouts and footnotes.",
+  summary: "Part one of a sample series: checklists, callouts, hints, footnotes and terms.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
@@ -21,7 +21,7 @@ series on the site.
 
 ```typst
 #tola-meta((
-  title: "[Tour 01] Callouts and Footnotes",
+  title: "[Tour 01] Callouts, Hints, Notes and Terms",
   date: "2025-03-12",
   series: "Theme Tour",
   part: 1,   // optional
@@ -60,6 +60,17 @@ and the status label: `note` (the default), `info`, `warning`, `success` or
 build. That is deliberate#footnote[See `[build.references]` in `tola.toml`.].]
 ```)
 
+= Hints
+
+`hint` is lighter than a callout: an engineering annotation with a target
+mark and no box, for a tip or an aside next to the text it concerns.
+
+#demo(```typst
+#import "/utils/ui.typ": hint
+
+#hint[Run `tola dev` while writing: it rebuilds the site on every *save*.]
+```)
+
 = Notes
 
 Footnotes are collected at the end of the post, and each one links back to
@@ -68,4 +79,37 @@ where it was cited.
 #demo(```typst
 Write the note where it belongs#footnote[Like this one.]; it appears
 at the foot of the post.
+```)
+
+= Terms
+
+`term` marks a word the reader may not know. Its definition goes in the
+brackets where the word first appears: the word gets a dotted underline,
+hovering it shows the definition, and every term is listed under "Terms" at
+the end of the post, after the notes. On touch screens the word links there.
+
+#demo(```typst
+#import "/utils/ui.typ": term
+
+The ground station decodes the #term("downlink")[The radio link from a
+spacecraft down to the ground.] at 2 Mb/s. When the #term("downlink") drops,
+it waits for the next pass.
+```)
+
+- Later uses leave the definition out and link to the same entry.
+- A term with no definition on the page, or defined twice, fails the build.
+
+`image` puts a picture above the definition, and `credit` an attribution
+under it, as licences such as CC BY ask.
+
+#demo(```typst
+#import "/utils/ui.typ": term
+
+Each channel of #term(
+  "telemetry",
+  image: "/assets/images/telemetry.png",
+  alt: "Telemetry curves",
+  credit: [Plot: sample image bundled with the theme],
+)[Measurements a spacecraft sends home: temperatures, voltages, attitude.]
+is plotted against mission time.
 ```)
