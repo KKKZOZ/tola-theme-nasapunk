@@ -1,5 +1,6 @@
-// In-article components: callouts, hints, images and cross-post links.
-// Import: #import "/utils/ui.typ": callout, hint, img, gallery, xref, related
+// In-article components: callouts, hints, images, cross-post links and
+// source-plus-output demos.
+// Import: #import "/utils/ui.typ": callout, hint, img, gallery, xref, related, demo
 
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
@@ -174,3 +175,38 @@
     })
   })
 })
+
+// ============================================================================
+// Demos
+// ============================================================================
+
+/// Typst source, then what it renders. `src` is a raw block (or a string);
+/// the code block shows it as written and the panel under it is the same
+/// text evaluated, so the two cannot drift apart. `#import` lines are shown
+/// but not run (evaluated code cannot read files): pass the names they bring
+/// in through `scope`, e.g. `#let demo = demo.with(scope: (callout: callout))`.
+/// `fold: true` puts the output first and folds the source away under it,
+/// for drawings whose code is too long to read before the picture.
+#let demo(src, scope: (:), fold: false) = {
+  let text = if type(src) == str { src } else { src.text }
+  let code = text.split("\n").filter(l => not l.trim().starts-with("#import")).join("\n")
+  let shown = raw(text, lang: "typst", block: true)
+  let out = eval(code, mode: "markup", scope: scope)
+  if fold {
+    html.div(class: "demo demo-fold", {
+      html.div(class: "demo-body", out)
+      html.elem("details", attrs: (class: "demo-src"), {
+        html.elem("summary", attrs: (data-pagefind-ignore: ""), [Typst source])
+        shown
+      })
+    })
+  } else {
+    html.div(class: "demo", {
+      shown
+      html.div(class: "demo-out", {
+        html.elem("div", attrs: (class: "demo-label", data-pagefind-ignore: ""), [Renders as])
+        html.div(class: "demo-body", out)
+      })
+    })
+  }
+}

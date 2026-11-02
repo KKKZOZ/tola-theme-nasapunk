@@ -1,5 +1,5 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout
+#import "/utils/ui.typ": callout, demo
 #import "/utils/mitex.typ": mi, mitex
 #import "/templates/latex.typ": to-latex
 
@@ -14,6 +14,7 @@
 // Each row starts from Typst source: the table shows it, renders it, and
 // asks templates/latex.typ what it copies as, so the post cannot drift from
 // the converter.
+#let demo = demo.with(scope: (mi: mi, mitex: mitex))
 #let example(src) = {
   let out = eval(src, mode: "markup", scope: (mi: mi))
   let eq = if out.func() == math.equation { out } else { out.children.find(c => c.func() == math.equation) }
@@ -47,16 +48,14 @@ what stopped them: font style and box.
 
 Write Typst's own math between dollar signs, or LaTeX with `mi` (inline) and
 `mitex` (display) from `utils/mitex.typ`. Both render the same:
-$e^(i pi) + 1 = 0$ and #mi(`e^{i\pi} + 1 = 0`).
 
-```typst
+#demo(```typst
 #import "/utils/mitex.typ": mi, mitex
 
 Typst $e^(i pi) + 1 = 0$ and LaTeX #mi(`e^{i\pi} + 1 = 0`).
-#mitex(`\int_0^\infty e^{-x^2} \, dx = \frac{\sqrt{\pi}}{2}`)
-```
 
 #mitex(`\int_0^\infty e^{-x^2} \, dx = \frac{\sqrt{\pi}}{2}`)
+```)
 
 = Copying as LaTeX
 
@@ -123,9 +122,12 @@ rebuild, pointing at its line in the source like a compiler warning, so it
 can be rewritten before anyone copies it. The examples on this page are
 listed there too.
 
-When a formula has to copy cleanly, write it in LaTeX with `mi`:
-#mi(`\boldsymbol{\mathcal{A}}`) and #mi(`x + \boxed{y}`) render the same as
-the first and third rows and copy as written.
+When a formula has to copy cleanly, write it in LaTeX with `mi`. These two
+render the same as the first and third rows and copy as written:
+
+#demo(```typst
+#mi(`\boldsymbol{\mathcal{A}}`) and #mi(`x + \boxed{y}`)
+```)
 
 = Design choices
 

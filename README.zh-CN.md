@@ -229,7 +229,7 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 
 | 模块 | 提供 |
 | --- | --- |
-| `utils/ui.typ` | `callout`、`hint`、`img`、`gallery`、`xref`、`related` |
+| `utils/ui.typ` | `callout`、`hint`、`img`、`gallery`、`xref`、`related`、`demo` |
 | `utils/diagram.typ` | `flow`、`diagram`、`timeline` |
 | `utils/cetz.typ` | 在 HTML 导出时输出内联 SVG 的 `cetz` |
 | `utils/mitex.typ` | MiTeX 的 `mi` / `mitex`，用 LaTeX 写公式；网页上框选复制时得到你写的 LaTeX 原文（Typst 原生公式复制出等价的 LaTeX） |

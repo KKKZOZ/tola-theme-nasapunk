@@ -229,7 +229,7 @@ Files under `content/lab/` use the post layout but stay out of the post list, fo
 
 | Module | Provides |
 | --- | --- |
-| `utils/ui.typ` | `callout`, `hint`, `img`, `gallery`, `xref`, `related` |
+| `utils/ui.typ` | `callout`, `hint`, `img`, `gallery`, `xref`, `related`, `demo` |
 | `utils/diagram.typ` | `flow`, `diagram`, `timeline` |
 | `utils/cetz.typ` | `cetz` that renders to inline SVG in HTML export |
 | `utils/mitex.typ` | MiTeX's `mi` / `mitex` for LaTeX formulas, which copy as the LaTeX you wrote (Typst's own math copies as equivalent LaTeX) |

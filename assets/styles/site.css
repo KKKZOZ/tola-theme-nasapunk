@@ -808,6 +808,22 @@ html { scroll-behavior: smooth; }
 .code-copy:hover { color: var(--orange); border-color: var(--orange); }
 .code-copy.is-copied { color: var(--success); border-color: var(--success); }
 
+/* `demo` (utils/ui.typ): a code block, then what it renders in a panel
+   hung from it. Folded: the output, then the source behind a toggle. */
+:where(.prose) .demo { margin: 1.4em 0 1.8em; }
+:where(.prose) .demo > .code-block { margin-bottom: 0; }
+.demo-out { border: .5px solid var(--hairline); border-top: 0; border-left: 3px solid var(--hairline); padding: 0 16px 16px; }
+.demo-label { padding: 10px 0 12px; font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.demo-label::before { content: "\2193\00a0"; color: var(--orange); }
+.demo-body > :first-child { margin-top: 0; }
+.demo-body > :last-child { margin-bottom: 0; }
+/* A bleeding figure reaches past the column, so the panel drops its sides. */
+.demo-out:has(figure > .img-bleed) { border-inline: 0; padding-inline: 0; }
+.demo-fold > .demo-body { margin-bottom: 10px; }
+.demo-src > summary { width: fit-content; font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); cursor: pointer; padding: 6px 0; }
+.demo-src > summary:hover { color: var(--orange); }
+.demo-src[open] > summary { margin-bottom: 8px; }
+
 /* Tables: ink header with orange rule, zebra rows, tinted first column. */
 /* A block so a wide table scrolls sideways; as wide as its cells, centered. */
 :where(.prose) table {

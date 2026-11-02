@@ -1,7 +1,7 @@
 #import "@tola/source:0.0.0": tola-meta
 #import "/utils/cetz.typ" as cetz
 #import "/utils/figure.typ": arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt
-#import "/utils/ui.typ": hint
+#import "/utils/ui.typ": demo, hint
 
 #tola-meta((
   title: "[Tour 03] Figures with CeTZ",
@@ -11,7 +11,40 @@
   series: "Theme Tour",
 ))
 
-#let fig-transfer() = cetz.canvas(length: 1pt, {
+#let demo = demo.with(scope: (
+  cetz: cetz, c: c, txt: txt, tag: tag, arrow: arrow, curve-arrow: curve-arrow, pill: pill,
+  cells: cells, seg: seg, legend: legend, box-swatch: box-swatch, line-swatch: line-swatch,
+))
+
+
+CeTZ draws through the regular `@preview/cetz` package. Import it from
+`/utils/cetz.typ` instead, and `canvas` renders the drawing as inline SVG in
+HTML export:
+
+#demo(```typst
+#import "/utils/cetz.typ" as cetz
+
+#cetz.canvas(length: 1pt, {
+  import cetz.draw: *
+  circle((0, 0), radius: 10)
+})
+```)
+
+Everything else in CeTZ (`draw`, `vector`, `palette`, ...) is re-exported
+unchanged. Text inside the figure is set by Typst with the theme's fonts, and
+the SVG scales down on narrow screens.
+
+= Arcs, ellipses and curves
+
+A Hohmann transfer from Earth to Mars. The orbits are circles; the transfer
+and Mars's motion are arcs, one of them elliptical; the event log and the
+budget bar are `rect` and `content` calls laid out in a loop.
+
+#demo(fold: true, ```typst
+#import "/utils/cetz.typ" as cetz
+#import "/utils/figure.typ": arrow, box-swatch, c, curve-arrow, legend, line-swatch, pill, seg, tag, txt
+
+#cetz.canvas(length: 1pt, {
   import cetz.draw: *
   let (r1, r2) = (50, 110)
   let at(r, deg) = (r * calc.cos(deg * 1deg), r * calc.sin(deg * 1deg))
@@ -103,8 +136,19 @@
   legend(px, ly, "transfer coast", line-swatch(px, ly, c.ink))
   legend(px + 100, ly, "burn", line-swatch(px + 100, ly, c.orange, w: 1.6pt))
 })
+```)
 
-#let fig-frame() = cetz.canvas(length: 1pt, {
+= Grids and zooms
+
+The bit layout of a telemetry transfer frame header. A loop of `rect` calls
+draws the 48 bits, each field coloured by a lookup; dashed lines zoom from the
+frame into its header, and Bézier arrows route the frame by its channel id.
+
+#demo(fold: true, ```typst
+#import "/utils/cetz.typ" as cetz
+#import "/utils/figure.typ": c, cells, curve-arrow, pill, seg, tag, txt
+
+#cetz.canvas(length: 1pt, {
   import cetz.draw: *
   // The frame, not to scale: header, three packets and idle fill, then the
   // operational control field and the frame check sequence.
@@ -177,39 +221,7 @@
   }
   content((vx + 8, vc.at(1)), txt("VC id = 1 → science", fill: c.orange, style: "italic"), anchor: "west")
 })
-
-CeTZ draws through the regular `@preview/cetz` package. Import it from
-`/utils/cetz.typ` instead, and `canvas` renders the drawing as inline SVG in
-HTML export:
-
-```typst
-#import "/utils/cetz.typ" as cetz
-
-#cetz.canvas(length: 1pt, {
-  import cetz.draw: *
-  circle((0, 0), radius: 10)
-})
-```
-
-Everything else in CeTZ (`draw`, `vector`, `palette`, ...) is re-exported
-unchanged. Text inside the figure is set by Typst with the theme's fonts, and
-the SVG scales down on narrow screens.
-
-= Arcs, ellipses and curves
-
-A Hohmann transfer from Earth to Mars. The orbits are circles; the transfer
-and Mars's motion are arcs, one of them elliptical; the event log and the
-budget bar are `rect` and `content` calls laid out in a loop.
-
-#fig-transfer()
-
-= Grids and zooms
-
-The bit layout of a telemetry transfer frame header. A loop of `rect` calls
-draws the 48 bits, each field coloured by a lookup; dashed lines zoom from the
-frame into its header, and Bézier arrows route the frame by its channel id.
-
-#fig-frame()
+```)
 
 = Colours for both themes
 
@@ -219,8 +231,8 @@ The figures take their colours from `c` in `utils/figure.typ`. The
 stylesheet swaps each of those colours for a night value, so a drawing in
 them needs no second version. The same module holds the helpers used here:
 
-```typst
-#import "/utils/figure.typ": c, txt, tag, arrow, curve-arrow, pill, cells, seg, legend
+#demo(```typst
+#import "/utils/figure.typ": c, arrow, pill, seg
 
 #cetz.canvas(length: 1pt, {
   import cetz.draw: *
@@ -229,7 +241,7 @@ them needs no second version. The same module holds the helpers used here:
   arrow("a.east", "b.west")
   seg(0, 160, -24, "blue1", body: "pass · 42 min")
 })
-```
+```)
 
 A colour outside `c` keeps its day value at night. Add a mapping for it to
 the end of `assets/styles/site.css` if you need one.
