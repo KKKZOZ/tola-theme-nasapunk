@@ -31,11 +31,7 @@
 - [特性](#特性)
 - [截图](#截图)
 - [快速开始](#快速开始)
-- [配置](#配置)
-- [写文章](#写文章)
-- [组件](#组件)
-- [部署](#部署)
-- [目录结构](#目录结构)
+- [文档](#文档)
 - [字体](#字体)
 - [致谢](#致谢)
 - [许可证](#许可证)
@@ -141,25 +137,7 @@ tola dev
 
 打开 <http://127.0.0.1:5277>。`tola dev` 会在保存时自动重新构建；`tola build` 把完整站点（含搜索索引）输出到 `public/`。
 
-每次重新构建后，`tola dev` 还会报告 `math-check` hook 失败，列出六个无法复制为 LaTeX 的公式：
-
-```text
-error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` failed: the command exited with status 1
- = stderr:
-   6 formulas cannot copy as LaTeX
-
-   warning: formula cannot copy as LaTeX
-      ┌─ content/posts/math.typ:35:1
-      │
-   35 │ $x + #box(stroke: .5pt, inset: 2pt)[$y$]$. Written with `mi` instead, the
-      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no LaTeX for box
-      │
-      = it copies as \text{[unsupported formula]}
-      = help: write it with `mi` / `mitex` to copy as written
-   ...
-```
-
-这是正常的。网页上复制公式时会得到 LaTeX，示例文章 `content/posts/math.typ` 故意放了这六个转不了的公式来演示。站点照常构建和更新，`tola build` 也不会运行这项检查。删掉示例文章后，报告只会列出你自己文章里的公式，并指出它在源文件中的行号。
+每次重新构建后，`tola dev` 还会报告 `math-check` hook 失败，列出六个无法复制为 LaTeX 的公式。这是正常的：示例文章 `content/posts/math.typ` 故意放了这六个公式，站点照常构建，`tola build` 也不会运行这项检查。详见 [Writing Posts → Math](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts#math)。
 
 然后换成你自己的内容：
 
@@ -167,121 +145,19 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 2. 在 `templates/config.typ` 里设置文档编号前缀。
 3. 用你自己的文章替换 `content/posts/` 里的示例，并修改 `content/about.typ`。
 
-## 配置
+## 文档
 
-| 配置项 | 位置 |
+完整文档在 [wiki](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki) 中（英文）。
+
+| 页面 | 内容 |
 | --- | --- |
-| 标题、作者、简介、语言 | `tola.toml` → `[site]` |
-| 站点公网地址（RSS、sitemap 和链接预览需要） | `tola.toml` → `origin` |
-| 部署在子路径下，例如 `/blog/` | `tola.toml` → `base-path` |
-| 文档编号前缀（`TN` → `TN-001`） | `templates/config.typ` → `doc-prefix` |
-| 正文栏宽度（页头、列表页与文章共用） | `templates/config.typ` → `content-width` |
-| 站点标题旁的橙色代号 | `templates/config.typ` → `mission` |
-| 页脚链接（GitHub、邮箱、Mastodon 等） | `templates/config.typ` → `social-links` |
-| 分享链接时的预览图：自动绘制（`auto`）、自己的图片或不用图 | `templates/config.typ` → `social-image` |
-| 代码配色，日间与夜间各一套（`@tola/code` 自带的任一主题） | `templates/config.typ` → `code-theme`、`code-dark-theme` |
-| 统计脚本等额外的 `<head>` 内容 | `templates/config.typ` → `head-extra` |
-| 顶部导航链接 | `templates/layout.typ` → `nav-items` |
-| 首页每页的文章数（其余在 `/page/2/`、`/page/3/` …） | `templates/pages.typ` → `shown` |
-| 目录收录的标题层级 | `templates/post.typ` → `toc-depth` |
-| RSS 收录的文章数；全文还是摘要 | `templates/feeds.typ` → `feed-size`、`full-text` |
-| 配色 | `assets/styles/site.css` 开头的颜色变量，`templates/base.typ` 里的 `palette` 与之对应 |
-| 搜索语言 | `scripts/search-index.mjs` → `forceLanguage`（见下文） |
+| [Configuration](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Configuration) | 各项设置的位置：站点信息、布局、订阅、配色、字体、搜索 |
+| [Writing Posts](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts) | 文章文件与 URL、`tola-meta` 字段、系列、草稿、数学公式 |
+| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | 提示框、图片、文章间链接、流程图、CeTZ 插图和 LaTeX 公式 |
+| [Deployment](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Deployment) | GitHub Pages 及其他静态托管、子路径部署 |
+| [Project Structure](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Project-Structure) | 主题中每个文件和目录的作用 |
 
-搜索会根据 `[site] language` 识别语言。如果站点以中文为主，把 `scripts/search-index.mjs` 里的 `forceLanguage` 设为 `"zh"`。
-
-## 写文章
-
-`content/posts/` 下的每个 `.typ` 文件就是一篇文章，URL 与文件路径对应：`content/posts/notes/cache.typ` → `/posts/notes/cache/`。
-
-```typst
-#import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout
-
-#tola-meta((
-  title: "缓存一致性笔记",
-  date: "2026-10-18",
-  summary: "一句话简介，用于文章列表、搜索结果和链接预览。",
-  tags: ("systems", "notes"),
-  series: "Theme Tour",
-))
-
-= 第一节
-
-#callout(kind: "warning")[先确认缓存状态，再相信延迟数据。]
-```
-
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| `title` | 字符串 | 必填。 |
-| `date` | `"YYYY-MM-DD"` | 没有日期的文件照常发布，但不进文章列表。 |
-| `updated` | `"YYYY-MM-DD"` | 最后修订日期：显示在标题下方，并用于 sitemap 和 RSS。 |
-| `summary` | 字符串 | 用于文章列表、搜索结果和 Open Graph。 |
-| `tags` | 字符串或数组 | 显示为标签，并汇总到 `/tags/`。 |
-| `weight` | 整数 | 首页排序：数值小的在前，相同的按日期从新到旧。默认值是 100（Hugo 视为未设置的 0 也按 100 算），所以 `weight: 1` 可以置顶，`weight: 200` 可以沉底。其他列表仍按日期排序。 |
-| `series` | 字符串 | 同名的文章组成一个系列。每篇正文前有系列导航框（第几篇 / 共几篇、前后两篇、全部篇目），`/series/` 页列出所有系列。系列至少有两篇才显示导航框。默认按日期从早到晚排列，可以用 `part` 指定顺序；导航框和 `/series/` 里会去掉标题开头的 `[Tour 01]` 这类标记。 |
-| `part` | 整数 | 在系列中的位置：写了 `part` 的文章排在前面，按数字从小到大，其余按日期。数字不必连续。 |
-| `draft` | 布尔值 | 草稿不会发布；指向草稿的链接显示为纯文本。 |
-
-`content/lab/` 下的文件使用文章布局，但不进文章列表，适合放测试页面。示例文章 `/posts/style-reference/` 展示了主题支持的所有元素。
-
-## 组件
-
-| 模块 | 提供 |
-| --- | --- |
-| `utils/ui.typ` | `callout`、`hint`、`img`、`gallery`、`xref`、`related`、`demo` |
-| `utils/diagram.typ` | `flow`、`diagram`、`timeline` |
-| `utils/cetz.typ` | 在 HTML 导出时输出内联 SVG 的 `cetz` |
-| `utils/mitex.typ` | MiTeX 的 `mi` / `mitex`，用 LaTeX 写公式；网页上框选复制时得到你写的 LaTeX 原文（Typst 原生公式复制出等价的 LaTeX） |
-| `utils/figure.typ` | 主题配色，以及绘制复杂 CeTZ 图用的辅助函数：`pill`、`arrow`、`curve-arrow`、`cells`、`seg`、`legend` 等 |
-
-```typst
-#import "/utils/ui.typ": callout, xref
-#import "/utils/diagram.typ": flow, n
-
-#callout(kind: "success")[构建通过。]
-
-#flow(n[Source], [compile], n([HTML], tone: "accent"))
-
-完整的 CeTZ 示例见 #xref("cetz-figures")。
-```
-
-示例文章里每个模块都有用到：`content/posts/theme-tour/` 演示提示框、脚注、流程图和时间线；`content/posts/figure-kit.typ` 逐个介绍 `utils/figure.typ` 里的函数，附效果图和函数签名；`content/posts/cetz-figures.typ` 是用这些函数画出的完整 CeTZ 图；`content/posts/math.typ` 介绍公式写法、`mi` / `mitex`，以及公式如何复制成 LaTeX。
-
-## 部署
-
-`tola build` 输出的是 `public/` 里的纯静态文件，任何静态托管都可以。
-
-部署到 GitHub Pages 时，仓库里已经带了 `.github/workflows/deploy.yml`，在线演示就是用它发布的。在你自己的仓库里：
-
-1. 把 **Settings → Pages → Source** 设为 **GitHub Actions**。
-2. 删掉 `deploy.yml` 里的 `if:` 那一行。它的作用是让基于模板创建的仓库在你主动开启之前不会自动部署。
-3. 推送到 `main`。
-
-这个 workflow 会向 GitHub 查询站点地址并传给 `tola build`，所以同一份文件既适用于个人站点（`https://<user>.github.io/`），也适用于项目站点（`https://<user>.github.io/<repo>/`）。项目站点挂在 `/<repo>/` 路径下，不会影响你的个人站点。文章里以 `/` 开头的链接需要带上这个前缀；相对链接和 `xref` 在哪都能用，漏掉的链接会在构建时报错。
-
-## 目录结构
-
-```
-├── site.typ              站点程序：生成所有页面
-├── tola.toml             站点配置
-├── typst-fonts/          插图使用的 IBM Plex Mono 与 Rajdhani
-├── scripts/              构建 hook：搜索索引（Pagefind）、tola dev 时的公式检查；测试脚本
-├── templates/            页面布局、页眉页脚、列表页
-│   ├── config.typ        tola.toml 之外的站点设置
-│   ├── feeds.typ         RSS 订阅源、sitemap 与 robots.txt
-│   └── social.typ        分享链接的预览图
-├── utils/                文章里用的组件（见上文）
-├── assets/
-│   ├── styles/site.css   全部样式；颜色变量在文件开头
-│   ├── scripts/          主题切换、搜索、复制按钮、脚注、图片放大、公式断行
-│   └── webfonts/         IBM Plex Mono 与 Rajdhani 的拉丁字符子集
-├── content/
-│   ├── posts/            示例文章
-│   └── about.typ
-├── tests/latex.typ       公式复制为 LaTeX 的测试用例：`npm test`，需要 Typst CLI
-└── .github/workflows/    构建检查、测试与 GitHub Pages 部署
-```
+[在线演示](https://kkkzoz.github.io/tola-theme-nasapunk/)本身也是教程：[Theme Tour](https://kkkzoz.github.io/tola-theme-nasapunk/series/) 系列的每篇文章都先给出示例的 Typst 源码，再展示渲染效果。
 
 ## 字体
 

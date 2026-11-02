@@ -31,11 +31,7 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 - [Features](#features)
 - [Screenshots](#screenshots)
 - [Quick start](#quick-start)
-- [Configuration](#configuration)
-- [Writing posts](#writing-posts)
-- [Components](#components)
-- [Deployment](#deployment)
-- [Project structure](#project-structure)
+- [Documentation](#documentation)
 - [Fonts](#fonts)
 - [Acknowledgements](#acknowledgements)
 - [License](#license)
@@ -141,25 +137,7 @@ tola dev
 
 Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
 
-After each rebuild, `tola dev` also reports the `math-check` hook as failed, listing six formulas that cannot copy as LaTeX:
-
-```text
-error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` failed: the command exited with status 1
- = stderr:
-   6 formulas cannot copy as LaTeX
-
-   warning: formula cannot copy as LaTeX
-      ┌─ content/posts/math.typ:35:1
-      │
-   35 │ $x + #box(stroke: .5pt, inset: 2pt)[$y$]$. Written with `mi` instead, the
-      │ ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ no LaTeX for box
-      │
-      = it copies as \text{[unsupported formula]}
-      = help: write it with `mi` / `mitex` to copy as written
-   ...
-```
-
-This is expected. A copied formula comes out as LaTeX, and the example post `content/posts/math.typ` has these six on purpose to show the ones that cannot. The site still builds and updates, and `tola build` skips the check. Once the example posts are gone, the report lists only formulas in your own posts, at their line in the source.
+After each rebuild, `tola dev` also reports the `math-check` hook as failed, listing six formulas that cannot copy as LaTeX. This is expected: the example post `content/posts/math.typ` has them on purpose, the site still builds, and `tola build` skips the check. See [Writing Posts → Math](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts#math).
 
 Then make it yours:
 
@@ -167,121 +145,19 @@ Then make it yours:
 2. Set the document-number prefix in `templates/config.typ`.
 3. Replace the example posts in `content/posts/` and edit `content/about.typ`.
 
-## Configuration
+## Documentation
 
-| What | Where |
+The full documentation is in the [wiki](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki).
+
+| Page | What it covers |
 | --- | --- |
-| Title, author, description, language | `tola.toml` → `[site]` |
-| Public address (for the RSS feed, sitemap and link previews) | `tola.toml` → `origin` |
-| Sub-path deployment, e.g. `/blog/` | `tola.toml` → `base-path` |
-| Document-number prefix (`TN` → `TN-001`) | `templates/config.typ` → `doc-prefix` |
-| Width of the text column (header, listings and posts) | `templates/config.typ` → `content-width` |
-| Orange code next to the site title | `templates/config.typ` → `mission` |
-| Footer links (GitHub, email, Mastodon, ...) | `templates/config.typ` → `social-links` |
-| Preview image for shared links: drawn (`auto`), your own file, or none | `templates/config.typ` → `social-image` |
-| Code colours, day and night (any `@tola/code` theme) | `templates/config.typ` → `code-theme`, `code-dark-theme` |
-| Analytics or other `<head>` additions | `templates/config.typ` → `head-extra` |
-| Header links | `templates/layout.typ` → `nav-items` |
-| Posts per home page (older ones on `/page/2/`, `/page/3/`, …) | `templates/pages.typ` → `shown` |
-| Heading levels in the table of contents | `templates/post.typ` → `toc-depth` |
-| Posts in the RSS feed; full text or summaries | `templates/feeds.typ` → `feed-size`, `full-text` |
-| Colours | tokens at the top of `assets/styles/site.css`, mirrored by `palette` in `templates/base.typ` |
-| Search language | `scripts/search-index.mjs` → `forceLanguage` (see below) |
+| [Configuration](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Configuration) | Where each setting lives: site identity, layout, feeds, colours, fonts, search |
+| [Writing Posts](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts) | Post files and URLs, `tola-meta` fields, series, drafts, math |
+| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | Callouts, images, cross-post links, diagrams, CeTZ figures and LaTeX math |
+| [Deployment](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Deployment) | GitHub Pages and other static hosts, sub-path sites |
+| [Project Structure](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Project-Structure) | What each file and folder in the theme does |
 
-Search detects the language from `[site] language`. For a site written mostly in Chinese, set `forceLanguage` to `"zh"` in `scripts/search-index.mjs`.
-
-## Writing posts
-
-Every `.typ` file under `content/posts/` is a post, published at the URL its path suggests: `content/posts/notes/cache.typ` → `/posts/notes/cache/`.
-
-```typst
-#import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout
-
-#tola-meta((
-  title: "Cache Coherence Notes",
-  date: "2026-10-18",
-  summary: "One line for the post list, search results and link previews.",
-  tags: ("systems", "notes"),
-  series: "Theme Tour",
-))
-
-= First section
-
-#callout(kind: "warning")[Check the cache before trusting latency numbers.]
-```
-
-| Field | Type | Notes |
-| --- | --- | --- |
-| `title` | string | Required. |
-| `date` | `"YYYY-MM-DD"` | Without a date, the file is published but left out of the post list. |
-| `updated` | `"YYYY-MM-DD"` | Date of the last revision: shown under the title, and used by the sitemap and feed. |
-| `summary` | string | Post list, search results, Open Graph. |
-| `tags` | string or array | Shown as chips; collected on `/tags/`. |
-| `weight` | integer | Home page order: lower comes first, posts with equal weight newest first. The default is 100 (0, which Hugo treats as unset, counts as 100 too), so `weight: 1` pins a post to the top and `weight: 200` sinks it. Other listings stay in date order. |
-| `series` | string | Posts with the same name form a series. Each part gets a series box under the title (part n of m, the parts before and after it, and the full list), and `/series/` lists every series. A series needs two parts before the box appears. Parts run oldest first unless numbered with `part`; a leading tag such as `[Tour 01]` is dropped from titles in the box and on `/series/`. |
-| `part` | integer | Position in the series: numbered parts come first, in number order, then the rest by date. The numbers need not be consecutive. |
-| `draft` | bool | Drafts are not published; links to them render as plain text. |
-
-Files under `content/lab/` use the post layout but stay out of the post list, for test pages. The example post `/posts/style-reference/` shows every element the theme styles.
-
-## Components
-
-| Module | Provides |
-| --- | --- |
-| `utils/ui.typ` | `callout`, `hint`, `img`, `gallery`, `xref`, `related`, `demo` |
-| `utils/diagram.typ` | `flow`, `diagram`, `timeline` |
-| `utils/cetz.typ` | `cetz` that renders to inline SVG in HTML export |
-| `utils/mitex.typ` | MiTeX's `mi` / `mitex` for LaTeX formulas, which copy as the LaTeX you wrote (Typst's own math copies as equivalent LaTeX) |
-| `utils/figure.typ` | Theme colours and helpers for detailed CeTZ figures: `pill`, `arrow`, `curve-arrow`, `cells`, `seg`, `legend`, ... |
-
-```typst
-#import "/utils/ui.typ": callout, xref
-#import "/utils/diagram.typ": flow, n
-
-#callout(kind: "success")[The build passed.]
-
-#flow(n[Source], [compile], n([HTML], tone: "accent"))
-
-See #xref("cetz-figures") for a full CeTZ example.
-```
-
-The example posts show each module in use: `content/posts/theme-tour/` for callouts, footnotes, flows and timelines, `content/posts/figure-kit.typ` for every helper in `utils/figure.typ` with its output and signature, `content/posts/cetz-figures.typ` for complete CeTZ figures built with them, and `content/posts/math.typ` for math, `mi` / `mitex`, and how formulas copy as LaTeX.
-
-## Deployment
-
-`tola build` writes plain static files to `public/`, so any static host works.
-
-For GitHub Pages, the repository ships `.github/workflows/deploy.yml`, which publishes the live demo. In your copy:
-
-1. Set **Settings → Pages → Source** to **GitHub Actions**.
-2. Delete the `if:` line in `deploy.yml`; it keeps template copies from deploying before they opt in.
-3. Push to `main`.
-
-The workflow asks GitHub for the site's address and passes it to `tola build`, so the same file works for a user site (`https://<user>.github.io/`) and a project site (`https://<user>.github.io/<repo>/`). A project site is served under `/<repo>/` and leaves your user site untouched. Links in your posts that start with `/` need that prefix too; relative links and `xref` work anywhere, and the build points out any link it misses.
-
-## Project structure
-
-```
-├── site.typ              site program: emits every page
-├── tola.toml             site settings
-├── typst-fonts/          IBM Plex Mono and Rajdhani for figures
-├── scripts/              build hooks: search index (Pagefind), formula check in tola dev; test runner
-├── templates/            layouts, header and footer, listings
-│   ├── config.typ        settings tola.toml has no key for
-│   ├── feeds.typ         RSS feed, sitemap and robots.txt
-│   └── social.typ        preview image for shared links
-├── utils/                components for posts (see above)
-├── assets/
-│   ├── styles/site.css   all styles; colour tokens at the top
-│   ├── scripts/          theme toggle, search, copy buttons, footnotes, zoom, formula line breaks
-│   └── webfonts/         IBM Plex Mono and Rajdhani, Latin subsets
-├── content/
-│   ├── posts/            example posts
-│   └── about.typ
-├── tests/latex.typ       cases for formulas copied as LaTeX: `npm test`, needs the Typst CLI
-└── .github/workflows/    build check, tests and GitHub Pages deployment
-```
+The [live demo](https://kkkzoz.github.io/tola-theme-nasapunk/) doubles as a tutorial: each post in the [Theme Tour](https://kkkzoz.github.io/tola-theme-nasapunk/series/) shows the Typst source of every example above what it renders.
 
 ## Fonts
 
