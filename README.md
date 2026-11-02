@@ -179,6 +179,7 @@ Then make it yours:
 | Orange code next to the site title | `templates/config.typ` → `mission` |
 | Footer links (GitHub, email, Mastodon, ...) | `templates/config.typ` → `social-links` |
 | Preview image for shared links: drawn (`auto`), your own file, or none | `templates/config.typ` → `social-image` |
+| Code colours, day and night (any `@tola/code` theme) | `templates/config.typ` → `code-theme`, `code-dark-theme` |
 | Analytics or other `<head>` additions | `templates/config.typ` → `head-extra` |
 | Header links | `templates/layout.typ` → `nav-items` |
 | Posts per home page (older ones on `/page/2/`, `/page/3/`, …) | `templates/pages.typ` → `shown` |

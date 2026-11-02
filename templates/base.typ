@@ -3,7 +3,8 @@
 
 #import "@tola/address:0.0.0": slugify
 #import "@tola/document:0.0.0": current-document
-#import "/templates/config.typ": cjk-font
+#import "@tola/code:0.0.0": code-themes, render-code
+#import "/templates/config.typ": cjk-font, code-dark-theme, code-theme
 #import "/templates/data.typ": draft-index
 #import "/templates/latex.typ": probe, to-latex
 
@@ -175,6 +176,12 @@
   // 12pt == 16px, the CSS size of `.prose`, so SVG frames (math, cetz) keep true scale.
   // The fonts only affect text inside SVG frames; HTML text is styled by CSS.
   set text(size: 12pt, font: body-font, fill: palette.ink)
+
+  // Code is highlighted by @tola/code: Typst's tokens as classes, coloured
+  // by its stylesheet (layout.typ `head`) in `code-theme`, and in
+  // `code-dark-theme` while the page is in the night theme.
+  set raw(theme: if code-theme == auto { auto } else { code-themes.at(code-theme) })
+  show raw: render-code.with(dark-theme: code-themes.at(code-dark-theme))
 
   // Code blocks get a bar with the language and a copy button. The button
   // starts hidden and is revealed by assets/scripts/copy.js.

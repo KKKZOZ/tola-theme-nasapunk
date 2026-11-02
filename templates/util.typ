@@ -1,7 +1,7 @@
 // Small helpers shared by the templates.
-// Import: #import "/templates/util.typ": cls, to-string, social-tags
+// Import: #import "/templates/util.typ": cls, social-tags
 
-#import "@tola/web:0.0.0": canonical, open-graph, twitter-card
+#import "@tola/web:0.0.0": canonical, open-graph, plain-text, twitter-card
 
 /// Join CSS classes, skipping `none` and empty strings; arrays are flattened.
 /// `cls("base", if active { "active" })` gives "base active" or "base".
@@ -17,18 +17,9 @@
   raw.split(" ").filter(x => x != "").join(" ")
 }
 
-/// Plain text of `it`: `to-string[Hello *world*]` gives "Hello world".
-#let to-string(it) = {
-  if it == none { "" } else if type(it) == str { it } else if type(it) != content { str(it) } else if it.has("text") {
-    if type(it.text) == str { it.text } else { to-string(it.text) }
-  } else if it.has("children") { it.children.map(to-string).join() } else if it.has("body") {
-    to-string(it.body)
-  } else if it == [ ] { " " } else { "" }
-}
-
 #let _og-meta(prop, content) = {
   if content == none or content == "" { return none }
-  let c = if type(content) == datetime { content.display("[year]-[month]-[day]") } else { to-string(content) }
+  let c = if type(content) == datetime { content.display("[year]-[month]-[day]") } else { plain-text(content) }
   // article: entries use `property`, which html.meta does not take.
   html.elem("meta", attrs: (property: prop, content: c))
 }
@@ -46,7 +37,7 @@
   image: none,
   article: none,
 ) = {
-  let description = if description not in (none, "") { to-string(description) }
+  let description = if description not in (none, "") { plain-text(description) }
   if url != none {
     canonical(url).join()
     open-graph(

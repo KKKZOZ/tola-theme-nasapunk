@@ -2,7 +2,9 @@
 // Import: #import "/utils/ui.typ": callout, hint, img, gallery, xref, related
 
 #import "@tola/address:0.0.0": asset-url
+#import "@tola/image:0.0.0": image-metadata, img as responsive-img
 #import "/templates/base.typ": palette
+#import "/templates/config.typ": content-width
 #import "/templates/data.typ": post-index
 #import "/templates/layout.typ": fmt-date, label, spans
 
@@ -53,13 +55,52 @@
 // Images
 // ============================================================================
 // Typst's `image()` inlines the file as base64 in HTML export. These helpers
-// emit a plain <img src> instead, so the file is cached by the browser.
-// Paths are site-absolute, e.g. "/assets/images/x.png": `asset-url` fails the
-// build at the call site when no [assets] declaration publishes the file.
+// emit an <img> the browser fetches and caches instead. Paths are
+// site-absolute, e.g. "/assets/images/x.png".
+//
+// A raster file goes through @tola/image: the build derives WebP copies at
+// a few widths (never past the source's own) under /_tola/images/, and the
+// <img> carries `srcset`, `sizes` and the pixel `width` / `height`, so the
+// page reserves the space before the image loads. A PNG becomes lossless
+// WebP, so screenshots stay crisp; a JPEG, WebP at quality 75. SVG and GIF
+// (which may be animated) are linked as they are, through `asset-url`,
+// which fails the build when no [assets] declaration publishes the file.
+// Any other URL is used as given.
 
-#let _img-tag(src, alt) = {
-  let url = if src.starts-with("/") { asset-url(src) } else { src }
-  html.elem("img", attrs: (src: url, alt: alt, loading: "lazy", decoding: "async"))
+#let _widths = (480, 760, 1140, 1520)
+#let _narrow = content-width + 2 * 16 // below this the column spans the window
+
+/// The `sizes` value for an image that fills `share` of the column, or
+/// `px` CSS pixels, or the column plus its bleed.
+#let _sizes(share: 1, px: none, bleed: false) = {
+  let wide = if px != none { "min(" + str(px) + "px, 100vw)" } else if bleed { str(content-width + 160) + "px" } else {
+    str(calc.round(content-width * share)) + "px"
+  }
+  if px != none { wide } else {
+    "(max-width: " + str(_narrow) + "px) " + str(calc.round(100 * share, digits: 2)) + "vw, " + wide
+  }
+}
+
+/// `sizes` for `img`'s `width` ("60%", "320px") and `bleed`.
+#let _img-sizes(width, bleed) = {
+  if bleed { return _sizes(bleed: true) }
+  if width == none { return _sizes() }
+  if width.ends-with("%") { return _sizes(share: float(width.trim("%")) / 100) }
+  if width.ends-with("px") { return _sizes(px: float(width.trim("px"))) }
+  _sizes()
+}
+
+#let _img-tag(src, alt, sizes) = {
+  let local = src.starts-with("/")
+  let ext = lower(src.split(".").last())
+  if local and ext not in ("svg", "gif") {
+    let meta = image-metadata(src)
+    let widths = _widths.filter(w => w < meta.width) + (calc.min(meta.width, _widths.last()),)
+    responsive-img(src, alt: alt, widths: widths.dedup(), sizes: sizes, quality: if meta.is-lossy { 75 } else { none })
+  } else {
+    let url = if local { asset-url(src) } else { src }
+    html.elem("img", attrs: (src: url, alt: alt, loading: "lazy", decoding: "async"))
+  }
 }
 
 // Both are native figures of kind image, numbered with the page's other
@@ -81,7 +122,7 @@
 #let img(src, alt: "", caption: none, width: none, bleed: false, numbering: auto) = {
   let attrs = (class: if bleed { "img img-bleed" } else { "img" })
   if width != none { attrs.insert("style", "width: " + width) }
-  _figure(caption, numbering, html.div(..attrs, _img-tag(src, alt)))
+  _figure(caption, numbering, html.div(..attrs, _img-tag(src, alt, _img-sizes(width, bleed))))
 }
 
 /// Images side by side; each item is a src string or (src, caption).
@@ -91,7 +132,7 @@
   html.div(class: "gallery", style: "--cols: " + str(columns), for item in items.pos() {
     let (src, sub) = if type(item) == array { item } else { (item, none) }
     html.div(class: "gallery-item", {
-      _img-tag(src, if sub != none { sub } else { "" })
+      _img-tag(src, if sub != none { sub } else { "" }, _sizes(share: 1 / columns))
       if sub != none { label(sub) }
     })
   }),

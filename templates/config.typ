@@ -34,6 +34,12 @@
 /// themselves use the browser's fonts (assets/styles/site.css).
 #let cjk-font = none
 
+/// Syntax colours for code: a name from @tola/code's `code-themes`
+/// (`tola help "@tola/code" code-themes`), or `auto` for Typst's own
+/// colours. `code-theme` is the day look, `code-dark-theme` the night one.
+#let code-theme = auto
+#let code-dark-theme = "github-dark"
+
 /// Extra <head> content on every page, such as an analytics script.
 /// `html.elem` takes any attribute; Plausible, for example:
 /// ```typst

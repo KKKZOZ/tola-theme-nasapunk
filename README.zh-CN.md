@@ -179,6 +179,7 @@ error[hook.after_publish]: the `math-check` hook in `build.hooks.after-publish` 
 | 站点标题旁的橙色代号 | `templates/config.typ` → `mission` |
 | 页脚链接（GitHub、邮箱、Mastodon 等） | `templates/config.typ` → `social-links` |
 | 分享链接时的预览图：自动绘制（`auto`）、自己的图片或不用图 | `templates/config.typ` → `social-image` |
+| 代码配色，日间与夜间各一套（`@tola/code` 自带的任一主题） | `templates/config.typ` → `code-theme`、`code-dark-theme` |
 | 统计脚本等额外的 `<head>` 内容 | `templates/config.typ` → `head-extra` |
 | 顶部导航链接 | `templates/layout.typ` → `nav-items` |
 | 首页每页的文章数（其余在 `/page/2/`、`/page/3/` …） | `templates/pages.typ` → `shown` |

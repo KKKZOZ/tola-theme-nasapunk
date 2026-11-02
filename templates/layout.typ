@@ -6,7 +6,9 @@
 #import "/templates/feeds.typ": feed-output, has-feed
 #import "/templates/util.typ": cls, social-tags
 #import "@tola/web:0.0.0": head-metadata
-#import "@tola/address:0.0.0": asset-url, output-url
+#import "@tola/address:0.0.0": asset-url, output-url, slugify
+#import "@tola/code:0.0.0": code-stylesheet
+#import "@tola/collection:0.0.0": group-by, group-by-keys
 #import "@tola/document:0.0.0": current-document
 #import "@tola/site:0.0.0": site
 
@@ -36,7 +38,8 @@
 }
 
 /// Anchor id for a tag on the /tags/ page, or a series on /series/.
-#let tag-slug(t) = lower(t).replace(regex("[^\p{L}\p{N}]+"), "-").trim("-")
+/// slugify rejects text with nothing left to slug, such as "++".
+#let tag-slug(t) = if t.match(regex("[\p{L}\p{N}]")) == none { "tag" } else { slugify(t) }
 #let tag-href(t) = output-url("tags/index.html") + "#" + tag-slug(t)
 #let series-href(s) = output-url("series/index.html") + "#" + tag-slug(s)
 
@@ -44,33 +47,17 @@
 /// share a slug ("LLM-Serving", "llm-serving") are one tag, named by the
 /// spelling most posts use.
 #let posts-by-tag(posts) = {
-  let groups = (:)
-  for p in posts {
-    for t in p.at("tags", default: ()) {
-      let group = groups.at(tag-slug(t), default: (names: (:), posts: ()))
-      group.names.insert(t, group.names.at(t, default: 0) + 1)
-      group.posts.push(p)
-      groups.insert(tag-slug(t), group)
-    }
-  }
-  groups.values()
-    .map(group => (group.names.pairs().sorted(key: ((t, n)) => -n).first().first(), group.posts))
+  group-by-keys(posts, keys: p => p.at("tags", default: ()).map(tag-slug))
+    .pairs()
+    .map(((slug, ps)) => {
+      let names = ps.map(p => p.tags.find(t => tag-slug(t) == slug))
+      (names.dedup().sorted(key: t => -names.filter(x => x == t).len()).first(), ps)
+    })
     .sorted(key: ((t, ps)) => (-ps.len(), lower(t)))
 }
 
 /// (year, posts) pairs, newest year first; `posts` must already be sorted.
-#let posts-by-year(posts) = {
-  let groups = ()
-  for p in posts {
-    let year = fmt-date(p.date).slice(0, 4)
-    if groups.len() > 0 and groups.at(-1).at(0) == year {
-      groups.at(-1).at(1).push(p)
-    } else {
-      groups.push((year, (p,)))
-    }
-  }
-  groups
-}
+#let posts-by-year(posts) = group-by(posts, key: p => fmt-date(p.date).slice(0, 4)).pairs()
 
 // ============================================================================
 // Primitives
@@ -158,6 +145,7 @@
   html.meta(name: "color-scheme", content: "light dark")
   if author != none { html.meta(name: "author", content: author) }
   html.link(rel: "icon", type: "image/svg+xml", href: asset-url("/assets/favicon.svg"))
+  code-stylesheet()
   html.link(rel: "stylesheet", href: asset-url("/assets/styles/site.css"))
   html.style(":root { --measure: " + str(content-width) + "px; }")
   html.link(

@@ -88,6 +88,9 @@ Tola checks these links at build time, and `xref` fails loudly if the post is mi
 
 Put files under `assets/images/` and reference them site-absolute. `img`
 emits a real `<img>` tag; Typst's own `image()` would inline the file as base64.
+A PNG or JPEG is served as WebP at a few widths (`srcset`), with its size
+reserved on the page so nothing jumps as it loads; SVG and GIF are linked as
+they are.
 
 `img` and `gallery` are figures: each is numbered with the page's other
 figures, a caption or not, and a label after it lets the text point at it.

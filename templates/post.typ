@@ -6,12 +6,14 @@
 // site.typ renders it with `post(page, posts)`.
 
 #import "@tola/address:0.0.0": slugify
+#import "@tola/collection:0.0.0": adjacent
+#import "@tola/document:0.0.0": headings
 #import "/templates/base.typ": doc-query, endnotes
 #import "/templates/config.typ": doc-prefix
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout: fmt-date, label, series-href
 #import "/templates/page.typ": html-document
-#import "/templates/util.typ": to-string
+#import "@tola/web:0.0.0": plain-text
 
 // ============================================================================
 // Document control block
@@ -31,10 +33,21 @@
 /// "2026:292": year and day of year, as in mission logs.
 #let gmt-day(d) = if d == none { none } else { str(d.year()) + ":" + pad(d.ordinal(), 3) }
 
+/// The words of a whole post body, for `read-minutes`. Not @tola/web
+/// `plain-text`, which is for titles and labels: it warns at every drawing,
+/// formula or `context` that carries no text, and a post has many.
+#let body-text(it) = {
+  if type(it) == str { it } else if type(it) != content { "" } else if it.has("text") {
+    if type(it.text) == str { it.text } else { body-text(it.text) }
+  } else if it.has("children") { it.children.map(body-text).join() } else if it.has("body") {
+    body-text(it.body)
+  } else if it == [ ] { " " } else { "" }
+}
+
 /// Minutes to read, as Hugo estimates it: ~500 units a minute in CJK-led
 /// text (where English words are mostly embedded terms), else ~220 words.
 #let read-minutes(body) = {
-  let text = to-string(body)
+  let text = body-text(body)
   let cjk = text.matches(regex("\p{Han}|\p{Hiragana}|\p{Katakana}|\p{Hangul}")).len()
   let words = text.matches(regex("[\p{Latin}\p{N}_]+")).len()
   let minutes = if cjk > words { (cjk + words) / 500 } else { words / 220 + cjk / 500 }
@@ -60,10 +73,10 @@
 })
 
 #let post-nav(posts, output) = {
-  // `posts` is newest first.
-  let i = posts.position(p => p.output == output)
-  if i == none { return }
-  let (newer, older) = (if i > 0 { posts.at(i - 1) }, posts.at(i + 1, default: none))
+  // `posts` is newest first: the one before is newer, the one after older.
+  let near = adjacent(posts, output, key: p => p.output)
+  if near == none { return }
+  let (newer, older) = (near.at("before", default: none), near.at("after", default: none))
   if older == none and newer == none { return }
   html.nav(class: "post-nav", {
     if older != none {
@@ -134,24 +147,25 @@
 /// Fragment id for the `n`th heading with this slug.
 #let with-suffix(slug, n) = if n <= 1 { slug } else { slug + "-" + str(n) }
 
-/// Section number shared by headings and the ToC. Level 1: "01", "02", ...;
-/// level 2: "1.1", "1.2", ... restarting per section. Needs `context`.
-#let heading-num(h) = {
+/// Section number shared by headings and the ToC, for a heading of `level`
+/// at `loc`. Level 1: "01", "02", ...; level 2: "1.1", "1.2", ...
+/// restarting per section. Needs `context`.
+#let heading-num(level, loc) = {
   let (n, m) = (0, 0)
   // `before` is inclusive, so the count includes this heading.
-  for x in doc-query(selector(heading).before(h.location())) {
+  for x in doc-query(selector(heading).before(loc)) {
     if x.level == 1 { n += 1; m = 0 } else if x.level == 2 { m += 1 }
   }
-  if h.level == 1 { if n < 10 { "0" } + str(n) } else if n > 0 { str(n) + "." + str(m) } else { str(m) }
+  if level == 1 { if n < 10 { "0" } + str(n) } else if n > 0 { str(n) + "." + str(m) } else { str(m) }
 }
 
 #let heading-with-id(it) = context {
-  let slug = heading-slug(to-string(it.body))
-  let n = doc-query(selector(heading).before(it.location())).filter(h => heading-slug(to-string(h.body)) == slug).len()
+  let slug = heading-slug(plain-text(it.body))
+  let n = doc-query(selector(heading).before(it.location())).filter(h => heading-slug(plain-text(h.body)) == slug).len()
   let tag = "h" + str(calc.min(it.level + 1, 6))
   let id = with-suffix(slug, n)
   html.elem(tag, attrs: (id: id), {
-    if it.level <= toc-depth { html.span(class: "heading-num", heading-num(it)) }
+    if it.level <= toc-depth { html.span(class: "heading-num", heading-num(it.level, it.location())) }
     it.body
     // Revealed on hover; copy.js copies the section URL on click.
     html.elem("a", attrs: (class: "heading-anchor", href: "#" + id, aria-label: "Copy link to this section", data-pagefind-ignore: ""), "#")
@@ -162,8 +176,9 @@
 #let toc() = context {
   let seen = (:)
   let entries = ()
-  for h in doc-query(heading) {
-    let slug = heading-slug(to-string(h.body))
+  // @tola/document: this page's headings, `text` being the plain text.
+  for h in headings() {
+    let slug = heading-slug(h.text)
     seen.insert(slug, seen.at(slug, default: 0) + 1)
     if h.level <= toc-depth { entries.push((h, with-suffix(slug, seen.at(slug)))) }
   }
@@ -172,7 +187,7 @@
     label("Contents", class: "accent")
     html.ol(class: "toc-list", for (h, id) in entries {
       html.li(class: "toc-l" + str(h.level), html.a(href: "#" + id, {
-        html.span(class: "toc-num", heading-num(h))
+        html.span(class: "toc-num", heading-num(h.level, h.location))
         // A hand-written footnote ref in a heading carries an id; the heading
         // keeps it, the ToC copy drops it.
         show html.elem.where(tag: "sup"): none
