@@ -1,8 +1,9 @@
-// Footnote previews: hovering or focusing a note ref shows the note in a
-// popover. Touch screens skip it; the ref still links down to the note.
+// Footnote and term previews: hovering or focusing a note ref or a term
+// (`term` in utils/ui.typ) shows the note or definition in a popover. Touch
+// screens skip it; the link still leads down to the Notes or Terms section.
 // Idempotent: safe to run more than once on the same page.
 (() => {
-  const refs = [...document.querySelectorAll(".fn-ref a:not([data-bound])")];
+  const refs = [...document.querySelectorAll(":is(.fn-ref a, a.term-ref):not([data-bound])")];
   if (!refs.length || matchMedia("(hover: none)").matches) return;
 
   let tip = document.querySelector(".fn-tip");
@@ -18,8 +19,10 @@
     if (!note) return;
     clearTimeout(hideTimer);
     const head = Object.assign(document.createElement("div"), { className: "label accent" });
-    head.textContent = `Note ${a.textContent}`;
-    const body = note.cloneNode(true);
+    const isTerm = a.classList.contains("term-ref");
+    head.textContent = isTerm ? `Term / ${a.textContent}` : `Note ${a.textContent}`;
+    // A term's entry is a <dt> and a <dd>: the popover shows the <dd>'s text.
+    const body = (isTerm ? note.querySelector("dd") : note).cloneNode(true);
     body.removeAttribute("id");
     body.querySelector(".fn-back")?.remove();
     tip.replaceChildren(head, ...body.childNodes);

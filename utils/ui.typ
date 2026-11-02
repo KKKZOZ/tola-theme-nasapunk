@@ -1,10 +1,10 @@
-// In-article components: callouts, hints, images, cross-post links and
-// source-plus-output demos.
-// Import: #import "/utils/ui.typ": callout, hint, img, gallery, xref, related, demo
+// In-article components: callouts, hints, terms, images, cross-post links
+// and source-plus-output demos.
+// Import: #import "/utils/ui.typ": callout, hint, term, img, gallery, xref, related, demo
 
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
-#import "/templates/base.typ": palette
+#import "/templates/base.typ": doc-query, palette, term-slug
 #import "/templates/config.typ": content-width
 #import "/templates/data.typ": post-index
 #import "/templates/layout.typ": fmt-date, label, spans
@@ -138,6 +138,34 @@
     })
   }),
 )
+
+// ============================================================================
+// Terms
+// ============================================================================
+
+/// A term the reader may not know, explained where it is first used:
+/// `#term("InfiniBand")[A network standard ...]`. The term links to its
+/// definition under "Terms" after the text (`endnotes` in base.typ), which
+/// assets/scripts/footnotes.js previews on hover. Later uses leave the
+/// definition out, `#term("InfiniBand")`, and link to the same entry.
+/// - `image`: a site-absolute picture shown above the definition.
+/// - `credit`: its attribution, as licences such as CC BY ask.
+#let term(name, image: none, alt: "", credit: none, ..definition) = {
+  let slug = term-slug(name)
+  let body = definition.pos().at(0, default: none)
+  if body == none {
+    assert(image == none, message: "term \"" + name + "\": an image needs a definition")
+    context {
+      let defined = doc-query(<nasapunk-term>).any(it => term-slug(it.value.name) == slug)
+      assert(defined, message: "term \"" + name + "\" has no definition on this page")
+      html.a(class: "term-ref", href: "#term-" + slug, name)
+    }
+  } else {
+    if image != none { body = { html.div(class: "term-img", _img-tag(image, alt, _sizes(px: 336))); body } }
+    [#metadata((name: name, body: body, credit: credit))<nasapunk-term>]
+    html.a(class: "term-ref", id: "termref-" + slug, href: "#term-" + slug, name)
+  }
+}
 
 // ============================================================================
 // Cross-post links

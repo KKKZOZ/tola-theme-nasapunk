@@ -626,6 +626,22 @@ html { scroll-behavior: smooth; }
 .endnotes li > p { margin: 0 0 .4em; }
 .fn-back { margin-left: .4em; color: var(--orange) !important; text-decoration: none !important; }
 
+/* Terms (utils/ui.typ `term`): a dotted underline in the text, a Terms list
+   after the notes, each name over its definition. */
+.term-ref, .term-ref:hover { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--orange); text-decoration-thickness: 1.5px; text-underline-offset: 4px; cursor: help; scroll-margin-top: 24px; }
+.term-ref:hover { background: var(--tint); }
+.endterms dl { margin: 8px 0 0; font-size: 13px; line-height: 1.65; color: var(--muted); }
+.endterms dl > div { padding: 2px 0 2px 2.4em; margin-bottom: .5em; scroll-margin-top: 24px; }
+.endterms dl > div:target { color: var(--ink); background: var(--tint); }
+.endterms dt { font: 500 12px var(--font-mono); color: var(--orange); letter-spacing: .03em; }
+.endterms dd { margin: 0; }
+.endterms dd > p { margin: 0 0 .4em; }
+/* A term's picture and its credit, in the list and in the popover (.fn-tip). */
+.term-img { max-width: 240px; margin: 4px 0 6px; }
+.fn-tip .term-img { max-width: none; }
+.term-img img { display: block; width: 100%; height: auto; }
+.term-credit { display: block; margin-top: 4px; font: 11px/1.5 var(--font-mono); color: var(--muted); }
+
 .fn-tip {
   position: absolute;
   z-index: 20;

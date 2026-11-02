@@ -75,25 +75,55 @@
 // Footnotes: Typst's HTML export cannot place them under a custom <body>, so
 // the show rule in `base` renders only the numbered ref, and `endnotes()`
 // lists the notes after the text. Refs and notes link to each other.
+//
+// Terms (`term` in utils/ui.typ) work the same way: the term in the text
+// links to its definition in a "Terms" section after the notes. Each
+// definition is a `metadata` labelled <nasapunk-term>.
 
 /// 1-based number of the footnote at `loc`. Needs `context`.
 #let note-number(loc) = doc-query(selector(footnote).before(loc)).len()
 
-/// The "Notes" section; renders nothing when the page has no footnotes.
+/// Slug of a term: its definition has the id "term-" + slug, and the use
+/// that defines it "termref-" + slug.
+#let term-slug(name) = slugify(name, mode: "ascii")
+
+/// The "Notes" and "Terms" sections; each renders nothing when the page has
+/// no footnotes or terms.
 #let endnotes() = context {
   let notes = doc-query(footnote)
-  if notes.len() == 0 { return }
-  // html.elem: the typed functions reject DPUB roles such as doc-endnotes.
-  html.elem("section", attrs: (class: "endnotes", role: "doc-endnotes"), {
-    html.div(class: "label accent", "Notes")
-    html.ol(for (i, note) in notes.enumerate() {
-      let n = str(i + 1)
-      html.li(id: "fn-" + n, {
-        note.body
-        html.a(class: "fn-back", href: "#fnref-" + n, aria-label: "Back to text", "↩")
+  if notes.len() > 0 {
+    // html.elem: the typed functions reject DPUB roles such as doc-endnotes.
+    html.elem("section", attrs: (class: "endnotes", role: "doc-endnotes"), {
+      html.div(class: "label accent", "Notes")
+      html.ol(for (i, note) in notes.enumerate() {
+        let n = str(i + 1)
+        html.li(id: "fn-" + n, {
+          note.body
+          html.a(class: "fn-back", href: "#fnref-" + n, aria-label: "Back to text", "↩")
+        })
       })
     })
-  })
+  }
+  let terms = doc-query(<nasapunk-term>).map(it => it.value)
+  let slugs = terms.map(t => term-slug(t.name))
+  assert(slugs.dedup().len() == slugs.len(), message: "a term is defined twice: " + terms.map(t => t.name).join(", "))
+  if terms.len() > 0 {
+    html.elem("section", attrs: (class: "endnotes endterms", role: "doc-glossary"), {
+      html.div(class: "label accent", "Terms")
+      html.dl(for t in terms {
+        let slug = term-slug(t.name)
+        // A <div> groups a <dt> with its <dd>, so `:target` lights up both.
+        html.div(id: "term-" + slug, {
+          html.dt(t.name)
+          html.dd({
+            t.body
+            html.a(class: "fn-back", href: "#termref-" + slug, aria-label: "Back to text", "↩")
+            if t.credit != none { html.span(class: "term-credit", t.credit) }
+          })
+        })
+      })
+    })
+  }
 }
 
 /// Site links. A link to a draft is plain text until the draft is published,
