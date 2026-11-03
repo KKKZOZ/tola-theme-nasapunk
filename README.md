@@ -153,7 +153,7 @@ The full documentation is in the [wiki](https://github.com/KKKZOZ/tola-theme-nas
 | --- | --- |
 | [Configuration](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Configuration) | Where each setting lives: site identity, layout, feeds, colours, fonts, search |
 | [Writing Posts](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts) | Post files and URLs, `tola-meta` fields, series, drafts, math |
-| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | Callouts, terms, images, cross-post links, diagrams, CeTZ figures and LaTeX math |
+| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | Callouts, folds, terms, images, cross-post links, diagrams, CeTZ figures and LaTeX math |
 | [Deployment](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Deployment) | GitHub Pages and other static hosts, sub-path sites |
 | [Project Structure](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Project-Structure) | What each file and folder in the theme does |
 

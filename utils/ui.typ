@@ -1,6 +1,6 @@
 // In-article components: callouts, hints, terms, images, cross-post links
 // and source-plus-output demos.
-// Import: #import "/utils/ui.typ": callout, hint, term, img, gallery, xref, related, demo
+// Import: #import "/utils/ui.typ": callout, hint, fold, term, img, gallery, xref, related, demo
 
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
@@ -51,6 +51,18 @@
   })
   html.div(class: "hint-rule hint-rule-bottom", role: "presentation", spans(4))
 })
+
+/// A panel folded shut under its title, for an answer, a long listing or a
+/// detail most readers skip: `#fold(title: [Show the answer])[...]`.
+/// `open: true` starts it unfolded.
+#let fold(body, title: [Details], open: false) = html.elem(
+  "details",
+  attrs: (class: "fold") + if open { (open: "") } else { (:) },
+  {
+    html.elem("summary", title)
+    html.div(class: "fold-body", body)
+  },
+)
 
 // ============================================================================
 // Images
