@@ -72,10 +72,9 @@ out of the post list. Use them for test pages. The
 
 = Components
 
-`utils/ui.typ` holds the in-article components: `callout`, `hint`, `img`,
-`gallery`, `xref` and `related`. `utils/diagram.typ` draws box-and-arrow
+`utils/ui.typ` holds the in-article components: `callout`, `hint`, `fold`,
+`term`, `img`, `gallery`, `xref` and `related`. `utils/diagram.typ` draws box-and-arrow
 diagrams and timelines in the site palette; #xref("02-diagrams") shows both.
 `utils/cetz.typ` is a drop-in `cetz` that renders to inline SVG, and
-`utils/figure.typ` holds colours and helpers for detailed drawings:
-#xref("figure-kit") goes through them, and #xref("cetz-figures") puts them to
-work.
+`utils/figure.typ` holds colours and helpers for detailed drawings;
+#xref("cetz-figures") puts them to work and goes through them one by one.

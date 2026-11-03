@@ -1,13 +1,13 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, demo, hint, term
+#import "/utils/ui.typ": callout, demo, fold, hint, term
 
-#let demo = demo.with(scope: (callout: callout, hint: hint, term: term))
+#let demo = demo.with(scope: (callout: callout, fold: fold, hint: hint, term: term))
 
 #tola-meta((
-  title: "[Tour 01] Callouts, Hints, Notes and Terms",
+  title: "[Tour 01] Callouts, Hints, Folds, Notes and Terms",
   date: "2025-03-12",
-  summary: "Part one of a sample series: checklists, callouts, hints, footnotes and terms.",
+  summary: "Part one of a sample series: checklists, callouts, hints, folds, footnotes and terms.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
@@ -21,7 +21,7 @@ series on the site.
 
 ```typst
 #tola-meta((
-  title: "[Tour 01] Callouts, Hints, Notes and Terms",
+  title: "[Tour 01] Callouts, Hints, Folds, Notes and Terms",
   date: "2025-03-12",
   series: "Theme Tour",
   part: 1,   // optional
@@ -69,6 +69,26 @@ mark and no box, for a tip or an aside next to the text it concerns.
 #import "/utils/ui.typ": hint
 
 #hint[Run `tola dev` while writing: it rebuilds the site on every *save*.]
+```)
+
+= Folds
+
+`fold` shuts a panel under its title, for an answer, a long listing or a
+detail most readers skip. `title` names it (`Details` by default) and
+`open: true` starts it unfolded.
+
+#demo(```typst
+#import "/utils/ui.typ": fold
+
+#fold(title: [Why does a broken anchor fail the build?])[
+  A link to a missing section looks fine in the source and only shows up
+  when a reader clicks it. Failing the build catches it first.
+]
+
+#fold(title: [Pre-flight list], open: true)[
+  + `tola build` passes.
+  + Both themes checked.
+]
 ```)
 
 = Notes

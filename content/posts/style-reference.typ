@@ -3,7 +3,7 @@
 #import "/utils/mitex.typ": mi, mitex
 
 #tola-meta((
-  title: "[Tour 05] Style Reference",
+  title: "[Tour 04] Style Reference",
   date: "2026-10-18",
   summary: "Every element the template styles, on one page.",
   tags: ("example", "series"),

@@ -11,7 +11,7 @@
 // night switch. Every colour is mapped as a fill (text included); as a
 // stroke, all but panel and the pale tones (*1, orange2, teal2) are. A colour
 // outside `c` keeps its value in both themes.
-// A walkthrough with examples: content/posts/figure-kit.typ.
+// A walkthrough with examples: content/posts/cetz-figures.typ.
 
 #import "/utils/cetz.typ" as cetz
 #import "/templates/base.typ": palette

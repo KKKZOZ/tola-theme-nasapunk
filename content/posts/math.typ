@@ -4,7 +4,7 @@
 #import "/templates/latex.typ": to-latex
 
 #tola-meta((
-  title: "[Tour 06] Math and Copying as LaTeX",
+  title: "[Tour 05] Math and Copying as LaTeX",
   date: "2026-10-29",
   summary: "Typst math and LaTeX through MiTeX, how formulas copy as LaTeX, and the ones that cannot.",
   tags: ("example", "series", "math"),
