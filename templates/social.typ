@@ -9,8 +9,8 @@
 #import "/templates/config.typ": social-image
 #import "/templates/layout.typ": author, orbital-glyph, social-output
 
-/// Day values of the livery `--band-*` tokens in assets/styles/site.css.
-#let bands = (rgb("#B84636"), rgb("#DE783C"), rgb("#E3B65A"), rgb("#719C98"), rgb("#355B70"))
+/// The livery bands (templates/colors.typ), top to bottom.
+#let bands = range(1, 6).map(i => palette.at("band-" + str(i)))
 
 /// Five stacked bands, each `stripe` tall, as the `.rail` class.
 #let rail(width, stripe) = stack(..bands.map(c => rect(width: width, height: stripe, fill: c, stroke: none)))

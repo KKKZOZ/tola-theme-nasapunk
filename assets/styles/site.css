@@ -17,52 +17,20 @@
 @font-face { font-family: "IBM Plex Mono"; font-weight: 700; font-style: italic; font-display: swap; src: url("../webfonts/ibm-plex-mono-latin-700-italic.woff2") format("woff2"); }
 
 /* ========================================================================== */
-/* Tokens (keep in sync with `palette` in templates/base.typ)                */
+/* Tokens                                                                     */
 /* ========================================================================== */
 
-/* Each colour is light-dark(day, night). The theme follows the system unless
-   the reader picks one with the header toggle: `data-theme` on <html> (set
-   in <head>, see layout.typ and theme.js) pins color-scheme. */
+/* Colours live in templates/colors.typ, with their night values: each one is
+   a custom property here (`--ink`, `--tint-info`, ...), written into every
+   page's <head> by layout.typ, as light-dark(day, night). The theme follows
+   the system unless the reader picks one with the header toggle:
+   `data-theme` on <html> (set in <head>, see layout.typ and theme.js) pins
+   color-scheme. */
 :root { color-scheme: light dark; }
 :root[data-theme="light"] { color-scheme: light; }
 :root[data-theme="dark"] { color-scheme: dark; }
 
 :root {
-  --paper: light-dark(#ffffff, #15191b);
-  --ink: light-dark(#222a2d, #dde2dc);
-  --orange: light-dark(#cb4b22, #ec6e42);
-  --muted: light-dark(#65716f, #919c99);
-  --rule: light-dark(#c5c9be, #3b4447);
-  --panel: light-dark(#e6e7dd, #20282b);
-  --blue: light-dark(#286379, #7db4c8);
-  --emphasis: light-dark(#b44020, #f2875b);
-  --success: light-dark(#35665b, #79b8a8);
-  --hint-emphasis: light-dark(#326d65, #7fc2b6);
-  --warning: light-dark(#8a5b13, #d9a24c);
-  --danger: light-dark(#a73434, #e57373);
-  --hairline: light-dark(#b7c5c5, #3f4b4d);
-  --dark-strong: #ffb17c;
-  --dark-emph: #9fd4dc;
-
-  /* Ink bars (series head, table header, search bar, targeted channel):
-     dark in both themes, lifted off the page at night. */
-  --bar: light-dark(#222a2d, #303b3f);
-  --on-bar: light-dark(#ffffff, #e8ebe4);
-
-  --tint: light-dark(#fcf0e7, #3a2419);
-  --code-bg: light-dark(#f0f3f2, #232b2e);
-  --pre-bg: light-dark(#f5f7f6, #1b2225);
-  --cell-line: light-dark(#d6deda, #2f393c);
-  --cell-key: light-dark(#edf1ef, #1f272a);
-  --cell-key-alt: light-dark(#e5ebe8, #252e31);
-  --shadow: light-dark(rgb(34 42 45 / .12), rgb(0 0 0 / .5));
-
-  --band-1: #b84636;
-  --band-2: #de783c;
-  --band-3: #e3b65a;
-  --band-4: #719c98;
-  --band-5: #355b70;
-
   --font-title: "Rajdhani", "Sarasa Gothic SC", "PingFang SC", "Noto Sans SC", sans-serif;
   --font-mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Gothic SC", "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
   --font-body: var(--font-mono);
@@ -78,6 +46,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 
 body {
   margin: 0;
@@ -566,7 +535,6 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 /* The floating layout: assets/styles/toc-float.css, loaded once the window
    has room for it (layout.typ). */
 
-html { scroll-behavior: smooth; }
 :where(.prose) :is(h2, h3, h4) { scroll-margin-top: 24px; }
 
 .post-nav {
@@ -778,6 +746,8 @@ html { scroll-behavior: smooth; }
 
 :where(.prose) a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 3px; }
 :where(.prose) a:hover { color: var(--orange); }
+/* Links to unpublished drafts (base.typ `site-link`): plain text, marked muted. */
+.draft-link { color: var(--muted); cursor: help; }
 
 :where(.prose) ul, :where(.prose) ol { padding-left: 1.4em; }
 :where(.prose) li { margin: .25em 0; padding-left: .25em; }
@@ -904,15 +874,15 @@ html { scroll-behavior: smooth; }
 
 .callout {
   --c: var(--emphasis);
-  --c-tint: light-dark(#fcf2ec, #2a1d17);
+  --c-tint: var(--tint-note);
   margin: 1.6em 0;
   background: var(--c-tint);
   border: .6px solid var(--c);
 }
-.callout-info { --c: var(--blue); --c-tint: light-dark(#edf4f7, #172429); }
-.callout-warning { --c: var(--warning); --c-tint: light-dark(#fcf5e5, #2a2416); }
-.callout-success { --c: var(--success); --c-tint: light-dark(#edf4ef, #172520); }
-.callout-danger { --c: var(--danger); --c-tint: light-dark(#faeeee, #2c1a1a); }
+.callout-info { --c: var(--blue); --c-tint: var(--tint-info); }
+.callout-warning { --c: var(--warning); --c-tint: var(--tint-warning); }
+.callout-success { --c: var(--success); --c-tint: var(--tint-success); }
+.callout-danger { --c: var(--danger); --c-tint: var(--tint-danger); }
 .callout-head {
   display: flex;
   justify-content: space-between;
@@ -967,6 +937,8 @@ html { scroll-behavior: smooth; }
 /* `img` and `gallery` (utils/ui.typ): a wrapper inside a Typst figure. */
 .img { margin-inline: auto; }
 .img img, .gallery img { display: block; width: 100%; height: auto; }
+/* Screenshots are mostly white pages: take the glare off at night. */
+:root[data-theme="dark"] :is(.img, .gallery, .zoom) img { filter: brightness(.88); }
 figure:has(> :is(.img, .gallery)) > figcaption { text-align: left; }
 /* A narrower image keeps its caption centered beneath it. */
 figure:has(> .img[style]) > figcaption { text-align: center; }
@@ -1019,7 +991,6 @@ figure:has(> .img-bleed) { margin-inline: calc(-1 * clamp(0px, (100vw - var(--me
 }
 .zoom-close:hover { color: var(--orange); border-color: var(--orange); }
 @keyframes zoom-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .zoom[open] { animation: none; } }
 html:has(.zoom[open]) { overflow: hidden; }
 
 /* Cross-post links */
@@ -1069,73 +1040,57 @@ html:has(.zoom[open]) { overflow: hidden; }
 }
 
 /* ========================================================================== */
-/* Formerly injected by Tola 0.7 (enhance.css)                                */
+/* Reduced motion                                                             */
 /* ========================================================================== */
 
-html { scroll-behavior: smooth; }
-
-/* Links to unpublished drafts (base.typ `site-link`): plain text, marked muted. */
-.draft-link { color: var(--muted); cursor: help; }
+/* Readers who ask the system for less motion get every change of state at
+   once: hover fades, the theme switch, the zoom veil. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+}
 
 /* ========================================================================== */
-/* Night theme for drawn content                                              */
+/* Print                                                                      */
 /* ========================================================================== */
 
-/* Inline SVG (math, cetz, html.frame) carries its colours as fill / stroke
-   attributes, which CSS overrides. Each colour the figures draw with (the
-   `palette` in base.typ, utils/diagram.typ, utils/figures/) maps to its
-   night value; the day value is the original, so the day theme is unchanged.
-   A colour missing here is drawn as is in both themes. */
-svg [fill="#000000"] { fill: var(--ink); }
-svg [stroke="#000000"] { stroke: var(--ink); }
-svg [fill="#222a2d"] { fill: var(--ink); }
-svg [stroke="#222a2d"] { stroke: var(--ink); }
-svg [fill="#ffffff"] { fill: var(--paper); }
-svg [stroke="#ffffff"] { stroke: var(--paper); }
-svg [fill="#65716f"] { fill: var(--muted); }
-svg [stroke="#65716f"] { stroke: var(--muted); }
-svg [fill="#cb4b22"] { fill: var(--orange); }
-svg [stroke="#cb4b22"] { stroke: var(--orange); }
-svg [fill="#286379"] { fill: var(--blue); }
-svg [stroke="#286379"] { stroke: var(--blue); }
-svg [fill="#326d65"] { fill: var(--hint-emphasis); }
-svg [stroke="#326d65"] { stroke: var(--hint-emphasis); }
-svg [fill="#8a5b13"] { fill: var(--warning); }
-svg [fill="#a73434"] { fill: var(--danger); }
-svg [stroke="#a73434"] { stroke: var(--danger); }
-svg [stroke="#c5c9be"] { stroke: var(--rule); }
-svg [fill="#b7c5c5"] { fill: var(--hairline); }
-svg [stroke="#b7c5c5"] { stroke: var(--hairline); }
-svg [fill="#fcf0e7"] { fill: var(--tint); }
-svg [fill="#f0f3f2"] { fill: var(--code-bg); }
-svg [fill="#f5f7f6"] { fill: var(--pre-bg); }
-svg [fill="#7d8987"] { fill: light-dark(#7d8987, #84908e); }
-svg [stroke="#7d8987"] { stroke: light-dark(#7d8987, #84908e); }
-svg [fill="#c9d0ce"] { fill: light-dark(#c9d0ce, #4a5457); }
-svg [stroke="#c9d0ce"] { stroke: light-dark(#c9d0ce, #4a5457); }
-svg [fill="#ecefee"] { fill: light-dark(#ecefee, #232b2e); }
-svg [fill="#fbece3"] { fill: light-dark(#fbece3, #3a2419); }
-svg [fill="#ebb39b"] { fill: light-dark(#ebb39b, #7a4630); }
-svg [fill="#debba6"] { fill: light-dark(#debba6, #6e4a38); }
-svg [fill="#6b4a3c"] { fill: light-dark(#6b4a3c, #d4a58f); }
-svg [fill="#e1ecef"] { fill: light-dark(#e1ecef, #1a2c33); }
-svg [fill="#d2e2e7"] { fill: light-dark(#d2e2e7, #24363d); }
-svg [fill="#a3c3ce"] { fill: light-dark(#a3c3ce, #3e6676); }
-svg [stroke="#a3c3ce"] { stroke: light-dark(#a3c3ce, #3e6676); }
-svg [fill="#dceae6"] { fill: light-dark(#dceae6, #1a2c28); }
-svg [fill="#95bfb6"] { fill: light-dark(#95bfb6, #3d6b62); }
-svg [fill="#f5e6cb"] { fill: light-dark(#f5e6cb, #3d3220); }
+/* Printed, or saved as PDF, a page keeps its text and drops the controls.
+   It prints in the day theme with folded panels open: assets/scripts/print.js
+   switches both for the print and back after. Without scripts the colours
+   still turn to day here; folds stay shut. */
+@page { margin: 16mm 14mm; }
 
-/* Syntax colours: Typst writes its default (day) theme as inline styles. */
-code [style="color: #d73948"] { color: light-dark(#d73948, #ff7b84) !important; }
-code [style="color: #4b69c6"] { color: light-dark(#4b69c6, #8fa8f5) !important; }
-code [style="color: #74747c"] { color: light-dark(#74747c, #8f8f99) !important; }
-code [style="color: #198810"] { color: light-dark(#198810, #6bcf63) !important; }
-code [style="color: #b60157"] { color: light-dark(#b60157, #f06aa5) !important; }
-code [style="color: #301414"] { color: light-dark(#301414, #e2cfcf) !important; }
-code [style="color: #8b41b1"] { color: light-dark(#8b41b1, #c58ee6) !important; }
-code [style="color: #16718d"] { color: light-dark(#16718d, #5fb6d1) !important; }
-code [style="color: #1d6c76"] { color: light-dark(#1d6c76, #5bb7c2) !important; }
+@media print {
+  :root[data-theme] { color-scheme: light; }
+  :root[data-theme] :is(.img, .gallery) img { filter: none; }
+  /* Keep the livery, ink bars and callout tints: browsers drop backgrounds. */
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { display: block; min-height: 0; }
 
-/* Screenshots are mostly white pages: take the glare off at night. */
-:root[data-theme="dark"] :is(.img, .gallery, .zoom) img { filter: brightness(.88); }
+  .skip, .site-nav, .read-progress, .toc, .heading-anchor, .code-head, .post-nav,
+  .series-nav, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
+  .has-readout > .readout-idle:not(.program-foot) { display: none !important; }
+  .site-footer { margin-top: 36px; padding-bottom: 0; }
+  .post-head { margin-top: 24px; }
+
+  /* Wide content wraps or fits the page: nothing scrolls on paper. */
+  :where(.prose) pre { overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; }
+  :where(.prose) table, .math-block { overflow: visible; }
+  figure:has(> .img-bleed) { margin-inline: 0; }
+
+  /* A link's address after its text, for links that leave the site. */
+  .prose a[href^="http"]:not(:has(img, svg))::after {
+    content: " <" attr(href) ">";
+    font-size: .8em;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+  }
+
+  /* Page breaks: a heading stays with its text, small blocks stay whole. */
+  :where(.prose) :is(h2, h3, h4, h5) { break-after: avoid; }
+  :is(figure, .callout, .hint, .doc-control, .related-card, tr, img, svg) { break-inside: avoid; }
+  :where(.prose) p { orphans: 3; widows: 3; }
+}

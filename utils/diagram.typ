@@ -14,15 +14,15 @@
 
 #let ink = palette.ink
 #let muted = palette.muted
-#let hairline = rgb("#B7C5C5")
-#let edge-stroke = .7pt + rgb("#7D8987")
-#let arrow = (end: "stealth", fill: rgb("#7D8987"), scale: .55)
+#let hairline = palette.hairline
+#let edge-stroke = .7pt + palette.line
+#let arrow = (end: "stealth", fill: palette.line, scale: .55)
 
 #let tones = (
-  plain: (fill: rgb("#F5F7F6"), bar: palette.blue, text: ink, sub: muted, border: hairline),
-  accent: (fill: rgb("#FCF0E7"), bar: palette.orange, text: ink, sub: rgb("#6B4A3C"), border: rgb("#DEBBA6")),
-  dark: (fill: ink, bar: palette.orange, text: white, sub: rgb("#C9D0CE"), border: ink),
-  muted: (fill: white, bar: none, text: muted, sub: muted, border: hairline),
+  plain: (fill: palette.pre-bg, bar: palette.blue, text: ink, sub: muted, border: hairline),
+  accent: (fill: palette.tint, bar: palette.orange, text: ink, sub: palette.accent-sub, border: palette.accent-line),
+  dark: (fill: ink, bar: palette.orange, text: palette.paper, sub: palette.grey2, border: ink),
+  muted: (fill: palette.paper, bar: none, text: muted, sub: muted, border: hairline),
   ghost: (fill: none, bar: none, text: muted, sub: muted, border: none),
 )
 
@@ -241,7 +241,7 @@
     } else if e.route == "hvh" {
       (a, (mid, "|-", a), (mid, "|-", b), b)
     } else { (a, b) }
-    let stroke = if e.dashed { (paint: rgb("#7D8987"), thickness: .7pt, dash: "dashed") } else { edge-stroke }
+    let stroke = if e.dashed { (paint: palette.line, thickness: .7pt, dash: "dashed") } else { edge-stroke }
     line(..pts, stroke: stroke, mark: if e.arrow { arrow } else { none })
     if e.label != none {
       let side = if e.label-side != auto { e.label-side } else if vertical { "right" } else { "above" }
@@ -281,7 +281,7 @@
       let major = e.at("major", default: false)
       let note = e.at("note", default: none)
       circle((0, y - 6), radius: if major { 4.5 } else { 3 },
-        fill: if major { palette.orange } else { white },
+        fill: if major { palette.orange } else { palette.paper },
         stroke: 1pt + if major { palette.orange } else { muted })
       content((-12, y - 6), text(size: 10.5pt, weight: 700, fill: if major { palette.orange } else { ink }, e.version), anchor: "east")
       let top = y

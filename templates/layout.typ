@@ -2,6 +2,7 @@
 // Import: #import "/templates/layout.typ" as layout
 
 #import "/templates/base.typ": palette
+#import "/templates/colors.typ": colors-css
 #import "/templates/config.typ": content-width, head-extra, mission, social-image, social-links
 #import "/templates/feeds.typ": feed-output, has-feed
 #import "/templates/util.typ": cls, social-tags
@@ -105,7 +106,12 @@
 // ============================================================================
 
 /// Scripts every page loads, deferred, in this order.
-#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js", "math.js")
+#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js", "print.js", "math.js")
+
+/// Web fonts fetched before the stylesheet asks for them: the body text and
+/// the titles, so the first paint is not set in a fallback font that then
+/// reflows. Paths under assets/webfonts/, as site.css names them.
+#let preload-fonts = ("ibm-plex-mono-latin-400-normal.woff2", "rajdhani-latin-700-normal.woff2")
 
 /// Narrowest window, in CSS pixels, where a post's table of contents floats
 /// beside the column: the column, then on each side the 48px gap, the 220px
@@ -145,9 +151,15 @@
   html.meta(name: "color-scheme", content: "light dark")
   if author != none { html.meta(name: "author", content: author) }
   html.link(rel: "icon", type: "image/svg+xml", href: asset-url("/assets/favicon.svg"))
+  // site.css loads them without the `?h=` hash: the same URL here, or the
+  // browser fetches each font twice. `crossorigin`: fonts are CORS requests.
+  for name in preload-fonts {
+    html.elem("link", attrs: (rel: "preload", href: output-url("assets/webfonts/" + name), "as": "font", type: "font/woff2", crossorigin: ""))
+  }
   code-stylesheet()
   html.link(rel: "stylesheet", href: asset-url("/assets/styles/site.css"))
-  html.style(":root { --measure: " + str(content-width) + "px; }")
+  // The colour properties and their night values (templates/colors.typ).
+  html.style(":root{--measure:" + str(content-width) + "px}" + colors-css)
   html.link(
     rel: "stylesheet",
     href: asset-url("/assets/styles/toc-float.css"),

@@ -242,8 +242,8 @@ frame into its header, and Bézier arrows route the frame by its channel id.
 page follows it.]
 
 `c` is a dictionary of colours. The strong tones are the theme's own; the
-pale ones are tints for fills. Each has a night value in the stylesheet, so a
-figure drawn with `c` needs no dark version.
+pale ones are tints for fills. Each has a night value in
+`templates/colors.typ`, so a figure drawn with `c` needs no dark version.
 
 #demo(fold: true, ```typst
 #cetz.canvas(length: 1pt, {
@@ -258,11 +258,10 @@ figure drawn with `c` needs no dark version.
 })
 ```)
 
-#callout(kind: "info")[Every colour in `c` changes at night as a fill, and
-text counts as a fill. As a stroke, all but `panel` and the pale tints
-(`blue1`, `orange1`, `orange2`, `teal1`, `teal2`, `grey1`) change. Any colour
-outside `c` keeps its day value; map it at the end of
-`assets/styles/site.css` if you need it.]
+#callout(kind: "info")[Every colour in `c` changes at night, as a fill (text
+included) and as a stroke. A colour of your own keeps its day value in both
+themes; to give it a night value, add it to `templates/colors.typ` and draw
+with `palette.<name>` from `templates/base.typ`.]
 
 = Text
 

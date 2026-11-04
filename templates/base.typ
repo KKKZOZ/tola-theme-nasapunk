@@ -4,20 +4,12 @@
 #import "@tola/address:0.0.0": slugify
 #import "@tola/document:0.0.0": current-document
 #import "@tola/code:0.0.0": code-themes, render-code
+// `palette`: the theme's colours by day (templates/colors.typ), for drawings
+// that should match the page; each follows the night theme too.
+#import "/templates/colors.typ": palette
 #import "/templates/config.typ": cjk-font, code-dark-theme, code-theme
 #import "/templates/data.typ": draft-index
 #import "/templates/latex.typ": probe, to-latex
-
-// Mirrors the day values of the `--*` tokens in assets/styles/site.css, for
-// Typst-side drawings (html.frame / cetz) that should match the page. The
-// stylesheet maps these colours (and those of utils/diagram.typ) to their
-// night values; a drawing in another colour keeps it in both themes.
-#let palette = (
-  paper: white, ink: rgb("#222A2D"), orange: rgb("#CB4B22"),
-  muted: rgb("#65716F"), rule: rgb("#C5C9BE"), panel: rgb("#E6E7DD"),
-  blue: rgb("#286379"), emphasis: rgb("#B44020"), success: rgb("#35665B"),
-  hint-emphasis: rgb("#326D65"), warning: rgb("#8A5B13"), danger: rgb("#A73434"),
-)
 
 // Rajdhani and IBM Plex Mono come from typst-fonts/; CJK text uses
 // `cjk-font` (config.typ), else any system font that has the glyphs.
