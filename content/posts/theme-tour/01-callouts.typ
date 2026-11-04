@@ -1,13 +1,13 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, demo, fold, hint, term
+#import "/utils/ui.typ": callout, cols, demo, fold, hint, term, xref
 
-#let demo = demo.with(scope: (callout: callout, fold: fold, hint: hint, term: term))
+#let demo = demo.with(scope: (callout: callout, cols: cols, fold: fold, hint: hint, term: term))
 
 #tola-meta((
-  title: "[Tour 01] Callouts, Hints, Folds, Notes and Terms",
+  title: "[Tour 01] In-Article Components",
   date: "2025-03-12",
-  summary: "Part one of a sample series: checklists, callouts, hints, folds, footnotes and terms.",
+  summary: "Part one of a sample series: checklists, callouts, hints, folds, columns, footnotes and terms.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
@@ -21,7 +21,7 @@ series on the site.
 
 ```typst
 #tola-meta((
-  title: "[Tour 01] Callouts, Hints, Folds, Notes and Terms",
+  title: "[Tour 01] In-Article Components",
   date: "2025-03-12",
   series: "Theme Tour",
   part: 1,   // optional
@@ -90,6 +90,47 @@ detail most readers skip. `title` names it (`Details` by default) and
   + Both themes checked.
 ]
 ```)
+
+= Columns
+
+`cols` sets blocks side by side, such as two versions of the same code, and
+stacks them on screens 600px wide or less. Each block is a trailing `[...]`,
+and `labels` puts one label above each, in order.
+
+#demo(````typst
+#import "/utils/ui.typ": cols
+
+#cols(labels: ([While writing], [Before pushing]))[
+  ```sh
+  tola dev
+  ```
+][
+  ```sh
+  tola build
+  ```
+]
+````)
+
+Every block shares one row unless `columns` says how many fit in it:
+
+#demo(```typst
+#import "/utils/ui.typ": cols
+
+#cols(columns: 2)[
+  *Uplink*: commands sent up to the spacecraft.
+][
+  *Downlink*: telemetry sent back to the ground.
+][
+  *Pass*: the minutes a ground station can see it.
+][
+  *Blackout*: the time between passes.
+]
+```)
+
+- `none` in place of a label leaves that block unlabelled.
+- A different number of labels and blocks fails the build.
+- For images, use `gallery` (#xref("04-style-reference")), which is a
+  numbered figure with a caption.
 
 = Notes
 

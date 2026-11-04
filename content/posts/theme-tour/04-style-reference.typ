@@ -1,5 +1,5 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, demo, gallery, hint, img, related, xref
+#import "/utils/ui.typ": callout, cols, demo, gallery, hint, img, related, xref
 #import "/utils/mitex.typ": mi, mitex
 
 #tola-meta((
@@ -11,7 +11,8 @@
 ))
 
 #let demo = demo.with(scope: (
-  callout: callout, gallery: gallery, hint: hint, img: img, related: related, xref: xref,
+  callout: callout, cols: cols, gallery: gallery, hint: hint, img: img, related: related,
+  xref: xref,
   mi: mi, mitex: mitex,
 ))
 
@@ -113,6 +114,34 @@ def union(masks):
     return set().union(*masks)
 ```
 ````)
+
+== Columns
+
+`cols` sets blocks side by side, such as two versions of the same code, and
+stacks them on narrow screens. Write each block as a trailing `[...]`;
+`labels` puts one label above each:
+
+#demo(````typst
+#import "/utils/ui.typ": cols
+
+#cols(labels: ([Loop], [Built-in]))[
+  ```python
+  out = set()
+  for m in masks:
+      out |= m
+  ```
+][
+  ```python
+  out = set().union(*masks)
+  ```
+]
+````)
+
+Every block shares one row unless `columns` says how many fit in it:
+
+#demo(```typst
+#cols(columns: 2)[*Channel A*: 1 Hz][*Channel B*: 10 Hz][*Channel C*: 50 Hz][*Channel D*: 100 Hz]
+```)
 
 = Links Between Posts
 

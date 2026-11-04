@@ -972,6 +972,13 @@ figure:has(> :is(.img, .gallery)) > figcaption { text-align: left; }
 figure:has(> .img[style]) > figcaption { text-align: center; }
 .gallery { display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 12px; }
 .gallery-item .label { margin-top: 6px; }
+/* `cols` (utils/ui.typ): blocks side by side, stacked when narrow. */
+.cols { display: grid; grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr)); gap: 12px; margin: 0 0 1.1em; }
+.cols-item { min-width: 0; }
+.cols-item > .label { margin-bottom: 6px; }
+.cols :is(.code-block, pre) { margin-bottom: 0; }
+.cols pre code { font-size: 13.5px; }
+@media (max-width: 600px) { .cols { grid-template-columns: 1fr; } }
 @media (min-width: 601px) and (max-width: 760px) { .channel-grid { columns: 2; } }
 /* Past the column by up to 80px a side, as far as the window allows. */
 figure:has(> .img-bleed) { margin-inline: calc(-1 * clamp(0px, (100vw - var(--measure)) / 2 - var(--gutter), 80px)); }

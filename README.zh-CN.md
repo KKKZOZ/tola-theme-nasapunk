@@ -153,7 +153,7 @@ tola dev
 | --- | --- |
 | [Configuration](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Configuration) | 各项设置的位置：站点信息、布局、订阅、配色、字体、搜索 |
 | [Writing Posts](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts) | 文章文件与 URL、`tola-meta` 字段、系列、草稿、数学公式 |
-| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | 提示框、折叠块、术语、图片、文章间链接、流程图、CeTZ 插图和 LaTeX 公式 |
+| [Components](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Components) | 提示框、折叠块、术语、图片、分栏、文章间链接、流程图、CeTZ 插图和 LaTeX 公式 |
 | [Deployment](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Deployment) | GitHub Pages 及其他静态托管、子路径部署 |
 | [Project Structure](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Project-Structure) | 主题中每个文件和目录的作用 |
 
