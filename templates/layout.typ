@@ -214,11 +214,17 @@
   html.div(class: "footer-rule", role: "presentation", spans(4))
   html.div(class: "footer-row", {
     label[© #author]
+    // Theme credit, centred between the copyright and the links.
+    html.div(class: "label footer-credit", {
+      "Built with "
+      html.a(href: "https://github.com/tola-rs/tola-ssg", "Tola")
+      " and "
+      html.a(href: "https://github.com/KKKZOZ/tola-theme-nasapunk", "tola-theme-nasapunk")
+    })
     html.div(class: "footer-links", {
       // html.elem: the typed html.a rejects rel="me".
       for (name, url) in social-links { html.elem("a", attrs: (class: "label", href: url, rel: "me"), name) }
       if has-feed { html.a(class: "label", href: output-url(feed-output), "RSS") }
-      label[Typst / Tola]
     })
   })
 })

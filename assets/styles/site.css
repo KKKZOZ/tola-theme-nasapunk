@@ -167,10 +167,12 @@ main { flex: 1; width: 100%; }
 .footer-rule span:nth-child(2) { width: 60px; height: 2px; background: var(--blue); }
 .footer-rule span:nth-child(3) { width: 20px; height: 2px; background: var(--band-4); }
 .footer-rule span:nth-child(4) { width: 8px; height: 2px; background: var(--band-3); }
-.footer-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; }
+/* Equal side columns keep the credit centred whatever the links' width. */
+.footer-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: start; gap: 12px; margin-top: 8px; }
+.footer-credit { text-align: center; }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px; }
-.footer-links a { color: var(--orange); text-decoration: none; }
-.footer-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+:is(.footer-links, .footer-credit) a { color: var(--orange); text-decoration: none; }
+:is(.footer-links, .footer-credit) a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ========================================================================== */
 /* Home                                                                       */
@@ -1037,6 +1039,9 @@ html:has(.zoom[open]) { overflow: hidden; }
   .index-list.has-code a > .label:first-child { grid-column: 1; }
   .index-list.has-code .index-title { grid-column: 1 / -1; grid-row: 2; }
   .post-nav .next { grid-column: 1; }
+  .footer-row { grid-template-columns: 1fr; gap: 4px; }
+  .footer-credit { text-align: left; }
+  .footer-links { justify-content: flex-start; }
 }
 
 /* ========================================================================== */
