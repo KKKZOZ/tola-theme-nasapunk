@@ -68,7 +68,7 @@ URL follows the file path: `content/posts/foo/bar.typ` publishes at
 
 #callout(kind: "info")[Files under `content/lab/` get the post layout but stay
 out of the post list. Use them for test pages. The
-#link("../style-reference/")[style reference] shows every element the theme styles.]
+#link("../theme-tour/04-style-reference/")[style reference] shows every element the theme styles.]
 
 = Components
 
@@ -77,4 +77,4 @@ out of the post list. Use them for test pages. The
 diagrams and timelines in the site palette; #xref("02-diagrams") shows both.
 `utils/cetz.typ` is a drop-in `cetz` that renders to inline SVG, and
 `utils/figure.typ` holds colours and helpers for detailed drawings;
-#xref("cetz-figures") puts them to work and goes through them one by one.
+#xref("03-cetz-figures") puts them to work and goes through them one by one.

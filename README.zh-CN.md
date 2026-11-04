@@ -137,7 +137,7 @@ tola dev
 
 打开 <http://127.0.0.1:5277>。`tola dev` 会在保存时自动重新构建；`tola build` 把完整站点（含搜索索引）输出到 `public/`。
 
-每次重新构建后，`tola dev` 还会报告 `math-check` hook 失败，列出六个无法复制为 LaTeX 的公式。这是正常的：示例文章 `content/posts/math.typ` 故意放了这六个公式，站点照常构建，`tola build` 也不会运行这项检查。详见 [Writing Posts → Math](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts#math)。
+每次重新构建后，`tola dev` 还会报告 `math-check` hook 失败，列出六个无法复制为 LaTeX 的公式。这是正常的：示例文章 `content/posts/theme-tour/05-math.typ` 故意放了这六个公式，站点照常构建，`tola build` 也不会运行这项检查。详见 [Writing Posts → Math](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts#math)。
 
 然后换成你自己的内容：
 

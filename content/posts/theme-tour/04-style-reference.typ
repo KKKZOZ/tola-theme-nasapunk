@@ -73,7 +73,7 @@ its source is gone by the time the page is built, so the theme rebuilds
 equivalent LaTeX from the formula (`\sum_{i=1}^n x_i`): same maths, not
 necessarily the same text. A formula with parts LaTeX has no counterpart
 for copies as `\text{[unsupported formula]}`, and a tip says which parts.
-#xref("math") has examples of both.]
+#xref("05-math") has examples of both.]
 
 = Blocks
 
@@ -124,9 +124,9 @@ build time, and `xref` fails loudly if the post is missing.
 #demo(```typst
 #import "/utils/ui.typ": xref
 
-A relative link to #link("../getting-started/")[the getting-started guide],
-a post by its title: #xref("cetz-figures"),
-and with other text: #xref("cetz-figures", body: [this post]).
+A relative link to #link("../../getting-started/")[the getting-started guide],
+a post by its title: #xref("03-cetz-figures"),
+and with other text: #xref("03-cetz-figures", body: [this post]).
 ```)
 
 `related` closes a post with cards for others, by the same names:
@@ -134,7 +134,7 @@ and with other text: #xref("cetz-figures", body: [this post]).
 #demo(```typst
 #import "/utils/ui.typ": related
 
-#related("cetz-figures", "getting-started")
+#related("03-cetz-figures", "getting-started")
 ```)
 
 = Images
