@@ -11,6 +11,10 @@
   series: "Theme Tour",
 ))
 
+// The formulas that cannot copy as LaTeX are here on purpose, so the page
+// stays out of the math-check report in `tola dev`:
+// math-check: ignore
+
 // Each row starts from Typst source: the table shows it, renders it, and
 // asks templates/latex.typ what it copies as, so the post cannot drift from
 // the converter.
@@ -119,8 +123,9 @@ parts.
 
 While `tola dev` runs, the terminal lists every such formula after each
 rebuild, pointing at its line in the source like a compiler warning, so it
-can be rewritten before anyone copies it. The examples on this page are
-listed there too.
+can be rewritten before anyone copies it. A page that shows such formulas on
+purpose, as this one does, opts out with a line `// math-check: ignore` in
+its source.
 
 When a formula has to copy cleanly, write it in LaTeX with `mi`. These two
 render the same as the first and third rows and copy as written:

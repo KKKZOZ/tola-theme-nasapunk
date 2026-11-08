@@ -137,8 +137,6 @@ tola dev
 
 Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
 
-After each rebuild, `tola dev` also reports the `math-check` hook as failed, listing six formulas that cannot copy as LaTeX. This is expected: the example post `content/posts/theme-tour/05-math.typ` has them on purpose, the site still builds, and `tola build` skips the check. See [Writing Posts → Math](https://github.com/KKKZOZ/tola-theme-nasapunk/wiki/Writing-Posts#math).
-
 Then make it yours:
 
 1. Set your title, name, description and language under `[site]` in `tola.toml`.
