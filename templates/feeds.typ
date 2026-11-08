@@ -6,12 +6,7 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/site:0.0.0": site
 #import "@tola/web:0.0.0": feed, sitemap
-
-/// Newest posts listed in the feed.
-#let feed-size = 20
-
-/// `true` puts each post's full text in the feed, `false` only its summary.
-#let full-text = true
+#import "/config.typ": feed-full-text, feed-size
 
 /// The feed's file, relative to the site root.
 #let feed-output = "feed.xml"
@@ -20,7 +15,8 @@
 /// to the feed only then.
 #let has-feed = site.url != none
 
-/// The RSS feed of the newest posts, a sitemap of every listed page, and a
+/// The RSS feed of the newest posts (`feed-size` and `feed-full-text` in
+/// config.typ), a sitemap of every listed page, and a
 /// robots.txt that points crawlers to the sitemap. `pages` are the published
 /// `(source:, output:)` records, `posts` the post records, newest first.
 #let feeds(pages, posts) = {
@@ -34,7 +30,7 @@
       published: p.date,
       summary: p.summary,
       // The post text, by the id post.typ gives it.
-      content: if full-text { (document: p.output, id: "post-content") },
+      content: if feed-full-text { (document: p.output, id: "post-content") },
     )
     if p.updated != none { entry.insert("updated", p.updated) }
     entry

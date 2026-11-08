@@ -2,7 +2,7 @@
 # https://github.com/tola-rs/tola-ssg
 #
 # Site-specific values without a `[site]` key (doc-number prefix, mission
-# code) live in `templates/config.typ`.
+# code) live in `config.typ`.
 
 # tola help "[site]"
 [site]
@@ -31,12 +31,14 @@ fragments = "error"
 # Pagefind indexes the compiled pages for /search/ (scripts/search-index.mjs).
 # Skipped by `tola dev` so saves reload without waiting for the index; `tola
 # preview` and `tola build` run it. Set `dev = "run"` to search in dev too.
+# For a site written mostly in one language, such as Chinese, name it after
+# the script: ["node", "scripts/search-index.mjs", "zh"].
 [[build.hooks.generate-outputs]]
 enable = true
 name = "search"
 command = ["node", "scripts/search-index.mjs"]
 dev = "skip"
-rerun-on = ["scripts/search-index.mjs", "package.json", "package-lock.json"]
+rerun-on = ["scripts/search-index.mjs", "package.json", "package-lock.json", "tola.toml"]
 outputs = [{ tree = "pagefind" }]
 
 # Lists formulas that cannot copy as LaTeX, compiler style, while `tola dev`
@@ -52,7 +54,7 @@ rerun-on = ["scripts/math-check.mjs"]
 # tola help "[typst.fonts]"
 # Compiler fonts for SVG frames (math, cetz) and the preview image: IBM Plex
 # Mono and Rajdhani ship in typst-fonts/. System fonts stay on for CJK text,
-# which no bundled font covers (`cjk-font` in templates/config.typ).
+# which no bundled font covers (`cjk-font` in config.typ).
 [typst.fonts]
 paths = ["typst-fonts"]
 system = true

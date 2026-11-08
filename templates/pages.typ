@@ -4,13 +4,11 @@
 
 #import "@tola/address:0.0.0": asset-url, output-url
 #import "@tola/site:0.0.0": site
+#import "/config.typ": posts-per-page
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout
 #import "/templates/page.typ": page
 #import "/templates/post.typ": doc-number, pad, part-title
-
-/// Posts per home page; the rest go on /page/2/, /page/3/, ...
-#let shown = 10
 
 /// The home page's n-th page (from 1): index.html, then page/n/index.html.
 #let home-output(n) = if n == 1 { "index.html" } else { "page/" + str(n) + "/index.html" }
@@ -24,18 +22,19 @@
   })
 }
 
-/// The home page and its following pages, `shown` posts each, by `weight`.
+/// The home page and its following pages, `posts-per-page` posts each
+/// (config.typ), by `weight`.
 /// The sort is stable, so equal weights stay newest first; other listings
 /// and the feed keep date order. The hero is on the first page only.
 #let home(posts) = {
   let listed = posts.sorted(key: p => p.weight)
-  let count = calc.max(1, calc.ceil(listed.len() / shown))
+  let count = calc.max(1, calc.ceil(listed.len() / posts-per-page))
   for n in range(1, count + 1) {
-    let first = (n - 1) * shown
+    let first = (n - 1) * posts-per-page
     page(home-output(n), if n > 1 { "Page " + str(n) }, posts: posts, {
       if n == 1 { layout.hero(subtitle: site.description, meta: str(posts.len()) + " posts") }
       html.div(class: "section-label", layout.label(class: "accent")[Recent posts])
-      layout.post-list(listed.slice(first, calc.min(listed.len(), first + shown)), start: listed.len() - first)
+      layout.post-list(listed.slice(first, calc.min(listed.len(), first + posts-per-page)), start: listed.len() - first)
       pager(n, count)
     })
   }

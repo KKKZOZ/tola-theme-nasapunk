@@ -3,9 +3,10 @@
 // so the same hook works on Linux, macOS and Windows.
 import { join } from "node:path";
 
-// Pagefind detects the language from each page's `lang`; set an ISO 639-1
-// code such as "zh" to index the whole site as one language instead.
-const forceLanguage = undefined;
+// Pagefind detects the language from each page's `lang`. An ISO 639-1 code
+// after the script in the hook's command (tola.toml), such as "zh", indexes
+// the whole site as that one language instead.
+const forceLanguage = process.argv[2] || undefined;
 
 const fail = (message) => {
   console.error(message);

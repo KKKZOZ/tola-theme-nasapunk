@@ -3,7 +3,7 @@
 
 #import "/templates/base.typ": palette
 #import "/templates/colors.typ": colors-css
-#import "/templates/config.typ": content-width, head-extra, mission, social-image, social-links
+#import "/config.typ": content-width, head-extra, mission, nav-items, social-image, social-links
 #import "/templates/feeds.typ": feed-output, has-feed
 #import "/templates/util.typ": cls, social-tags
 #import "@tola/web:0.0.0": head-metadata
@@ -14,18 +14,8 @@
 #import "@tola/site:0.0.0": site
 
 // ============================================================================
-// Configuration
+// Site
 // ============================================================================
-
-/// Header navigation: (label, output file).
-#let nav-items = (
-  ("Home", "index.html"),
-  ("Archive", "archive/index.html"),
-  ("Tags", "tags/index.html"),
-  ("Series", "series/index.html"),
-  ("Search", "search/index.html"),
-  ("About", "about/index.html"),
-)
 
 /// The site author's name, from `[site] authors`.
 #let author = site.authors.at(0, default: (name: none)).name
@@ -118,26 +108,36 @@
 /// TOC (assets/styles/toc-float.css) and 12px to spare.
 #let toc-float-at = content-width + 2 * (48 + 220 + 12)
 
-/// The preview image social.typ draws for `social-image: auto`.
+/// The preview image social.typ draws for the site (`social-image: auto`).
 #let social-output = "social.png"
 
+/// The preview image social.typ draws for the post written to `output`:
+/// "posts/x/index.html" -> "posts/x/social.png".
+#let post-social-output(output) = output.replace(regex("index\.html$"), "").replace(regex("\.html$"), "-") + "social.png"
+
+/// An image under assets/ ("/assets/…") or an absolute URL, as an absolute
+/// URL. Needs an origin.
+#let image-url(src) = if src.starts-with("/") { site.origin + asset-url(src) } else { src }
+
 /// `social-image` as an `(url:, alt:)` dictionary with an absolute URL, or
-/// `none` when there is none or the site has no origin.
+/// `none` when there is none or the site has no origin. Posts may have their
+/// own (post.typ).
 #let share-image = if social-image == none or site.url == none {
   none
 } else if social-image == auto {
   let alt = if site.description != "" { site.title + ": " + site.description } else { site.title }
   (url: output-url(social-output, origin: site.origin), alt: alt)
 } else {
-  let src = social-image.src
-  (url: if src.starts-with("/") { site.origin + asset-url(src) } else { src }, alt: social-image.alt)
+  (url: image-url(social-image.src), alt: social-image.alt)
 }
 
 /// Shared <head> content for the page written to `output`. Typst only adds
 /// charset/viewport when it builds the <head> itself, so templates with a
 /// custom head must emit them. `description` falls back to the site's;
-/// `article` is a post's `(published:, updated:, tags:)`.
-#let head(output, title, description: none, article: none) = html.head({
+/// `article` is a post's `(published:, updated:, tags:)`; `image` is the
+/// preview image, an `(url:, alt:)` dictionary, `none`, or `auto` for the
+/// site's (`share-image`).
+#let head(output, title, description: none, article: none, image: auto) = html.head({
   // A blocking script keeps the first paint until the stylesheet is in,
   // avoiding a flash of unstyled content. It also settles the theme before
   // that paint: the reader's pick (theme.js), else the system setting.
@@ -176,7 +176,7 @@
     url: if site.url != none { output-url(output, origin: site.origin) },
     description: description,
     site-name: site.title,
-    image: share-image,
+    image: if image == auto { share-image } else { image },
     article: if article != none { article + (author: author) },
   )
   head-extra

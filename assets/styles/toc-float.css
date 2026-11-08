@@ -1,6 +1,6 @@
 /* Post table of contents floating in the right gutter, sticky while the text
    scrolls. layout.typ loads this file only on windows wide enough for the
-   column (`content-width` in templates/config.typ) and the TOC side by side;
+   column (`content-width` in config.typ) and the TOC side by side;
    below that the TOC stays a box above the text (site.css). */
 
 .toc {

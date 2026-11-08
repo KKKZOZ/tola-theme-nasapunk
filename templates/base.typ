@@ -7,7 +7,7 @@
 // `palette`: the theme's colours by day (templates/colors.typ), for drawings
 // that should match the page; each follows the night theme too.
 #import "/templates/colors.typ": palette
-#import "/templates/config.typ": cjk-font, code-dark-theme, code-theme
+#import "/config.typ": cjk-font, code-dark-theme, code-theme
 #import "/templates/data.typ": draft-index
 #import "/templates/latex.typ": probe, to-latex
 

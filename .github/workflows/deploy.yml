@@ -1,7 +1,8 @@
 # Publishes the example site to GitHub Pages, the theme's live demo.
 #
 # In a copy of this template: set Settings → Pages → Source to "GitHub
-# Actions", then delete the `if:` line below. The workflow passes the Pages
+# Actions", then add a repository variable DEPLOY_PAGES = true (Settings →
+# Secrets and variables → Actions → Variables). The workflow passes the Pages
 # address to Tola, so it works for <user>.github.io and for project sites
 # under /<repo>/ alike.
 name: Deploy
@@ -22,8 +23,8 @@ concurrency:
 
 jobs:
   deploy:
-    # Only the theme's own repository deploys until a copy opts in.
-    if: github.repository == 'KKKZOZ/tola-theme-nasapunk'
+    # The theme's own repository, and copies that opt in with DEPLOY_PAGES.
+    if: github.repository == 'KKKZOZ/tola-theme-nasapunk' || vars.DEPLOY_PAGES == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

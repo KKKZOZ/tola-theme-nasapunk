@@ -35,7 +35,7 @@
   --font-mono: "IBM Plex Mono", "Sarasa Mono SC", "Sarasa Gothic SC", "PingFang SC", "Noto Sans SC", ui-monospace, monospace;
   --font-body: var(--font-mono);
 
-  --measure: 760px; /* set from `content-width` in templates/config.typ */
+  --measure: 760px; /* set from `content-width` in config.typ */
   --gutter: 16px;
 }
 
@@ -551,6 +551,8 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .post-nav-title { font: 600 19px/1.25 var(--font-title); }
 .post-nav a:hover .post-nav-title { color: var(--orange); }
 .post-nav .next { text-align: right; grid-column: 2; }
+/* `post-footer-extra` in config.typ: comments and the like. */
+.post-footer-extra { margin-top: 40px; }
 
 /* Series box under the doc control block (post.typ): an ink head bar like
    the callouts, older / newer parts, and the full part list folded away. */
@@ -1075,7 +1077,7 @@ html:has(.zoom[open]) { overflow: hidden; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { display: block; min-height: 0; }
 
-  .skip, .site-nav, .read-progress, .toc, .heading-anchor, .code-head, .post-nav,
+  .skip, .site-nav, .read-progress, .toc, .heading-anchor, .code-head, .post-nav, .post-footer-extra,
   .series-nav, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
   .has-readout > .readout-idle:not(.program-foot) { display: none !important; }
   .site-footer { margin-top: 36px; padding-bottom: 0; }

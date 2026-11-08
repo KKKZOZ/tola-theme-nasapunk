@@ -5,7 +5,7 @@
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
 #import "/templates/base.typ": doc-query, palette, term-slug
-#import "/templates/config.typ": content-width
+#import "/config.typ": content-width
 #import "/templates/data.typ": post-index
 #import "/templates/layout.typ": fmt-date, label, spans
 

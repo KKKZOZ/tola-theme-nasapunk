@@ -142,7 +142,7 @@ After each rebuild, `tola dev` also reports the `math-check` hook as failed, lis
 Then make it yours:
 
 1. Set your title, name, description and language under `[site]` in `tola.toml`.
-2. Set the document-number prefix in `templates/config.typ`.
+2. Set the document-number prefix in `config.typ`.
 3. Replace the example posts in `content/posts/` and edit `content/about.typ`.
 
 ## Documentation
@@ -164,7 +164,7 @@ The [live demo](https://kkkzoz.github.io/tola-theme-nasapunk/) doubles as a tuto
 Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts from `typst-fonts/`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
 
 > [!NOTE]
-> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` in `templates/config.typ`, and figures and the preview image use it too.
+> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` in `config.typ`, and figures and the preview image use it too.
 
 ## Acknowledgements
 

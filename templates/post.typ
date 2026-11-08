@@ -5,14 +5,16 @@
 // ```
 // site.typ renders it with `post(page, posts)`.
 
-#import "@tola/address:0.0.0": slugify
+#import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/collection:0.0.0": adjacent
 #import "@tola/document:0.0.0": headings
 #import "/templates/base.typ": doc-query, endnotes
-#import "/templates/config.typ": doc-prefix
+#import "@tola/site:0.0.0": site
+#import "/config.typ": doc-prefix, post-footer-extra, social-image, toc-depth
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout: fmt-date, label, series-href
 #import "/templates/page.typ": html-document
+#import "/templates/social.typ": post-card
 #import "@tola/web:0.0.0": plain-text
 
 // ============================================================================
@@ -135,9 +137,6 @@
 // existing section links keep working; ToC links use the same slug. Headings
 // whose slugs repeat get "-2", "-3", ... in document order.
 
-/// Deepest heading level listed in the ToC (1 = `=`, 2 = `==`, ...).
-#let toc-depth = 2
-
 /// Slug of a heading's text.
 #let heading-slug(text) = {
   // slugify rejects text with nothing left to slug, such as a lone symbol.
@@ -197,13 +196,41 @@
   }))
 }
 
+// ============================================================================
+// Sharing
+// ============================================================================
+
+/// The post's preview image as an `(url:, alt:)` dictionary, `none`, or
+/// `auto` for the site's: its own `image` field first, else the card drawn
+/// for it when `social-image` (config.typ) is `auto`. Images need an origin.
+#let post-image(m, output) = {
+  if m.image != none {
+    // Resolved even without an origin, so a missing file fails every build.
+    if m.image.starts-with("/") { let _ = asset-url(m.image) }
+    if site.url != none { (url: layout.image-url(m.image), alt: m.title) } else { none }
+  } else if social-image == auto {
+    if site.url != none { (url: output-url(layout.post-social-output(output), origin: site.origin), alt: m.title) } else { none }
+  } else { auto }
+}
+
 /// Write one post. `page` is its `(source:, output:)` record; `posts` the
 /// published post records, newest first.
 #let post(page, posts) = {
   let m = page.source.meta
   let body = include page.source.file
   let article = (published: m.date, updated: m.updated, tags: m.tags)
-  html-document(page.output, m.title, description: m.summary, article: article, posts: posts, {
+  if m.image == none and social-image == auto {
+    post-card(
+      layout.post-social-output(page.output),
+      title: m.title,
+      summary: m.summary,
+      doc: doc-number(posts, page.output),
+      date: fmt-date(m.date),
+      tags: m.tags,
+    )
+  }
+  let image = post-image(m, page.output)
+  html-document(page.output, m.title, description: m.summary, article: article, image: image, posts: posts, {
     show heading: heading-with-id
     layout.shell(html.article(class: "post", {
       // Fixed reading-progress bar at the top of the viewport (reading.js).
@@ -227,6 +254,19 @@
         html.elem("div", attrs: (class: "prose", id: "post-content", data-pagefind-body: ""), { body; endnotes() })
       })
       post-nav(posts, page.output)
+      // The `post-footer-extra` slot (config.typ): comments and the like.
+      if post-footer-extra != none {
+        let extra = post-footer-extra((
+          title: m.title,
+          output: page.output,
+          permalink: output-url(page.output),
+          url: if site.url != none { output-url(page.output, origin: site.origin) },
+          meta: m,
+        ))
+        if extra != none {
+          html.elem("section", attrs: (class: "post-footer-extra", data-pagefind-ignore: ""), extra)
+        }
+      }
     }))
   })
 }

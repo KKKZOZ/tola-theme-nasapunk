@@ -25,15 +25,14 @@ tola build     # writes public/, search index included
 = Site identity
 
 Most values live in `tola.toml` under `[site]`: title, author, description
-and language. Two values have no `[site]` key and live in
-`templates/config.typ`:
+and language. The rest live in `config.typ` at the site root, among them:
 
 ```typst
 #let doc-prefix = "TN"   // TN-001, TN-002, ... under each post title
 #let mission = none      // e.g. "RESEARCH NOTES" next to the site title
 ```
 
-Header links are set by `nav-items` in `templates/layout.typ`.
+Header links, footer links, posts per page and the feed are set there too.
 
 #hint[Set *origin* in `tola.toml` before you deploy: feeds and sitemaps need
 the public address.]

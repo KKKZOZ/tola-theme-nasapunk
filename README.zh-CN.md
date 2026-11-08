@@ -142,7 +142,7 @@ tola dev
 然后换成你自己的内容：
 
 1. 在 `tola.toml` 的 `[site]` 里填写站点标题、作者名、简介和语言。
-2. 在 `templates/config.typ` 里设置文档编号前缀。
+2. 在 `config.typ` 里设置文档编号前缀。
 3. 用你自己的文章替换 `content/posts/` 里的示例，并修改 `content/about.typ`。
 
 ## 文档
@@ -164,7 +164,7 @@ tola dev
 正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。Typst 绘制的插图和预览图使用 `typst-fonts/` 里的同两套字体，因此在任何构建机器上效果都一致。中日韩文字在页面和插图中都回退到系统字体。
 
 > [!NOTE]
-> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `templates/config.typ` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
+> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `config.typ` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
 
 ## 致谢
 

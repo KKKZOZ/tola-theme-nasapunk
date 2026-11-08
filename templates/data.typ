@@ -12,6 +12,9 @@
   // Last substantial revision: shown on the post, and the sitemap's lastmod.
   updated: optional(nullable(date), default: none),
   summary: optional(nullable(str), default: none),
+  // Preview image when the post is shared, in place of the one config.typ
+  // `social-image` gives: a file under assets/ ("/assets/…") or a URL.
+  image: optional(nullable(str), default: none),
   tags: optional(one-or-many(str), default: ()),
   // `series: "Name"` or `("Name",)`, as Hugo front matter writes it;
   // only the first entry counts.
