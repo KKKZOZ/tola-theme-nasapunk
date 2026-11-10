@@ -1,11 +1,10 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/diagram.typ": diagram, divider, edge, flow, flows, n, node, note, timeline
-#import "/utils/ui.typ": demo
+#import "@tola-modules/nasapunk:0.0.0": diagram, divider, edge, flow, flows, n, node, note, timeline, demo
 
 #tola-meta((
   title: "[Tour 02] Diagrams and Timelines",
   date: "2025-07-04",
-  summary: "Part two of a sample series: flows, grid diagrams and timelines from utils/diagram.typ.",
+  summary: "Part two of a sample series: flows, grid diagrams and timelines from the theme's diagram helpers.",
   tags: ("example", "series", "diagram"),
   series: "Theme Tour",
 ))
@@ -28,7 +27,7 @@ picks its style (`"plain"` by default, `"accent"`, `"dark"`, `"muted"`,
 a boundary across the flow, naming the side before and after it.
 
 #demo(```typst
-#import "/utils/diagram.typ": flow, n, divider
+#import "@tola-modules/nasapunk:0.0.0": flow, n, divider
 
 #flow(
   n([Source], sub: [`content/*.typ`]),
@@ -47,7 +46,7 @@ flow every node takes the width of the widest; `uniform: false` lets each
 one hug its own text.
 
 #demo(```typst
-#import "/utils/diagram.typ": flow, n
+#import "@tola-modules/nasapunk:0.0.0": flow, n
 
 #flow(
   dir: "ltr",
@@ -66,7 +65,7 @@ as in `flow`; `none` leaves a column without a caption. `gap` sets the space
 between columns.
 
 #demo(```typst
-#import "/utils/diagram.typ": flows, n
+#import "@tola-modules/nasapunk:0.0.0": flows, n
 
 #flows(
   ([STATIC SITE], (n[Request], [CDN], n([HTML file], tone: "accent"))),
@@ -87,7 +86,7 @@ position and its text; `edge` joins two ids, with an optional `label` and
 `dashed: true`. `col` and `row` on `diagram` set the grid spacing.
 
 #demo(```typst
-#import "/utils/diagram.typ": diagram, node, edge
+#import "@tola-modules/nasapunk:0.0.0": diagram, node, edge
 
 #diagram(
   node("repo", (0, 0), [Repo]),
@@ -109,7 +108,7 @@ picks the side the edge leaves or enters by. `note` writes free text at a
 grid position. `num`, `width` and `align` work on `node` as on `n`.
 
 #demo(```typst
-#import "/utils/diagram.typ": diagram, node, edge, note
+#import "@tola-modules/nasapunk:0.0.0": diagram, node, edge, note
 
 #diagram(
   col: 130,
@@ -137,7 +136,7 @@ brought, and optionally a `note` and `major: true` to make it stand out.
 `spacing` sets the gap between releases.
 
 #demo(```typst
-#import "/utils/diagram.typ": timeline
+#import "@tola-modules/nasapunk:0.0.0": timeline
 
 #timeline(
   (version: [0.1], items: ([First layout],)),

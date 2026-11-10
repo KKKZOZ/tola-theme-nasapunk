@@ -1,6 +1,6 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, cols, demo, fold, hint, term, xref
+#import "@tola-modules/nasapunk:0.0.0": callout, cols, demo, fold, hint, term, xref
 
 #let demo = demo.with(scope: (callout: callout, cols: cols, fold: fold, hint: hint, term: term))
 
@@ -47,12 +47,12 @@ A numbered list is `+` at the start of a line; `-` gives bullets.
 
 = Callouts
 
-`callout` from `utils/ui.typ` boxes a short message. `kind` sets the colour
+`callout` boxes a short message. `kind` sets the colour
 and the status label: `note` (the default), `info`, `warning`, `success` or
 `danger`. `title` replaces the label.
 
 #demo(```typst
-#import "/utils/ui.typ": callout
+#import "@tola-modules/nasapunk:0.0.0": callout
 
 #callout(kind: "success", title: [READY])[All three checks pass.]
 
@@ -66,7 +66,7 @@ build. That is deliberate#footnote[See `[build.references]` in `tola.toml`.].]
 mark and no box, for a tip or an aside next to the text it concerns.
 
 #demo(```typst
-#import "/utils/ui.typ": hint
+#import "@tola-modules/nasapunk:0.0.0": hint
 
 #hint[Run `tola dev` while writing: it rebuilds the site on every *save*.]
 ```)
@@ -78,7 +78,7 @@ detail most readers skip. `title` names it (`Details` by default) and
 `open: true` starts it unfolded.
 
 #demo(```typst
-#import "/utils/ui.typ": fold
+#import "@tola-modules/nasapunk:0.0.0": fold
 
 #fold(title: [Why does a broken anchor fail the build?])[
   A link to a missing section looks fine in the source and only shows up
@@ -98,7 +98,7 @@ stacks them on screens 600px wide or less. Each block is a trailing `[...]`,
 and `labels` puts one label above each, in order.
 
 #demo(````typst
-#import "/utils/ui.typ": cols
+#import "@tola-modules/nasapunk:0.0.0": cols
 
 #cols(labels: ([While writing], [Before pushing]))[
   ```sh
@@ -114,7 +114,7 @@ and `labels` puts one label above each, in order.
 Every block shares one row unless `columns` says how many fit in it:
 
 #demo(```typst
-#import "/utils/ui.typ": cols
+#import "@tola-modules/nasapunk:0.0.0": cols
 
 #cols(columns: 2)[
   *Uplink*: commands sent up to the spacecraft.
@@ -150,7 +150,7 @@ hovering it shows the definition, and every term is listed under "Terms" at
 the end of the post, after the notes. On touch screens the word links there.
 
 #demo(```typst
-#import "/utils/ui.typ": term
+#import "@tola-modules/nasapunk:0.0.0": term
 
 The ground station decodes the #term("downlink")[The radio link from a
 spacecraft down to the ground.] at 2 Mb/s. When the #term("downlink") drops,
@@ -164,7 +164,7 @@ it waits for the next pass.
 under it, as licences such as CC BY ask.
 
 #demo(```typst
-#import "/utils/ui.typ": term
+#import "@tola-modules/nasapunk:0.0.0": term
 
 Each channel of #term(
   "telemetry",

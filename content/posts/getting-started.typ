@@ -1,10 +1,10 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, hint, xref
+#import "@tola-modules/nasapunk:0.0.0": callout, hint, xref
 
 #tola-meta((
   title: "Getting Started with NASApunk",
   date: "2026-10-18",
-  updated: "2026-10-25",
+  updated: "2026-11-10",
   summary: "Install the theme, set your site identity, and write the first post.",
   tags: ("guide", "theme"),
   weight: 1,
@@ -12,7 +12,7 @@
 
 = Requirements
 
-- #link("https://github.com/tola-rs/tola-ssg")[Tola] 0.8 or newer.
+- #link("https://github.com/tola-rs/tola-ssg")[Tola] 0.8.2 or newer.
 - Node.js, for the #link("https://pagefind.app")[Pagefind] search index. Run
   `npm install` once in the site directory.
 
@@ -24,15 +24,20 @@ tola build     # writes public/, search index included
 
 = Site identity
 
-Most values live in `tola.toml` under `[site]`: title, author, description
-and language. The rest live in `config.typ` at the site root, among them:
+Everything lives in `tola.toml`. Title, author, description and language go
+under `[site]`; the theme's own settings under `[modules.nasapunk.options]`,
+among them:
 
-```typst
-#let doc-prefix = "TN"   // TN-001, TN-002, ... under each post title
-#let mission = none      // e.g. "RESEARCH NOTES" next to the site title
+```toml
+[modules.nasapunk.options]
+doc-prefix = "TN"          # TN-001, TN-002, ... under each post title
+mission = "RESEARCH NOTES" # next to the site title; "" hides it
 ```
 
 Header links, footer links, posts per page and the feed are set there too.
+Every option, with its default, is listed in `theme/tola-module.toml`.
+Settings that are Typst values, such as a comments block under each post,
+are arguments of `render-site` in `site.typ`.
 
 #hint[Set *origin* in `tola.toml` before you deploy: feeds and sitemaps need
 the public address.]
@@ -71,9 +76,16 @@ out of the post list. Use them for test pages. The
 
 = Components
 
-`utils/ui.typ` holds the in-article components: `callout`, `hint`, `fold`,
-`term`, `img`, `gallery`, `cols`, `xref` and `related`. `utils/diagram.typ` draws box-and-arrow
-diagrams and timelines in the site palette; #xref("02-diagrams") shows both.
-`utils/cetz.typ` is a drop-in `cetz` that renders to inline SVG, and
-`utils/figure.typ` holds colours and helpers for detailed drawings;
-#xref("03-cetz-figures") puts them to work and goes through them one by one.
+Posts import the theme's components from `@tola-modules/nasapunk:0.0.0`:
+
+```typst
+#import "@tola-modules/nasapunk:0.0.0": callout, hint, xref
+```
+
+The in-article components are `callout`, `hint`, `fold`, `term`, `img`,
+`gallery`, `cols`, `xref` and `related`. `flow`, `diagram` and `timeline`
+draw box-and-arrow diagrams and timelines in the site palette;
+#xref("02-diagrams") shows them. `cetz` is a drop-in CeTZ that renders to
+inline SVG, and `c`, `txt`, `arrow` and their kin are colours and helpers for
+detailed drawings; #xref("03-cetz-figures") puts them to work and goes
+through them one by one.

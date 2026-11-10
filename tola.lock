@@ -1,0 +1,17 @@
+[modules.nasapunk]
+path = "theme"
+tree_sha256 = "39a7c920faec305b54df6e8d81c75ffd6af70edc33b4c97733532869181cea53"
+
+[packages."@preview/cetz"]
+version = "0.5.2"
+tree_sha256 = "f507db956dcc874b0ddc341b17364d7071d5d2fcf479e6b5521e4a4da2c36f1e"
+
+[packages."@preview/mitex"]
+version = "0.2.7"
+tree_sha256 = "5478478087c254ffa655f94f9fdfd6bd27c06d42c8a21be2672c72dedb7967d9"
+
+[packages."@preview/oxifmt"]
+version = "1.0.0"
+tree_sha256 = "8a11ac68fbb773bd9a077674ef27a5105640245171e65729f31e2ac80f324c45"
+
+[icons]

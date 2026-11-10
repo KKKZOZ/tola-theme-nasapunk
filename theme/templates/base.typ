@@ -12,7 +12,7 @@
 #import "/templates/latex.typ": probe, to-latex
 
 // Rajdhani and IBM Plex Mono come from typst-fonts/; CJK text uses
-// `cjk-font` (config.typ), else any system font that has the glyphs.
+// the `cjk-font` option (config.typ), else any system font that has the glyphs.
 #let cjk = if cjk-font == none { () } else { (cjk-font,) }
 #let title-font = ("Rajdhani",) + cjk
 #let body-font = ("IBM Plex Mono",) + cjk

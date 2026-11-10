@@ -1,12 +1,10 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt
-#import "/utils/ui.typ": callout, demo, hint
+#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt, callout, demo, hint
 
 #tola-meta((
   title: "[Tour 03] Figures with CeTZ",
   date: "2026-02-14",
-  summary: "Detailed CeTZ drawings, themed for day and night, and every helper in utils/figure.typ that builds them.",
+  summary: "Detailed CeTZ drawings, themed for day and night, and every helper in the theme's figure kit that builds them.",
   tags: ("example", "series", "cetz", "diagram"),
   series: "Theme Tour",
 ))
@@ -16,12 +14,12 @@
   cells: cells, seg: seg, legend: legend, box-swatch: box-swatch, line-swatch: line-swatch,
 ))
 
-CeTZ draws through the regular `@preview/cetz` package. Import it from
-`/utils/cetz.typ` instead, and `canvas` renders the drawing as inline SVG in
-HTML export:
+CeTZ draws through the regular `@preview/cetz` package. Import `cetz` from
+the theme instead, and `canvas` renders the drawing as inline SVG in HTML
+export:
 
 #demo(```typst
-#import "/utils/cetz.typ" as cetz
+#import "@tola-modules/nasapunk:0.0.0": cetz
 
 #cetz.canvas(length: 1pt, {
   import cetz.draw: *
@@ -33,14 +31,13 @@ Everything else in CeTZ (`draw`, `vector`, `palette`, ...) is re-exported
 unchanged. Text inside the figure is set by Typst with the theme's fonts, and
 the SVG scales down on narrow screens.
 
-`utils/figure.typ` is a small kit for detailed drawings in the theme's
+The theme also carries a small kit for detailed drawings in its
 style: a palette that follows the day / night switch, and helpers for the
 shapes that technical figures keep needing. The two figures below are built
 with it; the sections after them go through it one helper at a time.
 
 ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": *   // or name the helpers you use
+#import "@tola-modules/nasapunk:0.0.0": *   // or name the helpers you use, cetz among them
 ```
 
 Draw on a canvas with `length: 1pt`, so coordinates are points and y grows
@@ -54,8 +51,7 @@ and Mars's motion are arcs, one of them elliptical; the event log and the
 budget bar are `rect` and `content` calls laid out in a loop.
 
 #demo(fold: true, ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": arrow, box-swatch, c, curve-arrow, legend, line-swatch, pill, seg, tag, txt
+#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, box-swatch, c, curve-arrow, legend, line-swatch, pill, seg, tag, txt
 
 #cetz.canvas(length: 1pt, {
   import cetz.draw: *
@@ -158,8 +154,7 @@ draws the 48 bits, each field coloured by a lookup; dashed lines zoom from the
 frame into its header, and Bézier arrows route the frame by its channel id.
 
 #demo(fold: true, ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": c, cells, curve-arrow, pill, seg, tag, txt
+#import "@tola-modules/nasapunk:0.0.0": cetz, c, cells, curve-arrow, pill, seg, tag, txt
 
 #cetz.canvas(length: 1pt, {
   import cetz.draw: *
@@ -243,7 +238,7 @@ page follows it.]
 
 `c` is a dictionary of colours. The strong tones are the theme's own; the
 pale ones are tints for fills. Each has a night value in
-`templates/colors.typ`, so a figure drawn with `c` needs no dark version.
+`theme/templates/colors.typ`, so a figure drawn with `c` needs no dark version.
 
 #demo(fold: true, ```typst
 #cetz.canvas(length: 1pt, {
@@ -260,8 +255,8 @@ pale ones are tints for fills. Each has a night value in
 
 #callout(kind: "info")[Every colour in `c` changes at night, as a fill (text
 included) and as a stroke. A colour of your own keeps its day value in both
-themes; to give it a night value, add it to `templates/colors.typ` and draw
-with `palette.<name>` from `templates/base.typ`.]
+themes; to give it a night value, add it to `theme/templates/colors.typ` and draw
+with `palette.<name>`, imported from the theme.]
 
 = Text
 
@@ -482,8 +477,8 @@ only that post needs go in the module too, next to the figures that use them:
 
 ```typst
 // figures/caches.typ
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": *
+#import "@tola-modules/nasapunk:0.0.0": cetz
+#import "@tola-modules/nasapunk:0.0.0": *
 
 #let fig-cache() = cetz.canvas(length: 1pt, { ... })
 ```
@@ -506,8 +501,7 @@ repeats: a dark square for elementwise × and +, a disc for each activation,
 and a dot where a line branches.
 
 #demo(fold: true, ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": arrow, box-swatch, c, legend, txt
+#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, box-swatch, c, legend, txt
 
 // A label, ink unless told otherwise; often math.
 #let lbl(pos, body, anchor: "center", fill: c.ink) = cetz.draw.content(
@@ -600,8 +594,7 @@ changing a number redraws the figure. `txt.with(size: 9pt)` raises the
 kit's default text size for this one figure.
 
 #demo(fold: true, ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": arrow, c, txt
+#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, c, txt
 
 #let txt = txt.with(size: 9pt)
 #let head(body) = text(size: 9pt, weight: 700, tracking: .6pt, fill: c.ink, upper(body))
@@ -706,8 +699,7 @@ lists its commits. The panels are the same drawing shifted right: `P` turns
 a commit's column and row into a point inside the current panel.
 
 #demo(fold: true, ```typst
-#import "/utils/cetz.typ" as cetz
-#import "/utils/figure.typ": c, tag, txt
+#import "@tola-modules/nasapunk:0.0.0": cetz, c, tag, txt
 
 #let commit-tones = (
   grey: (c.grey1, c.line), blue: (c.blue1, c.blue), orange: (c.orange1, c.orange),

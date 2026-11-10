@@ -1,9 +1,9 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/templates/layout.typ" as layout
+#import "@tola-modules/nasapunk:0.0.0": page-head
 
 #tola-meta((title: "About"))
 
-#layout.page-head("About")
+#page-head("About")
 
 Notes on research, systems and engineering.
 

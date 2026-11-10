@@ -16,7 +16,9 @@ permissions:
 
 env:
   # Oldest supported Tola release; keep it in step with the README badges.
-  MIN_TOLA: 0.8.0
+  # The theme is a Tola module, which 0.8.2 introduced; pre-releases from
+  # this one on are tested too.
+  MIN_TOLA: 0.8.2-pre.2
 
 jobs:
   versions:
@@ -25,18 +27,21 @@ jobs:
     outputs:
       versions: ${{ steps.list.outputs.versions }}
     steps:
-      # Stable releases from MIN_TOLA on, newest first, as a JSON array.
+      # Releases from MIN_TOLA on, newest first, as a JSON array. In the
+      # comparison "-" reads as "~", which version sort puts before the
+      # release it leads up to: 0.8.2-pre.2 < 0.8.2.
       - id: list
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          key() { printf '%s\n' "$1" | tr - '~'; }
           versions=$(
-            gh release list --repo tola-rs/tola-ssg --exclude-pre-releases --exclude-drafts --limit 100 --json tagName --jq '.[].tagName' \
+            gh release list --repo tola-rs/tola-ssg --exclude-drafts --limit 100 --json tagName --jq '.[].tagName' \
               | sed 's/^v//' \
               | while read -r v; do
-                  [ "$(printf '%s\n%s\n' "$MIN_TOLA" "$v" | sort -V | head -n1)" = "$MIN_TOLA" ] && echo "$v"
+                  [ "$(printf '%s\n%s\n' "$(key "$MIN_TOLA")" "$(key "$v")" | sort -V | head -n1)" = "$(key "$MIN_TOLA")" ] && echo "$v"
                 done \
-              | sort -rV \
+              | tr - '~' | sort -rV | tr '~' - \
               | jq -R -s -c 'split("\n") | map(select(. != ""))'
           )
           echo "Supported releases: $versions"
@@ -68,7 +73,7 @@ jobs:
           version: ${{ matrix.version }}
 
       - name: Build
-        run: tola build
+        run: tola build --locked
 
   main:
     name: Tola main
@@ -130,7 +135,7 @@ jobs:
       - name: Build
         run: tola build
 
-  # tests/latex.typ: the LaTeX copied formulas carry. Typst at the version
+  # theme/tests/latex.typ: the LaTeX copied formulas carry. Typst at the version
   # the newest supported Tola release builds with.
   latex:
     name: LaTeX copy tests

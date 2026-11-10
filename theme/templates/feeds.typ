@@ -1,6 +1,6 @@
 // RSS feed, sitemap and robots.txt, built from the post list. The feed and
 // sitemap list absolute addresses, so they are published only when the site
-// has an `origin` (tola.toml, or `tola build --origin`). site.typ emits them.
+// has an `origin` (tola.toml, or `tola build --origin`). `render-site` (lib.typ) emits them.
 // Import: #import "/templates/feeds.typ": feeds, has-feed, feed-output
 
 #import "@tola/address:0.0.0": output-url
@@ -15,8 +15,8 @@
 /// to the feed only then.
 #let has-feed = site.url != none
 
-/// The RSS feed of the newest posts (`feed-size` and `feed-full-text` in
-/// config.typ), a sitemap of every listed page, and a
+/// The RSS feed of the newest posts (`feed-size` and `feed-full-text`
+/// options), a sitemap of every listed page, and a
 /// robots.txt that points crawlers to the sitemap. `pages` are the published
 /// `(source:, output:)` records, `posts` the post records, newest first.
 #let feeds(pages, posts) = {

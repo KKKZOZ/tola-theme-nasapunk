@@ -1,45 +1,31 @@
-// The site program: every page Tola publishes is emitted here.
-//
-// Sources under content/ declare their metadata with `tola-meta` and hold
-// only their text; posts/ sources get the post layout, others the plain page
-// layout. lab/ holds test and reference pages: post layout, but they stay out
-// of the post list. Listing pages are built from the post records in
-// templates/pages.typ; the RSS feed and sitemap in templates/feeds.typ.
+// An optional site program, for settings that are Typst values rather than
+// TOML options. Unused until tola.toml selects it with
+// `[build] entry = "site.typ"`; it then builds the same site as the theme's
+// own entry, plus whatever is passed below.
 
-#import "@tola/site:0.0.0": site
-#import "@tola/source:0.0.0": all-sources
-#import "/templates/data.typ": draft-index, draft-urls, post-records, select-pages
-#import "/templates/feeds.typ": feeds
-#import "/templates/page.typ": page
-#import "/templates/pages.typ" as pages
-#import "/templates/post.typ": post
-#import "/templates/social.typ": social-card
+#import "@tola-modules/nasapunk:0.0.0": render-site
 
-#set text(
-  lang: site.language.lang,
-  script: site.language.script,
-  region: site.language.region,
+#render-site(
+  // Extra <head> content on every page, such as an analytics script.
+  // `html.elem` takes any attribute; Plausible, for example:
+  //   html.elem("script", attrs: (
+  //     defer: "", src: "https://plausible.io/js/script.js", data-domain: "example.com",
+  //   ))
+  head-extra: none,
+
+  // Content placed at the end of every post, after the links to the previous
+  // and next posts: comments, a newsletter form, a support link. A function
+  // that takes the post and returns content (or `none` to skip that post).
+  // The post is a dictionary: `title`, `output` ("posts/x/index.html"),
+  // `permalink` (its path), `url` (its absolute address, `none` without an
+  // origin) and `meta` (its tola-meta fields: `date`, `tags`, `series`, ...).
+  // Giscus comments, for example (the values come from https://giscus.app):
+  //   post => html.elem("script", attrs: (
+  //     src: "https://giscus.app/client.js",
+  //     data-repo: "you/your-blog", data-repo-id: "…",
+  //     data-category: "Comments", data-category-id: "…",
+  //     data-mapping: "pathname", data-theme: "preferred_color_scheme",
+  //     crossorigin: "anonymous", async: "",
+  //   ))
+  post-footer-extra: none,
 )
-
-#let selected = select-pages(all-sources())
-#let posts = post-records(selected)
-
-#draft-index.update(draft-urls(all-sources()))
-
-#for entry in selected {
-  if entry.source.id.starts-with("posts/") or entry.source.id.starts-with("lab/") {
-    post(entry, posts)
-  } else {
-    page(entry.output, entry.source.meta.title, include entry.source.file, posts: posts)
-  }
-}
-
-#pages.home(posts)
-#pages.archive(posts)
-#pages.tags(posts)
-#pages.series(posts)
-#pages.search()
-#pages.not-found()
-
-#feeds(selected, posts)
-#social-card()

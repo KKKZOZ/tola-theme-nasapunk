@@ -2,12 +2,17 @@
 // copied formula carries (templates/latex.typ), and lists the ones that fail.
 // Needs the Typst CLI, the version the supported Tola release builds with.
 import { execFileSync } from "node:child_process";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// The theme's root: its files import each other by package-absolute paths.
+const theme = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 let cases;
 try {
   const out = execFileSync(
     "typst",
-    ["eval", "query(<case>).map(it => it.value)", "--in", "tests/latex.typ", "--root", "."],
+    ["eval", "query(<case>).map(it => it.value)", "--in", join(theme, "tests", "latex.typ"), "--root", theme],
     { encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] },
   );
   cases = JSON.parse(out);

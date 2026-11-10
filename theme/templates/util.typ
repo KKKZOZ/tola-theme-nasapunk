@@ -1,7 +1,17 @@
 // Small helpers shared by the templates.
-// Import: #import "/templates/util.typ": cls, social-tags
+// Import: #import "/templates/util.typ": cls, social-tags, theme-asset
 
+#import "@tola/module:0.0.0": get-module
 #import "@tola/web:0.0.0": canonical, open-graph, plain-text, twitter-card
+
+/// URL of one of the theme's own files, by its path under assets/:
+/// `theme-asset("styles/site.css")`. Published under
+/// /_tola-modules/<alias>/, with the site's mount and cache-busting suffix.
+#let theme-asset(name) = {
+  let urls = get-module().assets.urls
+  assert(name in urls, message: "no theme asset " + name + " (assets disabled or renamed?)")
+  urls.at(name)
+}
 
 /// Join CSS classes, skipping `none` and empty strings; arrays are flattened.
 /// `cls("base", if active { "active" })` gives "base active" or "base".

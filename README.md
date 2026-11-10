@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/favicon.svg" width="84" alt="">
+<img src="theme/assets/favicon.svg" width="84" alt="">
 
 # NASApunk
 
@@ -9,7 +9,7 @@
 Write posts in Typst. Figures, diagrams and math render as inline SVG in the theme colours, by day and by night.
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-0.8%2B-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-0.8.2--pre.2%2B-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -120,17 +120,21 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 
 ## Quick start
 
-You need [Tola](https://github.com/tola-rs/tola-ssg) 0.8 or newer and Node.js (for the search index).
+> [!IMPORTANT]
+> This is the `preview` branch, for [Tola 0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) and newer. Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
+
+You need Tola 0.8.2-pre.2 or newer and Node.js (for the search index). Install Tola with [mise](https://mise.jdx.dev) (`mise use -g tola@0.8.2-pre.2`), or download a binary from its [release page](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2).
+
+### Start from the template
+
+The simplest way: a copy of this repository is a working blog, with the theme in `theme/`.
 
 ```sh
-# 1. Get the theme: click "Use this template" on GitHub, or
-git clone https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+# 1. Get the template, its preview branch
+git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
 cd my-blog
 
-# 2. Install Tola (or download a binary from its release page)
-cargo install --locked tola
-
-# 3. Install Pagefind and start the dev server
+# 2. Install Pagefind and start the dev server
 npm install
 tola dev
 ```
@@ -140,8 +144,44 @@ Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes t
 Then make it yours:
 
 1. Set your title, name, description and language under `[site]` in `tola.toml`.
-2. Set the document-number prefix in `config.typ`.
+2. Set the theme's options, such as the document-number prefix, under `[modules.nasapunk.options]` in `tola.toml`. Every option, with its default, is listed in `theme/tola-module.toml`.
 3. Replace the example posts in `content/posts/` and edit `content/about.typ`.
+
+Everything you own sits outside `theme/`: `tola.toml`, `site.typ`, `content/`, `assets/` and `typst-fonts/`. To update the theme, replace `theme/` with the one from a newer copy, or fetch it from Git as below.
+
+### Use it as a module
+
+A site of your own can take the theme straight from Git; Tola fetches it, and `tola update nasapunk` upgrades it. In `tola.toml`:
+
+```toml
+[build]
+entry = { module = "nasapunk" }
+
+[modules.nasapunk]
+git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+
+[modules.nasapunk.options]
+doc-prefix = "TN"
+
+[typst.fonts]
+paths = ["typst-fonts"]
+system = true
+```
+
+Copy `typst-fonts/` from this repository into the site so figures are drawn in the theme's fonts, and run `npm install pagefind` there for search (or set `search = false` under `[modules.nasapunk.options]`). Posts go in `content/posts/` and import the theme's components:
+
+```typst
+#import "@tola/source:0.0.0": tola-meta
+#import "@tola-modules/nasapunk:0.0.0": callout
+
+#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post."))
+
+#callout(kind: "info")[Written with NASApunk.]
+```
+
+### Typst-valued settings
+
+Extra `<head>` markup (analytics) and content under every post (comments) are Typst values, not TOML. Set `entry = "site.typ"` under `[build]` and pass them to `render-site` in `site.typ`; the template's `site.typ` shows both.
 
 ## Documentation
 
@@ -162,7 +202,7 @@ The [live demo](https://kkkzoz.github.io/tola-theme-nasapunk/) doubles as a tuto
 Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts from `typst-fonts/`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
 
 > [!NOTE]
-> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` in `config.typ`, and figures and the preview image use it too.
+> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` under `[modules.nasapunk.options]` in `tola.toml`, and figures and the preview image use it too.
 
 ## Acknowledgements
 
@@ -170,7 +210,7 @@ Built on [Tola](https://github.com/tola-rs/tola-ssg) and [Typst](https://typst.a
 
 ## License
 
-The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `assets/webfonts/` and `typst-fonts/`.
+The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `theme/assets/webfonts/` and `typst-fonts/`.
 
 ## Star History
 

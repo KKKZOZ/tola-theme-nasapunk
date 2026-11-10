@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/favicon.svg" width="84" alt="">
+<img src="theme/assets/favicon.svg" width="84" alt="">
 
 # NASApunk
 
@@ -9,7 +9,7 @@
 用 Typst 写文章，插图、图表和公式渲染为内联 SVG，跟随主题的日夜配色。
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-0.8%2B-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-0.8.2--pre.2%2B-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -120,17 +120,21 @@
 
 ## 快速开始
 
-需要 [Tola](https://github.com/tola-rs/tola-ssg) 0.8 或更新版本，以及 Node.js（用于生成搜索索引）。
+> [!IMPORTANT]
+> 这是 `preview` 分支，适用于 [Tola 0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题现在位于 `theme/` 目录，并在 `tola.toml` 中配置。Tola 0.8.0 和 0.8.1 请使用 `main` 分支。
+
+需要 Tola 0.8.2-pre.2 或更新版本，以及 Node.js（用于生成搜索索引）。可以用 [mise](https://mise.jdx.dev) 安装 Tola（`mise use -g tola@0.8.2-pre.2`），也可以从它的 [release 页面](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2)下载预编译版本。
+
+### 从模板开始
+
+最简单的方式：本仓库的副本本身就是一个可以直接使用的博客，主题位于 `theme/`。
 
 ```sh
-# 1. 获取主题：在 GitHub 上点 "Use this template"，或者
-git clone https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+# 1. 获取模板的 preview 分支
+git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
 cd my-blog
 
-# 2. 安装 Tola（也可以从它的 release 页面下载预编译版本）
-cargo install --locked tola
-
-# 3. 安装 Pagefind 并启动开发服务器
+# 2. 安装 Pagefind 并启动开发服务器
 npm install
 tola dev
 ```
@@ -140,8 +144,44 @@ tola dev
 然后换成你自己的内容：
 
 1. 在 `tola.toml` 的 `[site]` 里填写站点标题、作者名、简介和语言。
-2. 在 `config.typ` 里设置文档编号前缀。
+2. 在 `tola.toml` 的 `[modules.nasapunk.options]` 里设置主题选项，例如文档编号前缀。所有选项及其默认值都列在 `theme/tola-module.toml` 中。
 3. 用你自己的文章替换 `content/posts/` 里的示例，并修改 `content/about.typ`。
+
+属于你自己的文件都在 `theme/` 之外：`tola.toml`、`site.typ`、`content/`、`assets/` 和 `typst-fonts/`。更新主题时，用新版本的 `theme/` 替换即可，或者按下文的方式从 Git 获取。
+
+### 作为模块使用
+
+你自己的站点也可以直接从 Git 引用主题：Tola 会自动获取它，`tola update nasapunk` 可以升级。在 `tola.toml` 中：
+
+```toml
+[build]
+entry = { module = "nasapunk" }
+
+[modules.nasapunk]
+git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+
+[modules.nasapunk.options]
+doc-prefix = "TN"
+
+[typst.fonts]
+paths = ["typst-fonts"]
+system = true
+```
+
+把本仓库的 `typst-fonts/` 复制到站点中，插图才会使用主题的字体；再在站点里运行 `npm install pagefind` 以启用搜索（或者在 `[modules.nasapunk.options]` 中设置 `search = false`）。文章放在 `content/posts/`，从主题导入组件：
+
+```typst
+#import "@tola/source:0.0.0": tola-meta
+#import "@tola-modules/nasapunk:0.0.0": callout
+
+#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post."))
+
+#callout(kind: "info")[Written with NASApunk.]
+```
+
+### Typst 值类型的设置
+
+额外的 `<head>` 内容（如统计脚本）和每篇文章末尾的内容（如评论区）是 Typst 值，不能写在 TOML 里。在 `[build]` 中设置 `entry = "site.typ"`，然后在 `site.typ` 里把它们传给 `render-site`；模板自带的 `site.typ` 中有这两项的示例。
 
 ## 文档
 
@@ -162,7 +202,7 @@ tola dev
 正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。Typst 绘制的插图和预览图使用 `typst-fonts/` 里的同两套字体，因此在任何构建机器上效果都一致。中日韩文字在页面和插图中都回退到系统字体。
 
 > [!NOTE]
-> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `config.typ` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
+> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `tola.toml` 的 `[modules.nasapunk.options]` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
 
 ## 致谢
 
@@ -170,7 +210,7 @@ tola dev
 
 ## 许可证
 
-主题以 [MIT 许可证](LICENSE) 发布。随附字体使用 SIL Open Font License 1.1，许可证原文见 `assets/webfonts/` 与 `typst-fonts/`。
+主题以 [MIT 许可证](LICENSE) 发布。随附字体使用 SIL Open Font License 1.1，许可证原文见 `theme/assets/webfonts/` 与 `typst-fonts/`。
 
 ## Star History
 

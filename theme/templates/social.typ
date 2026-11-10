@@ -1,8 +1,8 @@
 // Social preview images: 1200 × 630 PNGs that link previews show when a
-// page is shared (`social-image: auto` in config.typ). The site's card is
+// page is shared (`social-image = "auto"`, the default option). The site's card is
 // drawn from its title, description, author and address, so it follows
 // tola.toml; each post's from its title, summary, document number, date and
-// tags. site.typ emits the site's, post.typ each post's.
+// tags. `render-site` (lib.typ) emits the site's, post.typ each post's.
 // Import: #import "/templates/social.typ": social-card, post-card
 
 #import "@tola/site:0.0.0": site

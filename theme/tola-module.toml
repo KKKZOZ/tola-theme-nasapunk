@@ -1,0 +1,121 @@
+# NASApunk: a Tola theme module.
+# https://github.com/KKKZOZ/tola-theme-nasapunk
+#
+# A site selects it in tola.toml:
+#
+#   [build]
+#   entry = { module = "nasapunk" }
+#
+#   [modules.nasapunk]
+#   git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", subdir = "theme" }
+#
+# and overrides any option below under [modules.nasapunk.options]. Settings
+# that are Typst values (extra <head> markup, the post footer slot) are
+# arguments of `render-site` (lib.typ); see site.typ.
+
+[typst]
+entry = "lib.typ"
+
+[build]
+entry = "site.typ"
+
+[options]
+# Prefix of post document numbers: TN-001, TN-002, ... Use your initials
+# for a personal series, e.g. "ABC-TN".
+doc-prefix = "TN"
+
+# Orange code shown in the header next to the site title, e.g.
+# "RESEARCH NOTES"; "" hides it.
+mission = ""
+
+# Width of the text column in CSS pixels, shared by the header, listings
+# and post text.
+content-width = 760
+
+# Posts per home page; older ones go on /page/2/, /page/3/, ...
+posts-per-page = 10
+
+# Deepest heading level numbered and listed in a post's table of contents
+# (1 = `=`, 2 = `==`).
+toc-depth = 2
+
+# Newest posts listed in the RSS feed, and whether each carries the post's
+# full text (true) or only its summary (false).
+feed-size = 20
+feed-full-text = true
+
+# Preview image when a page is shared: "auto" draws one from the site's
+# title and description, and one per post; "none" gives a text-only card;
+# { src = "/assets/…", alt = "…" } uses a file the site publishes for every
+# page (1200 × 630 suits most sites). A post's own `image` field wins. Needs
+# `origin` in [site], as image URLs are absolute.
+social-image = "auto"
+
+# Font for Chinese, Japanese and Korean text in figures and preview images
+# drawn by Typst, e.g. "Sarasa Gothic SC"; "" uses any system font with the
+# glyphs. Pages use the browser's fonts.
+cjk-font = ""
+
+# Syntax colours for code: a name from @tola/code's `code-themes`
+# (`tola help "@tola/code" code-themes`), or "auto" for Typst's own.
+# `code-theme` is the day look, `code-dark-theme` the night one.
+code-theme = "auto"
+code-dark-theme = "github-dark"
+
+# Full-text search with Pagefind (/search/ and the `search` hook below).
+# Needs Node.js and `npm install pagefind` in the site.
+search = true
+
+# Pagefind detects each page's language from its `lang`. An ISO 639-1 code,
+# such as "zh", indexes the whole site as that one language instead: for a
+# site written mostly in Chinese, Japanese or Korean.
+search-language = ""
+
+# Under `tola dev`, list formulas that cannot copy as LaTeX, compiler style
+# (the `math-check` hook below). Needs Node.js.
+math-check = true
+
+# Header navigation: label and output file. A page written as
+# content/projects.typ publishes at "projects/index.html".
+nav = [
+  { label = "Home", output = "index.html" },
+  { label = "Archive", output = "archive/index.html" },
+  { label = "Tags", output = "tags/index.html" },
+  { label = "Series", output = "series/index.html" },
+  { label = "Search", output = "search/index.html" },
+  { label = "About", output = "about/index.html" },
+]
+
+# Footer links, e.g. { label = "Email", url = "mailto:you@example.com" }.
+# They carry rel="me", so Mastodon and other IndieWeb profiles that link
+# back to the site can verify them.
+social-links = [
+  { label = "GitHub", url = "https://github.com/KKKZOZ/tola-theme-nasapunk" },
+]
+
+# Published under /_tola-modules/<alias>/. A site may swap one file for its
+# own with [modules.<alias>.assets.replace], e.g. "favicon.svg".
+[assets]
+trees = [{ source = "assets", url-prefix = "/" }]
+
+# Pagefind indexes the compiled pages for /search/. `tola dev` skips it, so
+# saves reload without waiting for the index; `tola preview`, `tola check`
+# and `tola build` run it. Pagefind is resolved from the site's own
+# node_modules.
+[[hooks.generate-outputs]]
+name = "search"
+argv = ["node", "{module}/scripts/search-index.mjs"]
+enabled-by = "search"
+dev = "skip"
+rerun-on = { include = ["scripts/search-index.mjs", { project = "package.json" }, { project = "package-lock.json" }] }
+outputs = [{ tree = "pagefind" }]
+
+# Lists formulas that cannot copy as LaTeX while `tola dev` runs. Tola shows
+# the list as hook warnings; the site still updates. A post that shows such
+# formulas on purpose opts out with a line `// math-check: ignore`.
+[[hooks.after-publish]]
+name = "math-check"
+argv = ["node", "{module}/scripts/math-check.mjs"]
+enabled-by = "math-check"
+dev = "run"
+rerun-on = { include = ["scripts/math-check.mjs"] }

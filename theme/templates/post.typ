@@ -3,14 +3,14 @@
 // #import "@tola/source:0.0.0": tola-meta
 // #tola-meta((title: "...", date: "2026-10-19", summary: "...", tags: ("a", "b")))
 // ```
-// site.typ renders it with `post(page, posts)`.
+// `render-site` (lib.typ) renders it with `post(page, posts)`.
 
 #import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/collection:0.0.0": adjacent
 #import "@tola/document:0.0.0": headings
 #import "/templates/base.typ": doc-query, endnotes
 #import "@tola/site:0.0.0": site
-#import "/config.typ": doc-prefix, post-footer-extra, social-image, toc-depth
+#import "/config.typ": doc-prefix, extras, social-image, toc-depth
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout: fmt-date, label, series-href
 #import "/templates/page.typ": html-document
@@ -202,7 +202,7 @@
 
 /// The post's preview image as an `(url:, alt:)` dictionary, `none`, or
 /// `auto` for the site's: its own `image` field first, else the card drawn
-/// for it when `social-image` (config.typ) is `auto`. Images need an origin.
+/// for it when the `social-image` option is `auto`. Images need an origin.
 #let post-image(m, output) = {
   if m.image != none {
     // Resolved even without an origin, so a missing file fails every build.
@@ -254,9 +254,12 @@
         html.elem("div", attrs: (class: "prose", id: "post-content", data-pagefind-body: ""), { body; endnotes() })
       })
       post-nav(posts, page.output)
-      // The `post-footer-extra` slot (config.typ): comments and the like.
-      if post-footer-extra != none {
-        let extra = post-footer-extra((
+      // The `post-footer-extra` slot (`render-site`, lib.typ): comments and
+      // the like.
+      context {
+        let footer-extra = extras.get().post-footer-extra
+        if footer-extra == none { return }
+        let extra = footer-extra((
           title: m.title,
           output: page.output,
           permalink: output-url(page.output),

@@ -3,9 +3,9 @@
 
 #import "/templates/base.typ": palette
 #import "/templates/colors.typ": colors-css
-#import "/config.typ": content-width, head-extra, mission, nav-items, social-image, social-links
+#import "/config.typ": content-width, extras, mission, nav-items, search, social-image, social-links
 #import "/templates/feeds.typ": feed-output, has-feed
-#import "/templates/util.typ": cls, social-tags
+#import "/templates/util.typ": cls, social-tags, theme-asset
 #import "@tola/web:0.0.0": head-metadata
 #import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/code:0.0.0": code-stylesheet
@@ -115,8 +115,8 @@
 /// "posts/x/index.html" -> "posts/x/social.png".
 #let post-social-output(output) = output.replace(regex("index\.html$"), "").replace(regex("\.html$"), "-") + "social.png"
 
-/// An image under assets/ ("/assets/…") or an absolute URL, as an absolute
-/// URL. Needs an origin.
+/// A file the site publishes ("/assets/…") or an absolute URL, as an
+/// absolute URL. Needs an origin.
 #let image-url(src) = if src.starts-with("/") { site.origin + asset-url(src) } else { src }
 
 /// `social-image` as an `(url:, alt:)` dictionary with an absolute URL, or
@@ -150,22 +150,24 @@
   ).join()
   html.meta(name: "color-scheme", content: "light dark")
   if author != none { html.meta(name: "author", content: author) }
-  html.link(rel: "icon", type: "image/svg+xml", href: asset-url("/assets/favicon.svg"))
-  // site.css loads them without the `?h=` hash: the same URL here, or the
-  // browser fetches each font twice. `crossorigin`: fonts are CORS requests.
+  html.link(rel: "icon", type: "image/svg+xml", href: theme-asset("favicon.svg"))
+  // site.css loads them without the cache-busting query: the same URL here,
+  // or the browser fetches each font twice. `crossorigin`: fonts are CORS
+  // requests.
   for name in preload-fonts {
-    html.elem("link", attrs: (rel: "preload", href: output-url("assets/webfonts/" + name), "as": "font", type: "font/woff2", crossorigin: ""))
+    let href = theme-asset("webfonts/" + name).split("?").first()
+    html.elem("link", attrs: (rel: "preload", href: href, "as": "font", type: "font/woff2", crossorigin: ""))
   }
   code-stylesheet()
-  html.link(rel: "stylesheet", href: asset-url("/assets/styles/site.css"))
+  html.link(rel: "stylesheet", href: theme-asset("styles/site.css"))
   // The colour properties and their night values (templates/colors.typ).
   html.style(":root{--measure:" + str(content-width) + "px}" + colors-css)
   html.link(
     rel: "stylesheet",
-    href: asset-url("/assets/styles/toc-float.css"),
+    href: theme-asset("styles/toc-float.css"),
     media: "(min-width: " + str(toc-float-at) + "px)",
   )
-  for name in scripts { html.script("", src: asset-url("/assets/scripts/" + name), defer: true) }
+  for name in scripts { html.script("", src: theme-asset("scripts/" + name), defer: true) }
   // Lets feed readers find the feed from any page.
   if has-feed {
     html.link(rel: "alternate", type: "application/rss+xml", title: site.title, href: output-url(feed-output))
@@ -179,7 +181,8 @@
     image: if image == auto { share-image } else { image },
     article: if article != none { article + (author: author) },
   )
-  head-extra
+  // `head-extra`, given to `render-site` (lib.typ).
+  context extras.get().head-extra
 })
 
 // ============================================================================
@@ -199,6 +202,7 @@
     html.nav(class: "site-nav", context {
       let here = current-document().output
       for (name, output) in nav-items {
+        if output == "search/index.html" and not search { continue }
         // Home stays lit on the home page's following pages (page/2/, ...).
         let active = here == output or (output == "index.html" and here.starts-with("page/"))
         html.a(class: cls("label", if active { "is-active" }), href: output-url(output), name)

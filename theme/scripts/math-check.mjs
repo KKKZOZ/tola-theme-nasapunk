@@ -1,26 +1,30 @@
-// The `math-check` build hook (tola.toml): warns about formulas that cannot
-// copy as LaTeX and copy as a placeholder instead (templates/latex.typ),
+// The `math-check` build hook (tola-module.toml): warns about formulas that
+// cannot copy as LaTeX and copy as a placeholder instead (templates/latex.typ),
 // pointing at them in the source like a compiler warning.
 //
-// Tola shows a hook's output only when the hook fails (and without colour),
-// so under `tola dev` the report exits 1: Tola prints it after the rebuild,
-// and the site updates as usual. `tola build` skips the report, since a
-// failing hook would fail the build, and with it a deployment.
+// Under `tola dev` each formula is submitted to Tola as a warning (through
+// TOLA_REPORT_PATH), which Tola shows after the rebuild; the site updates as
+// usual. `tola build` skips the report, so a deployment is never held up.
 //
 // Formulas from utils/mitex.typ copy their own source and are fine. A page
 // that shows unconvertible formulas on purpose opts out with a line
 // `// math-check: ignore` in its source.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, relative } from "node:path";
 
-const { TOLA_HOOK_INPUT_DIR: site, TOLA_BUILD_MODE: mode } = process.env;
-if (!site) {
-  console.error("Run by Tola as the `math-check` build hook; use `tola dev`.");
+const {
+  TOLA_HOOK_INPUT_DIR: site,
+  TOLA_BUILD_MODE: mode,
+  TOLA_PROJECT_ROOT: root,
+  TOLA_CONTENT_ROOT: content,
+  TOLA_REPORT_PATH: reportPath,
+} = process.env;
+if (!site || !root || !content) {
+  console.error("Run by Tola as the theme's `math-check` build hook; use `tola dev`.");
   process.exit(1);
 }
 if (mode !== "dev") process.exit(0);
-const content = "content"; // build.content-dir in tola.toml
 
 // ============================================================================
 // Pages
@@ -247,8 +251,10 @@ for (const file of (await readdir(site, { recursive: true })).sort()) {
   const page = pageFormulas(await readFile(join(site, file), "utf8"));
   if (!page.some((f) => f.issues && f.where !== "toc")) continue;
   const url = "/" + file.split(/[\\/]/).join("/").replace(/index\.html$/, "");
-  const path = sourceOf(url);
-  const src = path ? readFileSync(path, "utf8") : null;
+  const source = sourceOf(url);
+  const src = source ? readFileSync(source, "utf8") : null;
+  // Shown relative to the site root, as Tola shows its own diagnostics.
+  const path = source && relative(root, source).split(/[\\/]/).join("/");
   if (src && ignored(src)) continue;
   const found = src ? locate(src, page) : new Map();
   page.forEach((f, n) => {
@@ -266,17 +272,28 @@ for (const file of (await readdir(site, { recursive: true })).sort()) {
             ` │`,
           ],
         };
-    blocks.push([
-      "warning: formula cannot copy as LaTeX",
-      ...lines,
-      `${pad} = it copies as ${placeholder}`,
-      `${pad} = help: write it with \`mi\` / \`mitex\` to copy as written, or put \`// math-check: ignore\` in the source to leave the page out`,
-    ].join("\n"));
+    blocks.push({ lines, pad });
   });
 }
 
-if (blocks.length) {
+const help = "write it with `mi` / `mitex` to copy as written, or put `// math-check: ignore` in the source to leave the page out";
+
+if (reportPath) {
+  // Tola's diagnostic batch (schema version 1). Hooks have no source
+  // snapshot to point into, so the framed source line goes in a note.
+  const diagnostics = blocks.map(({ lines }) => ({
+    severity: "warning",
+    code: "math-check",
+    message: "formula cannot copy as LaTeX",
+    notes: [lines.join("\n"), `it copies as ${placeholder}`],
+    hints: [help],
+  }));
+  writeFileSync(reportPath, JSON.stringify({ schemaVersion: 1, diagnostics }));
+} else if (blocks.length) {
   const count = blocks.length === 1 ? "1 formula" : `${blocks.length} formulas`;
-  process.stderr.write(`${count} cannot copy as LaTeX\n\n` + blocks.join("\n\n") + "\n");
+  const text = blocks.map(({ lines, pad }) =>
+    ["warning: formula cannot copy as LaTeX", ...lines, `${pad} = it copies as ${placeholder}`, `${pad} = help: ${help}`].join("\n"),
+  );
+  process.stderr.write(`${count} cannot copy as LaTeX\n\n` + text.join("\n\n") + "\n");
   process.exit(1);
 }

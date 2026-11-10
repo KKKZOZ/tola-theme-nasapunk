@@ -12,8 +12,8 @@
   // Last substantial revision: shown on the post, and the sitemap's lastmod.
   updated: optional(nullable(date), default: none),
   summary: optional(nullable(str), default: none),
-  // Preview image when the post is shared, in place of the one config.typ
-  // `social-image` gives: a file under assets/ ("/assets/…") or a URL.
+  // Preview image when the post is shared, in place of the one the
+  // `social-image` option gives: a file the site publishes ("/assets/…") or a URL.
   image: optional(nullable(str), default: none),
   tags: optional(one-or-many(str), default: ()),
   // `series: "Name"` or `("Name",)`, as Hugo front matter writes it;

@@ -1,6 +1,5 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, cols, demo, gallery, hint, img, related, xref
-#import "/utils/mitex.typ": mi, mitex
+#import "@tola-modules/nasapunk:0.0.0": callout, cols, demo, gallery, hint, img, related, xref, mi, mitex
 
 #tola-meta((
   title: "[Tour 04] Style Reference",
@@ -55,11 +54,11 @@ numbered and listed in the table of contents.
 == Math
 
 Write formulas in LaTeX with `mi` (inline) and `mitex` (display) from
-`utils/mitex.typ`. Inline math sits on the baseline, and display math is
+the theme. Inline math sits on the baseline, and display math is
 centered:
 
 #demo(```typst
-#import "/utils/mitex.typ": mi, mitex
+#import "@tola-modules/nasapunk:0.0.0": mi, mitex
 
 Inline #mi(`a^2 + b^2 = c^2`) sits on the baseline.
 
@@ -85,7 +84,7 @@ for copies as `\text{[unsupported formula]}`, and a tip says which parts.
 replaces the label.
 
 #demo(```typst
-#import "/utils/ui.typ": callout
+#import "@tola-modules/nasapunk:0.0.0": callout
 
 #callout[Callouts default to *note*.]
 #callout(kind: "info")[Neutral context with _emphasis_.]
@@ -99,7 +98,7 @@ replaces the label.
 `hint` is an open annotation beside the text rather than a boxed panel.
 
 #demo(```typst
-#import "/utils/ui.typ": hint
+#import "@tola-modules/nasapunk:0.0.0": hint
 
 #hint[An open engineering annotation: *key term* and _aside_ in mono italic.]
 ```)
@@ -122,7 +121,7 @@ stacks them on narrow screens. Write each block as a trailing `[...]`;
 `labels` puts one label above each:
 
 #demo(````typst
-#import "/utils/ui.typ": cols
+#import "@tola-modules/nasapunk:0.0.0": cols
 
 #cols(labels: ([Loop], [Built-in]))[
   ```python
@@ -151,7 +150,7 @@ last segment of one; `body` overrides the text. Tola checks these links at
 build time, and `xref` fails loudly if the post is missing.
 
 #demo(```typst
-#import "/utils/ui.typ": xref
+#import "@tola-modules/nasapunk:0.0.0": xref
 
 A relative link to #link("../../getting-started/")[the getting-started guide],
 a post by its title: #xref("03-cetz-figures"),
@@ -161,7 +160,7 @@ and with other text: #xref("03-cetz-figures", body: [this post]).
 `related` closes a post with cards for others, by the same names:
 
 #demo(```typst
-#import "/utils/ui.typ": related
+#import "@tola-modules/nasapunk:0.0.0": related
 
 #related("03-cetz-figures", "getting-started")
 ```)
@@ -182,7 +181,7 @@ as the anchor when it is a valid HTML id, so write `<fig-x>` rather than
 `<fig:x>`, which still links but as `#loc-3`.
 
 #demo(```typst
-#import "/utils/ui.typ": img
+#import "@tola-modules/nasapunk:0.0.0": img
 
 #img(
   "/assets/images/telemetry.png",
@@ -202,7 +201,7 @@ as the anchor when it is a valid HTML id, so write `<fig-x>` rather than
 `(path, label)` pair to label it:
 
 #demo(```typst
-#import "/utils/ui.typ": gallery
+#import "@tola-modules/nasapunk:0.0.0": gallery
 
 #gallery(
   columns: 2,

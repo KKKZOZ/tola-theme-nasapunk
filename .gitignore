@@ -6,3 +6,6 @@ public/
 .tola-build.lock
 node_modules/
 .DS_Store
+
+.claude
+.agents

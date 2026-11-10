@@ -1,8 +1,9 @@
-# Tola configuration (v0.8.0)
+# Tola configuration (v0.8.2)
 # https://github.com/tola-rs/tola-ssg
 #
-# Site-specific values without a `[site]` key (doc-number prefix, mission
-# code) live in `config.typ`.
+# The theme is the module in theme/ (tola-module.toml), selected as
+# `nasapunk`. Its settings go under [modules.nasapunk.options] below; the
+# defaults, with notes, are in theme/tola-module.toml.
 
 # tola help "[site]"
 [site]
@@ -14,54 +15,49 @@ description = "A Typst blog theme in the NASApunk style."
 language = "en"
 
 # tola help "[build]"
+# The theme's site program builds every page. To pass it Typst values
+# (extra <head> markup, a comments block under posts), set
+# `entry = "site.typ"` and edit site.typ.
 [build]
-entry = "site.typ"
+entry = { module = "nasapunk" }
 content-dir = "content"
 publish-dir = "public"
 
 # tola help "[build.references]"
 # A broken link, image or section anchor fails the build. Links to drafts
-# are not links until the draft publishes (templates/base.typ `site-link`).
+# are not links until the draft publishes (theme/templates/base.typ
+# `site-link`).
 [build.references]
 navigation = "error"
 resources = "error"
 fragments = "error"
 
-# tola help "[build.hooks]"
-# Pagefind indexes the compiled pages for /search/ (scripts/search-index.mjs).
-# Skipped by `tola dev` so saves reload without waiting for the index; `tola
-# preview` and `tola build` run it. Set `dev = "run"` to search in dev too.
-# For a site written mostly in one language, such as Chinese, name it after
-# the script: ["node", "scripts/search-index.mjs", "zh"].
-[[build.hooks.generate-outputs]]
-enable = true
-name = "search"
-command = ["node", "scripts/search-index.mjs"]
-dev = "skip"
-rerun-on = ["scripts/search-index.mjs", "package.json", "package-lock.json", "tola.toml"]
-outputs = [{ tree = "pagefind" }]
+# tola help "[modules]"
+# A copy of this template keeps the theme in theme/. To follow the theme's
+# releases instead, delete theme/ and fetch it from Git, then `tola update
+# nasapunk` to upgrade:
+#   git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+[modules.nasapunk]
+path = "theme"
 
-# Lists formulas that cannot copy as LaTeX, compiler style, while `tola dev`
-# runs (scripts/math-check.mjs). Tola shows the list as a failed hook, but the
-# site still updates. `tola build` skips it, so a deployment is never held up.
-# A post that shows such formulas on purpose opts out with a line
-# `// math-check: ignore` in its source.
-[[build.hooks.after-publish]]
-enable = true
-name = "math-check"
-command = ["node", "scripts/math-check.mjs"]
-dev = "run"
-rerun-on = ["scripts/math-check.mjs"]
+# Every option, with its default and notes, is in theme/tola-module.toml.
+[modules.nasapunk.options]
+doc-prefix = "TN"
+social-links = [
+  { label = "GitHub", url = "https://github.com/KKKZOZ/tola-theme-nasapunk" },
+]
 
 # tola help "[typst.fonts]"
 # Compiler fonts for SVG frames (math, cetz) and the preview image: IBM Plex
 # Mono and Rajdhani ship in typst-fonts/. System fonts stay on for CJK text,
-# which no bundled font covers (`cjk-font` in config.typ).
+# which no bundled font covers (`cjk-font` option).
 [typst.fonts]
 paths = ["typst-fonts"]
 system = true
 
 # tola help "[assets]"
+# Your own files, such as post images: "/assets/images/x.png". The theme's
+# stylesheets, scripts and web fonts are published by the module.
 [assets]
 cache-busting = true
 trees = [{ source = "assets", url-prefix = "/assets" }]

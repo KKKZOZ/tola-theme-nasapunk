@@ -1,14 +1,15 @@
 // Pages built from the post list rather than written as sources: home,
-// archive, tags, series, search and the 404 page. site.typ emits each one.
+// archive, tags, series, search and the 404 page. `render-site` (lib.typ) emits each one.
 // Import: #import "/templates/pages.typ" as pages
 
-#import "@tola/address:0.0.0": asset-url, output-url
+#import "@tola/address:0.0.0": output-url
 #import "@tola/site:0.0.0": site
 #import "/config.typ": posts-per-page
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout
 #import "/templates/page.typ": page
 #import "/templates/post.typ": doc-number, pad, part-title
+#import "/templates/util.typ": theme-asset
 
 /// The home page's n-th page (from 1): index.html, then page/n/index.html.
 #let home-output(n) = if n == 1 { "index.html" } else { "page/" + str(n) + "/index.html" }
@@ -23,7 +24,7 @@
 }
 
 /// The home page and its following pages, `posts-per-page` posts each
-/// (config.typ), by `weight`.
+/// (an option), by `weight`.
 /// The sort is stable, so equal weights stay newest first; other listings
 /// and the feed keep date order. The hero is on the first page only.
 #let home(posts) = {
@@ -240,7 +241,7 @@
     html.div(id: "search-status", class: "label search-status", aria-live: "polite", "Standing by")
     html.ol(id: "search-results", class: "search-results")
   })
-  html.elem("script", attrs: (type: "module", src: asset-url("/assets/scripts/search.js")))
+  html.elem("script", attrs: (type: "module", src: theme-asset("scripts/search.js")))
 })
 
 /// The "Loss of signal" page, served for addresses the site does not publish.

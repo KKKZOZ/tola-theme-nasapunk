@@ -4,6 +4,7 @@
 
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
+#import "@tola/site:0.0.0": project-path
 #import "/templates/base.typ": doc-query, palette, term-slug
 #import "/config.typ": content-width
 #import "/templates/data.typ": post-index
@@ -69,7 +70,8 @@
 // ============================================================================
 // Typst's `image()` inlines the file as base64 in HTML export. These helpers
 // emit an <img> the browser fetches and caches instead. Paths are
-// site-absolute, e.g. "/assets/images/x.png".
+// site-absolute, e.g. "/assets/images/x.png": the file at that path in the
+// site, published at the same URL by the site's [assets].
 //
 // A raster file goes through @tola/image: the build derives WebP copies at
 // a few widths (never past the source's own) under /_tola/images/, and the
@@ -107,9 +109,11 @@
   let local = src.starts-with("/")
   let ext = lower(src.split(".").last())
   if local and ext not in ("svg", "gif") {
-    let meta = image-metadata(src)
+    // The theme is a package: a bare "/…" would name a file in it.
+    let file = project-path(src.trim("/", at: start))
+    let meta = image-metadata(file)
     let widths = _widths.filter(w => w < meta.width) + (calc.min(meta.width, _widths.last()),)
-    responsive-img(src, alt: alt, widths: widths.dedup(), sizes: sizes, quality: if meta.is-lossy { 75 } else { none })
+    responsive-img(file, alt: alt, widths: widths.dedup(), sizes: sizes, quality: if meta.is-lossy { 75 } else { none })
   } else {
     let url = if local { asset-url(src) } else { src }
     html.elem("img", attrs: (src: url, alt: alt, loading: "lazy", decoding: "async"))

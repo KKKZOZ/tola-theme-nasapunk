@@ -1,7 +1,5 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "/utils/ui.typ": callout, demo
-#import "/utils/mitex.typ": mi, mitex
-#import "/templates/latex.typ": to-latex
+#import "@tola-modules/nasapunk:0.0.0": callout, demo, mi, mitex, to-latex
 
 #tola-meta((
   title: "[Tour 05] Math and Copying as LaTeX",
@@ -16,7 +14,7 @@
 // math-check: ignore
 
 // Each row starts from Typst source: the table shows it, renders it, and
-// asks templates/latex.typ what it copies as, so the post cannot drift from
+// asks the theme's `to-latex` what it copies as, so the post cannot drift from
 // the converter.
 #let demo = demo.with(scope: (mi: mi, mitex: mitex))
 #let example(src) = {
@@ -51,10 +49,10 @@ what stopped them: font style and box.
 = Writing math
 
 Write Typst's own math between dollar signs, or LaTeX with `mi` (inline) and
-`mitex` (display) from `utils/mitex.typ`. Both render the same:
+`mitex` (display) from the theme. Both render the same:
 
 #demo(```typst
-#import "/utils/mitex.typ": mi, mitex
+#import "@tola-modules/nasapunk:0.0.0": mi, mitex
 
 Typst $e^(i pi) + 1 = 0$ and LaTeX #mi(`e^{i\pi} + 1 = 0`).
 
