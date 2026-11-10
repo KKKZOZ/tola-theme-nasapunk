@@ -125,41 +125,42 @@
 
 需要 Tola 0.8.2-pre.2 或更新版本，以及 Node.js（用于生成搜索索引）。可以用 [mise](https://mise.jdx.dev) 安装 Tola（`mise use -g tola@0.8.2-pre.2`），也可以从它的 [release 页面](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2)下载预编译版本。
 
-### 从模板开始
+### 作为模块安装（推荐）
 
-最简单的方式：本仓库的副本本身就是一个可以直接使用的博客，主题位于 `theme/`。
+博客仓库里只放你自己的文件：文章、`tola.toml` 和几个辅助文件。主题由 Tola 从 Git 拉取，所以更新主题不会动到你的文章，也不需要合并代码。
 
 ```sh
-# 1. 获取模板的 preview 分支
-git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+# 1. 创建一个空站点；主题自带站点程序
+tola init my-blog
 cd my-blog
+rm site.typ
 
-# 2. 安装 Pagefind 并启动开发服务器
-npm install
-tola dev
+# 2. 下载 Typst 绘制插图和预览图所用的字体
+curl -L https://github.com/KKKZOZ/tola-theme-nasapunk/archive/refs/heads/preview.tar.gz \
+  | tar xz --strip-components=1 tola-theme-nasapunk-preview/typst-fonts
+
+# 3. 安装 Pagefind，用于搜索
+npm install --save-dev pagefind
+echo "node_modules/" >> .gitignore
 ```
 
-打开 <http://127.0.0.1:5277>。`tola dev` 会在保存时自动重新构建；`tola build` 把完整站点（含搜索索引）输出到 `public/`。
-
-然后换成你自己的内容：
-
-1. 在 `tola.toml` 的 `[site]` 里填写站点标题、作者名、简介和语言。
-2. 在 `tola.toml` 的 `[modules.nasapunk.options]` 里设置主题选项，例如文档编号前缀。所有选项及其默认值都列在 `theme/tola-module.toml` 中。
-3. 用你自己的文章替换 `content/posts/` 里的示例，并修改 `content/about.typ`。
-
-属于你自己的文件都在 `theme/` 之外：`tola.toml`、`site.typ`、`content/`、`assets/` 和 `typst-fonts/`。更新主题时，用新版本的 `theme/` 替换即可，或者按下文的方式从 Git 获取。
-
-### 作为模块使用
-
-你自己的站点也可以直接从 Git 引用主题：Tola 会自动获取它，`tola update nasapunk` 可以升级。在 `tola.toml` 中：
+把 `tola.toml` 替换为：
 
 ```toml
+[site]
+title = "My Blog"
+authors = [{ name = "Your Name" }]
+description = "Notes on research and engineering."
+language = "en"
+
 [build]
 entry = { module = "nasapunk" }
 
 [modules.nasapunk]
 git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
 
+# 主题选项。全部选项及其默认值和说明：
+# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml
 [modules.nasapunk.options]
 doc-prefix = "TN"
 
@@ -168,20 +169,46 @@ paths = ["typst-fonts"]
 system = true
 ```
 
-把本仓库的 `typst-fonts/` 复制到站点中，插图才会使用主题的字体；再在站点里运行 `npm install pagefind` 以启用搜索（或者在 `[modules.nasapunk.options]` 中设置 `search = false`）。文章放在 `content/posts/`，从主题导入组件：
+写第一篇文章 `content/posts/hello.typ`，以及关于页 `content/about.typ`：
 
 ```typst
 #import "@tola/source:0.0.0": tola-meta
 #import "@tola-modules/nasapunk:0.0.0": callout
 
-#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post."))
+#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post.", tags: ("notes",)))
+
+= First section
 
 #callout(kind: "info")[Written with NASApunk.]
 ```
 
+```typst
+#import "@tola/source:0.0.0": tola-meta
+#tola-meta((title: "About"))
+
+About this blog.
+```
+
+运行 `tola dev`，打开 <http://127.0.0.1:5277>。`tola dev` 会在保存时自动重新构建；`tola build` 把完整站点（含搜索索引）输出到 `public/`。
+
+更新主题时，运行 `tola update nasapunk`，然后提交变化了的 `tola.lock`。锁文件把主题固定在某个提交上，所以在你主动更新之前，任何机器上的每次构建都使用同一个版本的主题。文章中要用图片时，用 `[assets] trees = [{ source = "assets", url-prefix = "/assets" }]` 发布你自己的目录，并以 `/assets/…` 引用。[演示站点](https://kkkzoz.github.io/tola-theme-nasapunk/)展示了每个组件及其源码。
+
+### 从演示站点开始
+
+想先试用主题，或者要修改主题本身的代码，可以克隆本仓库：它就是演示站点，主题位于 `theme/`。
+
+```sh
+git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+cd my-blog
+npm install
+tola dev
+```
+
+在 `tola.toml` 的 `[site]` 里填写站点标题、作者名和语言，在 `[modules.nasapunk.options]` 里设置主题选项；用你自己的文章替换 `content/posts/` 里的示例，并修改 `content/about.typ`。这样文章和主题在同一个仓库里，主题的新版本需要手动合并。之后想改用模块方式，删除 `theme/`，并把 `[modules.nasapunk]` 改成上面的 `git` 那一行即可。
+
 ### Typst 值类型的设置
 
-额外的 `<head>` 内容（如统计脚本）和每篇文章末尾的内容（如评论区）是 Typst 值，不能写在 TOML 里。在 `[build]` 中设置 `entry = "site.typ"`，然后在 `site.typ` 里把它们传给 `render-site`；模板自带的 `site.typ` 中有这两项的示例。
+额外的 `<head>` 内容（如统计脚本）和每篇文章末尾的内容（如评论区）是 Typst 值，不能写在 TOML 里。在 `[build]` 中设置 `entry = "site.typ"`，然后在你自己的 `site.typ` 里把它们传给 `render-site`；[演示站点的 `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/site.typ) 中有这两项的示例。
 
 ## 文档
 

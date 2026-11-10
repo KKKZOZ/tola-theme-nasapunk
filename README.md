@@ -125,41 +125,42 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 
 You need Tola 0.8.2-pre.2 or newer and Node.js (for the search index). Install Tola with [mise](https://mise.jdx.dev) (`mise use -g tola@0.8.2-pre.2`), or download a binary from its [release page](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2).
 
-### Start from the template
+### Install as a module (recommended)
 
-The simplest way: a copy of this repository is a working blog, with the theme in `theme/`.
+Your blog's repository holds only your own files: posts, `tola.toml` and a few support files. Tola fetches the theme from Git, so updating it never touches your posts and never needs a merge.
 
 ```sh
-# 1. Get the template, its preview branch
-git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+# 1. Create an empty site; the theme brings its own site program
+tola init my-blog
 cd my-blog
+rm site.typ
 
-# 2. Install Pagefind and start the dev server
-npm install
-tola dev
+# 2. The fonts Typst draws figures and preview images in
+curl -L https://github.com/KKKZOZ/tola-theme-nasapunk/archive/refs/heads/preview.tar.gz \
+  | tar xz --strip-components=1 tola-theme-nasapunk-preview/typst-fonts
+
+# 3. Pagefind, for search
+npm install --save-dev pagefind
+echo "node_modules/" >> .gitignore
 ```
 
-Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
-
-Then make it yours:
-
-1. Set your title, name, description and language under `[site]` in `tola.toml`.
-2. Set the theme's options, such as the document-number prefix, under `[modules.nasapunk.options]` in `tola.toml`. Every option, with its default, is listed in `theme/tola-module.toml`.
-3. Replace the example posts in `content/posts/` and edit `content/about.typ`.
-
-Everything you own sits outside `theme/`: `tola.toml`, `site.typ`, `content/`, `assets/` and `typst-fonts/`. To update the theme, replace `theme/` with the one from a newer copy, or fetch it from Git as below.
-
-### Use it as a module
-
-A site of your own can take the theme straight from Git; Tola fetches it, and `tola update nasapunk` upgrades it. In `tola.toml`:
+Replace `tola.toml` with:
 
 ```toml
+[site]
+title = "My Blog"
+authors = [{ name = "Your Name" }]
+description = "Notes on research and engineering."
+language = "en"
+
 [build]
 entry = { module = "nasapunk" }
 
 [modules.nasapunk]
 git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
 
+# The theme's options. All of them, with defaults and notes:
+# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml
 [modules.nasapunk.options]
 doc-prefix = "TN"
 
@@ -168,20 +169,46 @@ paths = ["typst-fonts"]
 system = true
 ```
 
-Copy `typst-fonts/` from this repository into the site so figures are drawn in the theme's fonts, and run `npm install pagefind` there for search (or set `search = false` under `[modules.nasapunk.options]`). Posts go in `content/posts/` and import the theme's components:
+Write a first post as `content/posts/hello.typ`, and an about page as `content/about.typ`:
 
 ```typst
 #import "@tola/source:0.0.0": tola-meta
 #import "@tola-modules/nasapunk:0.0.0": callout
 
-#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post."))
+#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post.", tags: ("notes",)))
+
+= First section
 
 #callout(kind: "info")[Written with NASApunk.]
 ```
 
+```typst
+#import "@tola/source:0.0.0": tola-meta
+#tola-meta((title: "About"))
+
+About this blog.
+```
+
+Run `tola dev` and open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
+
+To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. For images in posts, publish a folder of your own with `[assets] trees = [{ source = "assets", url-prefix = "/assets" }]` and link them as `/assets/…`. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
+
+### Start from the demo site
+
+To try the theme out, or to change the theme's own code, clone this repository: it is the demo site, with the theme in `theme/`.
+
+```sh
+git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+cd my-blog
+npm install
+tola dev
+```
+
+Your title, name and language go under `[site]` in `tola.toml`, the theme's options under `[modules.nasapunk.options]`; replace the example posts in `content/posts/` and edit `content/about.typ`. Your posts and the theme then share one repository, so a newer theme has to be merged in by hand. To switch to the module install later, delete `theme/` and give `[modules.nasapunk]` the `git` line above.
+
 ### Typst-valued settings
 
-Extra `<head>` markup (analytics) and content under every post (comments) are Typst values, not TOML. Set `entry = "site.typ"` under `[build]` and pass them to `render-site` in `site.typ`; the template's `site.typ` shows both.
+Extra `<head>` markup (analytics) and content under every post (comments) are Typst values, not TOML. Set `entry = "site.typ"` under `[build]` and pass them to `render-site` in a `site.typ` of your own; [the demo's `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/site.typ) shows both.
 
 ## Documentation
 
