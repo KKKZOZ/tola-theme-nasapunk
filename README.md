@@ -211,7 +211,7 @@ The theme publishes [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic
 
 ```toml
 [modules.cjk]
-tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz", sha256 = "070b620d8e30bd492784757bc7917dde0ecf7bd8873b8ea3db3990eb5589c5f7" }
+tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz" }
 
 [modules.nasapunk.options]
 cjk-font = "Sarasa Gothic SC"

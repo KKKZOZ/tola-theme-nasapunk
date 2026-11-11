@@ -1,7 +1,8 @@
 #!/bin/sh
 # Publishes Sarasa Gothic SC as the font module release `sarasa-<version>`
 # when this repository has no release for that version yet, then points
-# README.md, README.zh-CN.md and tola-module.toml at the new archive.
+# README.md, README.zh-CN.md and tola-module.toml at the new archive. The
+# archive's SHA-256 goes in the release notes.
 # Older releases stay, so sites that pinned one keep building.
 #
 #   cjk/release.sh            # the newest upstream version
@@ -46,7 +47,6 @@ The fonts are under the SIL Open Font License 1.1 (fonts/OFL-SarasaGothic.txt). 
 for file in README.md README.zh-CN.md cjk/tola-module.toml; do
   perl -pi -e '
     s{releases/download/sarasa-[0-9.]+/nasapunk-cjk\.tar\.gz}{releases/download/'"$tag"'/nasapunk-cjk.tar.gz}g;
-    s{(nasapunk-cjk\.tar\.gz", sha256 = ")[0-9a-f]{64}}{${1}'"$sha"'}g;
   ' "$file"
 done
 echo "$version"
