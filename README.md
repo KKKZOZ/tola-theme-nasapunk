@@ -122,6 +122,8 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 
 > [!IMPORTANT]
 > This is the `preview` branch, for [Tola 0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) and newer. Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
+>
+> The 0.8.2-pre.2 binaries were replaced after release with a build that adds module fonts and `tola init` from Git, which the steps below need. If `tola init --help` does not list `--branch`, you have the earlier build; reinstall it: `mise uninstall tola@0.8.2-pre.2 && mise install tola@0.8.2-pre.2`.
 
 You need Tola 0.8.2-pre.2 or newer and Node.js (for the search index). Install Tola with [mise](https://mise.jdx.dev) (`mise use -g tola@0.8.2-pre.2`), or download a binary from its [release page](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2).
 
@@ -130,28 +132,35 @@ You need Tola 0.8.2-pre.2 or newer and Node.js (for the search index). Install T
 Your blog's repository holds only your own files: posts, `tola.toml` and a few support files. Tola fetches the theme from Git, so updating it never touches your posts and never needs a merge.
 
 ```sh
-# 1. Create an empty site; the theme brings its own site program
-tola init my-blog
+tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
+  --branch preview --subdir theme --alias nasapunk \
+  -- --title "My Blog" --author "Your Name"
 cd my-blog
-rm site.typ
-
-# 2. The fonts Typst draws figures and preview images in
-curl -L https://github.com/KKKZOZ/tola-theme-nasapunk/archive/refs/heads/preview.tar.gz \
-  | tar xz --strip-components=1 tola-theme-nasapunk-preview/typst-fonts
-
-# 3. Pagefind, for search
-npm install --save-dev pagefind
-echo "node_modules/" >> .gitignore
+npm install
+tola dev
 ```
 
-Replace `tola.toml` with:
+Open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
+
+The theme's initializer writes a ready site:
+
+| File | What it is |
+| --- | --- |
+| `tola.toml` | Your site's settings, with the theme fetched from Git and its fonts selected |
+| `tola.lock` | The theme commit your builds use |
+| `content/posts/hello.typ`, `content/about.typ` | A first post and an about page |
+| `package.json` | Pagefind, which builds the search index |
+| `.gitignore` | Build output, caches and `node_modules/` |
+
+The flags after `--` are optional: `--title`, `--author`, `--description` and `--language` (for example `zh`) fill in `[site]`, and you can change them in `tola.toml` later. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
+
+To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
+
+To use the theme in a site you already have, add to its `tola.toml`:
 
 ```toml
 [site]
 title = "My Blog"
-authors = [{ name = "Your Name" }]
-description = "Notes on research and engineering."
-language = "en"
 
 [build]
 entry = { module = "nasapunk" }
@@ -159,39 +168,12 @@ entry = { module = "nasapunk" }
 [modules.nasapunk]
 git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
 
-# The theme's options. All of them, with defaults and notes:
-# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml
-[modules.nasapunk.options]
-doc-prefix = "TN"
-
 [typst.fonts]
-paths = ["typst-fonts"]
+modules = ["nasapunk"]
 system = true
 ```
 
-Write a first post as `content/posts/hello.typ`, and an about page as `content/about.typ`:
-
-```typst
-#import "@tola/source:0.0.0": tola-meta
-#import "@tola-modules/nasapunk:0.0.0": callout
-
-#tola-meta((title: "Hello", date: "2026-11-10", summary: "The first post.", tags: ("notes",)))
-
-= First section
-
-#callout(kind: "info")[Written with NASApunk.]
-```
-
-```typst
-#import "@tola/source:0.0.0": tola-meta
-#tola-meta((title: "About"))
-
-About this blog.
-```
-
-Run `tola dev` and open <http://127.0.0.1:5277>. `tola dev` rebuilds on save; `tola build` writes the finished site, search index included, to `public/`.
-
-To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. For images in posts, publish a folder of your own with `[assets] trees = [{ source = "assets", url-prefix = "/assets" }]` and link them as `/assets/…`. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
+Then delete the site's own `site.typ`, run `npm install --save-dev pagefind` for search, and import components in posts from `@tola-modules/nasapunk:0.0.0`.
 
 ### Start from the demo site
 
@@ -226,7 +208,7 @@ The [live demo](https://kkkzoz.github.io/tola-theme-nasapunk/) doubles as a tuto
 
 ## Fonts
 
-Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts from `typst-fonts/`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
+Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts, which ship with the theme in `theme/typst-fonts/` and are selected by `[typst.fonts] modules = ["nasapunk"]`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
 
 > [!NOTE]
 > For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` under `[modules.nasapunk.options]` in `tola.toml`, and figures and the preview image use it too.
@@ -237,7 +219,7 @@ Built on [Tola](https://github.com/tola-rs/tola-ssg) and [Typst](https://typst.a
 
 ## License
 
-The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `theme/assets/webfonts/` and `typst-fonts/`.
+The theme is released under the [MIT License](LICENSE). The bundled fonts are under the SIL Open Font License 1.1; their license texts are in `theme/assets/webfonts/` and `theme/typst-fonts/`.
 
 ## Star History
 

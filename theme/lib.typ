@@ -44,6 +44,10 @@
 ///   ("posts/x/index.html"), `permalink` (its path), `url` (its absolute
 ///   address, `none` without an origin) and `meta` (its tola-meta fields).
 #let render-site(head-extra: none, post-footer-extra: none) = {
+  assert(
+    site.title != "",
+    message: "NASApunk needs a site title: set `title` under `[site]` in tola.toml",
+  )
   set text(
     lang: site.language.lang,
     script: site.language.script,
