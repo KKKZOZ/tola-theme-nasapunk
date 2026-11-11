@@ -122,19 +122,14 @@
 
 > [!IMPORTANT]
 > 这是 `preview` 分支，适用于 [Tola 0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题现在位于 `theme/` 目录，并在 `tola.toml` 中配置。Tola 0.8.0 和 0.8.1 请使用 `main` 分支。
->
-> 0.8.2-pre.2 发布后替换过一次二进制，新版本加入了模块字体和从 Git 运行 `tola init`，下面的步骤依赖这两项。如果 `tola init --help` 里没有 `--branch`，说明你装的是早先的版本，请重新安装：`mise uninstall tola@0.8.2-pre.2 && mise install tola@0.8.2-pre.2`。
 
 需要 Tola 0.8.2-pre.2 或更新版本，以及 Node.js（用于生成搜索索引）。可以用 [mise](https://mise.jdx.dev) 安装 Tola（`mise use -g tola@0.8.2-pre.2`），也可以从它的 [release 页面](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2)下载预编译版本。
 
 ### 作为模块安装（推荐）
 
-博客仓库里只放你自己的文件：文章、`tola.toml` 和几个辅助文件。主题由 Tola 从 Git 拉取，所以更新主题不会动到你的文章，也不需要合并代码。
-
 ```sh
 tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
-  --branch preview --subdir theme --alias nasapunk \
-  -- --title "My Blog" --author "Your Name"
+  --branch preview --subdir theme --alias nasapunk
 cd my-blog
 npm install
 tola dev
@@ -152,7 +147,7 @@ tola dev
 | `package.json` | Pagefind，用于生成搜索索引 |
 | `.gitignore` | 构建输出、缓存和 `node_modules/` |
 
-`--` 之后的参数都可以省略：`--title`、`--author`、`--description` 和 `--language`（例如 `zh`）用来填写 `[site]`，之后也可以在 `tola.toml` 里修改。主题选项写在 `[modules.nasapunk.options]` 下，全部选项及其默认值和说明见 [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml)。第一次构建会把主题用到的 Typst 包写入 `tola.lock`，构建之后提交它。
+站点标题、作者、简介和语言在 `tola.toml` 的 `[site]` 中填写。主题选项写在 `[modules.nasapunk.options]` 下，全部选项及其默认值和说明见 [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml)。第一次构建会把主题用到的 Typst 包写入 `tola.lock`，构建之后提交它。
 
 更新主题时，运行 `tola update nasapunk`，然后提交变化了的 `tola.lock`。锁文件把主题固定在某个提交上，所以在你主动更新之前，任何机器上的每次构建都使用同一个版本的主题。[演示站点](https://kkkzoz.github.io/tola-theme-nasapunk/)展示了每个组件及其源码。
 

@@ -122,19 +122,14 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 
 > [!IMPORTANT]
 > This is the `preview` branch, for [Tola 0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) and newer. Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
->
-> The 0.8.2-pre.2 binaries were replaced after release with a build that adds module fonts and `tola init` from Git, which the steps below need. If `tola init --help` does not list `--branch`, you have the earlier build; reinstall it: `mise uninstall tola@0.8.2-pre.2 && mise install tola@0.8.2-pre.2`.
 
 You need Tola 0.8.2-pre.2 or newer and Node.js (for the search index). Install Tola with [mise](https://mise.jdx.dev) (`mise use -g tola@0.8.2-pre.2`), or download a binary from its [release page](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2).
 
 ### Install as a module (recommended)
 
-Your blog's repository holds only your own files: posts, `tola.toml` and a few support files. Tola fetches the theme from Git, so updating it never touches your posts and never needs a merge.
-
 ```sh
 tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
-  --branch preview --subdir theme --alias nasapunk \
-  -- --title "My Blog" --author "Your Name"
+  --branch preview --subdir theme --alias nasapunk
 cd my-blog
 npm install
 tola dev
@@ -152,7 +147,7 @@ The theme's initializer writes a ready site:
 | `package.json` | Pagefind, which builds the search index |
 | `.gitignore` | Build output, caches and `node_modules/` |
 
-The flags after `--` are optional: `--title`, `--author`, `--description` and `--language` (for example `zh`) fill in `[site]`, and you can change them in `tola.toml` later. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
+Set your site's title, author, description and language under `[site]` in `tola.toml`. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
 
 To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
 
