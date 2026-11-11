@@ -203,14 +203,28 @@ tola dev
 
 ## 字体
 
-正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。Typst 绘制的插图和预览图使用同样的两套字体，它们随主题放在 `theme/typst-fonts/` 中，由 `[typst.fonts] modules = ["nasapunk"]` 选用，因此在任何构建机器上效果都一致。中日韩文字在页面和插图中都回退到系统字体。
+正文使用 IBM Plex Mono，标题使用 Rajdhani，均为自托管。Typst 绘制的插图和预览图使用同样的两套字体，它们随主题放在 `theme/typst-fonts/` 中，由 `[typst.fonts] modules = ["nasapunk"]` 选用，因此在任何构建机器上效果都一致。中日韩文字回退到系统字体：页面中总是如此，插图中则可以加入下面的字体模块。
 
-> [!NOTE]
-> 中文推荐使用[更纱黑体](https://github.com/be5invis/Sarasa-Gothic/releases)（Sarasa Gothic SC）。在构建机器上安装后，在 `tola.toml` 的 `[modules.nasapunk.options]` 中设置 `cjk-font = "Sarasa Gothic SC"`，插图和预览图也会使用它。
+### 插图中的中文
+
+主题把[更纱黑体](https://github.com/be5invis/Sarasa-Gothic)（Sarasa Gothic SC）发布成了一个字体模块，包含常规、斜体、粗体和粗斜体。在 `tola.toml` 中加入以下内容（`[typst.fonts]` 的 `modules` 一行改成同时包含两个模块）：
+
+```toml
+[modules.cjk]
+tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz", sha256 = "31fdadf3ab3c10c8e926bcbb68a91ca051ed83b3c719e7a3af0c92a64af57af1" }
+
+[modules.nasapunk.options]
+cjk-font = "Sarasa Gothic SC"
+
+[typst.fonts]
+modules = ["nasapunk", "cjk"]
+```
+
+第一次构建时会下载一次（约 32 MB），并由 `tola.lock` 锁定。之后插图、图表和预览图里的中文在任何构建机器上（包括 CI）都用更纱黑体绘制。网页正文不受影响，浏览器用读者电脑上的中文字体显示。也可以用构建机器上已安装的字体，只需把 `cjk-font` 设为它的名字。
 
 ## 致谢
 
-基于 [Tola](https://github.com/tola-rs/tola-ssg) 和 [Typst](https://typst.app) 构建。插图使用 [CeTZ](https://github.com/cetz-package/cetz)，搜索使用 [Pagefind](https://pagefind.app)。字体：[IBM Plex Mono](https://github.com/IBM/plex) 与 [Rajdhani](https://github.com/itfoundry/rajdhani)。
+基于 [Tola](https://github.com/tola-rs/tola-ssg) 和 [Typst](https://typst.app) 构建。插图使用 [CeTZ](https://github.com/cetz-package/cetz)，搜索使用 [Pagefind](https://pagefind.app)。字体：[IBM Plex Mono](https://github.com/IBM/plex)、[Rajdhani](https://github.com/itfoundry/rajdhani) 与[更纱黑体](https://github.com/be5invis/Sarasa-Gothic)。
 
 ## 许可证
 

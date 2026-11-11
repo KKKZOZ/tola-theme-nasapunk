@@ -9,3 +9,5 @@ node_modules/
 
 .claude
 .agents
+# cjk/pack.sh output
+nasapunk-cjk.tar.gz

@@ -1,0 +1,42 @@
+# Keeps the CJK font module (cjk/) on the newest Sarasa Gothic release: when
+# upstream has a version this repository has not published yet, it publishes
+# the release `sarasa-<version>` and commits the README's new address and
+# checksum. Otherwise it does nothing.
+name: CJK fonts
+
+on:
+  push:
+    branches: [main, preview]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cjk-fonts
+
+jobs:
+  release:
+    name: Sarasa Gothic release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install a .7z reader
+        run: command -v bsdtar || command -v 7z || command -v 7zz || { sudo apt-get update -q && sudo apt-get install -y --no-install-recommends libarchive-tools; }
+
+      - name: Publish the newest Sarasa Gothic
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "version=$(cjk/release.sh)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit the new address
+        if: steps.release.outputs.version != ''
+        run: |
+          git diff --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: Sarasa Gothic ${{ steps.release.outputs.version }} font module"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin HEAD:"$GITHUB_REF_NAME"

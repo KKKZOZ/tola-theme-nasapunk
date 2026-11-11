@@ -203,14 +203,28 @@ The [live demo](https://kkkzoz.github.io/tola-theme-nasapunk/) doubles as a tuto
 
 ## Fonts
 
-Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts, which ship with the theme in `theme/typst-fonts/` and are selected by `[typst.fonts] modules = ["nasapunk"]`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font, in pages and in figures.
+Body text is IBM Plex Mono and headings are Rajdhani, both self-hosted. Figures and the preview image drawn by Typst use the same two fonts, which ship with the theme in `theme/typst-fonts/` and are selected by `[typst.fonts] modules = ["nasapunk"]`, so they look the same on every build machine. Chinese, Japanese and Korean text falls back to the system font: in pages always, in figures unless you add the font module below.
 
-> [!NOTE]
-> For Chinese text, the theme recommends [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic/releases) (更纱黑体). Install it on the build machine and set `cjk-font = "Sarasa Gothic SC"` under `[modules.nasapunk.options]` in `tola.toml`, and figures and the preview image use it too.
+### Chinese text in figures
+
+The theme publishes [Sarasa Gothic SC](https://github.com/be5invis/Sarasa-Gothic) (更纱黑体) as a font module: Regular, Italic, Bold and Bold Italic. Add it to `tola.toml`, extending the `modules` line under `[typst.fonts]`:
+
+```toml
+[modules.cjk]
+tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz", sha256 = "31fdadf3ab3c10c8e926bcbb68a91ca051ed83b3c719e7a3af0c92a64af57af1" }
+
+[modules.nasapunk.options]
+cjk-font = "Sarasa Gothic SC"
+
+[typst.fonts]
+modules = ["nasapunk", "cjk"]
+```
+
+The first build downloads it once (about 32 MB) and `tola.lock` pins it. Figures, diagrams and preview images then draw Chinese text in Sarasa Gothic on every build machine, including CI. Page text is not affected: browsers show it in the reader's own Chinese font. A font installed on the build machine works too: set only `cjk-font` to its name.
 
 ## Acknowledgements
 
-Built on [Tola](https://github.com/tola-rs/tola-ssg) and [Typst](https://typst.app). Figures use [CeTZ](https://github.com/cetz-package/cetz); search uses [Pagefind](https://pagefind.app). Fonts: [IBM Plex Mono](https://github.com/IBM/plex) and [Rajdhani](https://github.com/itfoundry/rajdhani).
+Built on [Tola](https://github.com/tola-rs/tola-ssg) and [Typst](https://typst.app). Figures use [CeTZ](https://github.com/cetz-package/cetz); search uses [Pagefind](https://pagefind.app). Fonts: [IBM Plex Mono](https://github.com/IBM/plex), [Rajdhani](https://github.com/itfoundry/rajdhani) and [Sarasa Gothic](https://github.com/be5invis/Sarasa-Gothic).
 
 ## License
 

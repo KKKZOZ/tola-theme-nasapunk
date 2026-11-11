@@ -1,0 +1,18 @@
+# Sarasa Gothic SC (更纱黑体) for the Typst compiler, as a Tola module: CJK
+# text in figures, diagrams and preview images. The fonts are not in this
+# repository; pack.sh builds nasapunk-cjk.tar.gz for the GitHub release
+# `sarasa-<version>`.
+#
+# A site adds:
+#
+#   [modules.cjk]
+#   tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz" }
+#
+#   [modules.nasapunk.options]
+#   cjk-font = "Sarasa Gothic SC"
+#
+#   [typst.fonts]
+#   modules = ["nasapunk", "cjk"]
+
+[typst]
+fonts = ["fonts"]
