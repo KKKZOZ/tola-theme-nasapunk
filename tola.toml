@@ -49,10 +49,11 @@ social-links = [
 
 # tola help "[typst.fonts]"
 # Compiler fonts for SVG frames (math, cetz) and the preview image: IBM Plex
-# Mono and Rajdhani ship in typst-fonts/. System fonts stay on for CJK text,
-# which no bundled font covers (`cjk-font` option).
+# Mono and Rajdhani ship with the theme (theme/typst-fonts/). System fonts
+# stay on for CJK text, which no bundled font covers (`cjk-font` option).
 [typst.fonts]
-paths = ["typst-fonts"]
+paths = []
+modules = ["nasapunk"]
 system = true
 
 # tola help "[assets]"

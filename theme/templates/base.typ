@@ -11,7 +11,7 @@
 #import "/templates/data.typ": draft-index
 #import "/templates/latex.typ": probe, to-latex
 
-// Rajdhani and IBM Plex Mono come from typst-fonts/; CJK text uses
+// Rajdhani and IBM Plex Mono come from typst-fonts/ (`[typst] fonts`); CJK text uses
 // the `cjk-font` option (config.typ), else any system font that has the glyphs.
 #let cjk = if cjk-font == none { () } else { (cjk-font,) }
 #let title-font = ("Rajdhani",) + cjk

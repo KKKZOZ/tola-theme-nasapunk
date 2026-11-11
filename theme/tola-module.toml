@@ -15,9 +15,18 @@
 
 [typst]
 entry = "lib.typ"
+# Compiler fonts for SVG frames (math, cetz) and the preview image. A site
+# selects them with `[typst.fonts] modules = ["nasapunk"]`.
+fonts = ["typst-fonts"]
 
 [build]
 entry = "site.typ"
+
+# Creates a new site that uses this theme (tools/init.nu):
+#   tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
+#     --branch preview --subdir theme --alias nasapunk
+[init]
+nu = "tools/init.nu"
 
 [options]
 # Prefix of post document numbers: TN-001, TN-002, ... Use your initials
