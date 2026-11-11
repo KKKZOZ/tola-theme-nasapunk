@@ -319,21 +319,32 @@ def locate [cs: list<string>, breaks: list<int>, page: list] {
 
 def spaces [width: int] { "" | fill --width $width }
 
+# The colors of Tola's own diagnostics: blue for the frame, yellow for what a
+# warning points at. Tola keeps them in a note when it draws in color and
+# drops them otherwise (NO_COLOR, a pipe, the log).
+const BORDER = (ansi blue)
+const MARK = (ansi yellow)
+const RESET = (ansi reset)
+
 # The source line at `at`, framed and underlined like a compiler's.
 def frame [file: string, cs: list<string>, breaks: list<int>, at: record, issues: string] {
   let line_start = ($breaks | where $it < $at.start | last 1 | get -o 0 | default (-1)) + 1
   let line_end = $breaks | where $it >= $at.start | get -o 0 | default ($cs | length)
   let line = ($breaks | where $it < $at.start | length) + 1
   let col = $at.start - $line_start
-  let text = $cs | slice $line_start..<$line_end | str join | str replace --regex '\r$' '' | str replace --all "\t" " "
+  let text = $cs | slice $line_start..<$line_end | str join | str replace --regex '\r$' '' | str replace --all "\t" " " | split chars
   let width = [1 (([$at.end $line_end] | math min) - $at.start)] | math max
+  let before = $text | first $col | str join
+  let marked = $text | skip $col | first $width | str join
+  let after = $text | skip ($col + $width) | str join
   let pad = spaces ($line | into string | str length)
+  let carets = "" | fill --character '^' --width $width
   [
-    $"($pad) ┌─ ($file):($line):($col + 1)"
-    $"($pad) │"
-    $"($line) │ ($text)"
-    $"($pad) │ (spaces $col)("" | fill --character '^' --width $width) no LaTeX for ($issues)"
-    $"($pad) │"
+    $"($pad) ($BORDER)┌─($RESET) ($file):($line):($col + 1)"
+    $"($pad) ($BORDER)│($RESET)"
+    $"($BORDER)($line) │($RESET) ($before)($MARK)($marked)($RESET)($after)"
+    $"($pad) ($BORDER)│($RESET) (spaces $col)($MARK)($carets) no LaTeX for ($issues)($RESET)"
+    $"($pad) ($BORDER)│($RESET)"
   ]
 }
 
@@ -373,11 +384,12 @@ def main [] {
       # Without a source position: the page, and the text before the formula.
       let lines = if $at != null { frame $path $cs $breaks $at $f.issues } else {
         let shown = if $path == null { "" } else { " (" + $path + ")" }
+        let before = $f.before | split chars | last 60 | str join
         [
-          (" ┌─ " + $url + $shown)
-          " │"
-          (" │ …" + ($f.before | split chars | last 60 | str join) + " ⟨formula⟩ no LaTeX for " + $f.issues)
-          " │"
+          $" ($BORDER)┌─($RESET) ($url)($shown)"
+          $" ($BORDER)│($RESET)"
+          $" ($BORDER)│($RESET) …($before) ($MARK)⟨formula⟩ no LaTeX for ($f.issues)($RESET)"
+          $" ($BORDER)│($RESET)"
         ]
       }
       $issues = $issues | append (diagnostic issue "formula cannot copy as LaTeX"
