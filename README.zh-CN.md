@@ -211,7 +211,7 @@ tola dev
 
 ```toml
 [modules.cjk]
-tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz", sha256 = "31fdadf3ab3c10c8e926bcbb68a91ca051ed83b3c719e7a3af0c92a64af57af1" }
+tarball = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk/releases/download/sarasa-1.0.43/nasapunk-cjk.tar.gz", sha256 = "070b620d8e30bd492784757bc7917dde0ecf7bd8873b8ea3db3990eb5589c5f7" }
 
 [modules.nasapunk.options]
 cjk-font = "Sarasa Gothic SC"
