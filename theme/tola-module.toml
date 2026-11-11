@@ -81,8 +81,7 @@ search = true
 search-language = ""
 
 # Under `tola dev`, list formulas that cannot copy as LaTeX, compiler style
-# (the `math-check` hook below). Runs only where Node.js is installed;
-# elsewhere, and in `tola build`, it is skipped.
+# (the `math-check` hook below). `tola build` skips it.
 math-check = true
 
 # Header navigation: label and output file. A page written as
@@ -127,4 +126,3 @@ name = "math-check"
 nu = "scripts/math-check.nu"
 enabled-by = "math-check"
 dev = "run"
-rerun-on = { include = ["scripts/math-check.mjs"] }
