@@ -85,7 +85,6 @@ const IGNORE = r#'
 /.public-swap/
 /.tola/
 /.tola-build.lock
-/node_modules/
 .DS_Store
 '#
 
@@ -111,18 +110,11 @@ def main [
   let hello = $HELLO | str trim --left
     | str replace --all "{name}" $name
     | str replace --all "{today}" (date now | format date "%Y-%m-%d")
-  let package = {
-    private: true
-    description: "Pagefind indexes the built site for /search/."
-    scripts: {build: "tola build", dev: "tola dev"}
-    devDependencies: {pagefind: "1.5.2"}
-  }
 
   mkdir ($out | path join "content" "posts")
   $config | save --raw ($out | path join "tola.toml")
   $hello | save --raw ($out | path join "content" "posts" "hello.typ")
   $ABOUT | str trim --left | save --raw ($out | path join "content" "about.typ")
-  ($package | to json --indent 2) + (char nl) | save --raw ($out | path join "package.json")
   $IGNORE | str trim --left | save --raw ($out | path join ".gitignore")
   $IGNORE | str trim --left | save --raw ($out | path join ".ignore")
 }

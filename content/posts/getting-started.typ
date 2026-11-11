@@ -12,12 +12,13 @@
 
 = Requirements
 
-- #link("https://github.com/tola-rs/tola-ssg")[Tola] 0.8.2 or newer.
-- Node.js, for the #link("https://pagefind.app")[Pagefind] search index. Run
-  `npm install` once in the site directory.
+- #link("https://github.com/tola-rs/tola-ssg")[Tola], newer than 0.8.2-pre.2.
+
+Nothing else: the first build downloads
+#link("https://pagefind.app")[Pagefind], which builds the search index, into
+`.tola/`.
 
 ```sh
-npm install
 tola dev       # live reload, search index skipped
 tola build     # writes public/, search index included
 ```

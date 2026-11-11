@@ -1,5 +1,6 @@
-// `npm test`: runs the cases in tests/latex.typ, which check the LaTeX a
-// copied formula carries (templates/latex.typ), and lists the ones that fail.
+// `node theme/tests/test-latex.mjs`: runs the cases in tests/latex.typ,
+// which check the LaTeX a copied formula carries (templates/latex.typ), and
+// lists the ones that fail.
 // Needs the Typst CLI, the version the supported Tola release builds with.
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";

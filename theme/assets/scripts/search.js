@@ -1,5 +1,5 @@
-// Site search on /search/, backed by the Pagefind index that `npm run build`
-// writes to /pagefind/ after the Tola build. The query lives in ?q= so
+// Site search on /search/, backed by the Pagefind index that the theme's
+// `search` hook (scripts/search.nu) writes to /pagefind/ in `tola build`. The query lives in ?q= so
 // searches can be linked.
 const input = document.getElementById("search-input");
 const status = document.getElementById("search-status");
@@ -34,7 +34,7 @@ const main = async () => {
     await pagefind.options({ excerptLength: 28 });
     pagefind.init();
   } catch {
-    status.textContent = "No carrier: search index not built (npm run build)";
+    status.textContent = "No carrier: search index not built (tola build)";
     input.disabled = true;
     return;
   }

@@ -1,5 +1,5 @@
 // Cases for templates/latex.typ, the LaTeX a copied formula carries. Run
-// with `npm test` (tests/test-latex.mjs), which needs the Typst CLI.
+// with `node theme/tests/test-latex.mjs`, which needs the Typst CLI.
 //
 // Each case is a formula, as Typst source or as LaTeX given to MiTeX's own
 // `mi` (what a post gets when it imports @preview/mitex instead of

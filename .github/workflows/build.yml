@@ -16,9 +16,11 @@ permissions:
 
 env:
   # Oldest supported Tola release; keep it in step with the README badges.
-  # The theme is a Tola module, which 0.8.2 introduced; pre-releases from
-  # this one on are tested too.
-  MIN_TOLA: 0.8.2-pre.2
+  # The search hook downloads Pagefind with Nu's `http get`, which works from
+  # the release after 0.8.2-pre.2 on (tola-rs/tola-ssg#107); pre-releases
+  # count too. Until one ships, no release qualifies and Tola main is the
+  # check.
+  MIN_TOLA: 0.8.2-pre.3
 
 jobs:
   versions:
@@ -45,12 +47,12 @@ jobs:
               | jq -R -s -c 'split("\n") | map(select(. != ""))'
           )
           echo "Supported releases: $versions"
-          [ "$versions" != "[]" ]
           echo "versions=$versions" >> "$GITHUB_OUTPUT"
 
   release:
     name: Tola ${{ matrix.version }}
     needs: versions
+    if: needs.versions.outputs.versions != '[]'
     runs-on: ubuntu-latest
     strategy:
       # Report every release, not only the first one that breaks.
@@ -59,14 +61,6 @@ jobs:
         version: ${{ fromJSON(needs.versions.outputs.versions) }}
     steps:
       - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install Pagefind
-        run: npm ci
 
       - uses: ./.github/actions/install-tola
         with:
@@ -77,10 +71,12 @@ jobs:
 
   main:
     name: Tola main
+    needs: versions
     runs-on: ubuntu-latest
-    # Upstream main may break between releases; report it without failing
-    # the workflow.
-    continue-on-error: true
+    # Upstream main may break between releases; once a release supports the
+    # theme, report it without failing the workflow. Until then it is the only
+    # build, and it must pass.
+    continue-on-error: ${{ needs.versions.outputs.versions != '[]' }}
     env:
       # A quicker release build than Tola's own (thin LTO, one codegen unit);
       # the binary only builds this small site.
@@ -88,14 +84,6 @@ jobs:
       CARGO_PROFILE_RELEASE_CODEGEN_UNITS: "16"
     steps:
       - uses: actions/checkout@v5
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Install Pagefind
-        run: npm ci
 
       # Outside the site, so the build never sees Tola's sources.
       - name: Clone Tola main
@@ -147,4 +135,4 @@ jobs:
         with:
           typst-version: 0.15.1
 
-      - run: npm test
+      - run: node theme/tests/test-latex.mjs

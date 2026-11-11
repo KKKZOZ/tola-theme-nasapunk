@@ -72,7 +72,7 @@ code-theme = "auto"
 code-dark-theme = "github-dark"
 
 # Full-text search with Pagefind (/search/ and the `search` hook below).
-# Needs Node.js and `npm install pagefind` in the site.
+# The first build downloads Pagefind (about 50 MB) into .tola/.
 search = true
 
 # Pagefind detects each page's language from its `lang`. An ISO 639-1 code,
@@ -81,7 +81,8 @@ search = true
 search-language = ""
 
 # Under `tola dev`, list formulas that cannot copy as LaTeX, compiler style
-# (the `math-check` hook below). Needs Node.js.
+# (the `math-check` hook below). Runs only where Node.js is installed;
+# elsewhere, and in `tola build`, it is skipped.
 math-check = true
 
 # Header navigation: label and output file. A page written as
@@ -107,16 +108,15 @@ social-links = [
 [assets]
 trees = [{ source = "assets", url-prefix = "/" }]
 
-# Pagefind indexes the compiled pages for /search/. `tola dev` skips it, so
-# saves reload without waiting for the index; `tola preview`, `tola check`
-# and `tola build` run it. Pagefind is resolved from the site's own
-# node_modules.
+# Pagefind indexes the compiled pages for /search/ (scripts/search.nu, run
+# by the Nushell built into Tola). `tola dev` skips it, so saves reload
+# without waiting for the index; `tola preview`, `tola check` and `tola
+# build` run it.
 [[hooks.generate-outputs]]
 name = "search"
-argv = ["node", "{module}/scripts/search-index.mjs"]
+nu = "scripts/search.nu"
 enabled-by = "search"
 dev = "skip"
-rerun-on = { include = ["scripts/search-index.mjs", { project = "package.json" }, { project = "package-lock.json" }] }
 outputs = [{ tree = "pagefind" }]
 
 # Lists formulas that cannot copy as LaTeX while `tola dev` runs. Tola shows
@@ -124,7 +124,7 @@ outputs = [{ tree = "pagefind" }]
 # formulas on purpose opts out with a line `// math-check: ignore`.
 [[hooks.after-publish]]
 name = "math-check"
-argv = ["node", "{module}/scripts/math-check.mjs"]
+nu = "scripts/math-check.nu"
 enabled-by = "math-check"
 dev = "run"
 rerun-on = { include = ["scripts/math-check.mjs"] }
