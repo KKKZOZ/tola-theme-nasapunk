@@ -1,23 +1,12 @@
 # The `search` build hook (tola-module.toml): Pagefind indexes the compiled
-# pages for /search/. Pagefind's standalone binary is downloaded once per
-# version and platform into the hook's cache (.tola/hooks/...) and checked
-# against the digests below, so a site needs neither Node.js nor npm.
+# pages for /search/. Each run looks up Pagefind's latest release; its
+# standalone binary is downloaded once per version and platform into the
+# hook's cache (.tola/hooks/...), checked against the SHA-256 the release
+# publishes beside it, so a site needs neither Node.js nor npm.
 
 use tola [diagnostic get-hook get-module]
 
-const VERSION = "1.5.2"
-
-# SHA-256 of pagefind_extended-v<VERSION>-<target>.tar.gz, from the
-# release's .sha256 files. The extended build segments Chinese and Japanese.
-const DIGESTS = {
-  aarch64-apple-darwin: "99c4b882c81c3c0f046ef85d188daeb8f6f4b598344e885cca7224c7670faec4"
-  x86_64-apple-darwin: "35239dfab0bd319d4344c0a4fb0f9228481bab52241021fd2e5f1b2b2b8ce42d"
-  aarch64-unknown-linux-musl: "3f667f37fb6c03006212cea2a28cd26c0b47eb797c1113cad716dfff712ff19d"
-  x86_64-unknown-linux-musl: "aeb135927856e7a49816cf2c9c2e53167f87afa1f61f7288b7d66c234a950d38"
-  aarch64-pc-windows-msvc: "4fd44a27ecc7ac517e1293e8d9e31073d1cf16d457f3126c31374c69e836df43"
-  x86_64-pc-windows-msvc: "7ba298054764dfb3c5b982a1eb92607bea8ecaec20a923fc8a4dfd68272ae8a2"
-  x86_64-unknown-freebsd: "7baf3d83b5c82922dc2759f1f2fd44d4911987b78dc6d576b91a8438441e6f86"
-}
+const REPO = "https://github.com/Pagefind/pagefind"
 
 # Report one error and stop: Tola fails the build with the message.
 def fail [message: string, ...notes: string] {
@@ -27,6 +16,25 @@ def fail [message: string, ...notes: string] {
   exit 1
 }
 
+# The version of Pagefind's latest release, read from where GitHub's
+# /releases/latest redirects to (no API call, so no rate limit).
+def latest [] {
+  let url = $"($REPO)/releases/latest"
+  let response = try { http get --full --redirect-mode manual $url } catch {|err|
+    fail "Could not look up Pagefind's latest release." $url $err.msg
+  }
+  let location = $response.headers.response
+    | where ($it.name | str lowercase) == "location"
+    | get -o 0.value
+    | default ""
+  let version = $location | parse --regex '/releases/tag/v(?<version>[^/]+)$' | get -o 0.version
+  if $version == null {
+    fail "Could not look up Pagefind's latest release." $url $"GitHub answered ($response.status) without a release tag."
+  }
+  $version
+}
+
+# Pagefind's name for this platform, e.g. aarch64-apple-darwin.
 def target [] {
   let os = $nu.os-info
   let system = match $os.name {
@@ -34,30 +42,44 @@ def target [] {
     "linux" => "unknown-linux-musl"
     "windows" => "pc-windows-msvc"
     "freebsd" => "unknown-freebsd"
-    _ => ""
+    _ => { fail $"Pagefind has no binary for ($os.name)." }
   }
-  let target = $"($os.arch)-($system)"
-  if $target not-in $DIGESTS {
-    fail $"Pagefind has no binary for ($os.name) on ($os.arch)."
-  }
-  $target
+  $"($os.arch)-($system)"
 }
 
-# The Pagefind binary, downloaded into the cache on first use.
+# Fetch a release file; a missing one means Pagefind has no build for this
+# platform.
+def fetch [url: string, version: string] {
+  let response = try { http get --raw --full --allow-errors $url } catch {|err|
+    fail $"Could not download Pagefind ($version)." $url $err.msg
+  }
+  if $response.status == 404 {
+    fail $"Pagefind ($version) has no binary for ($nu.os-info.name) on ($nu.os-info.arch)." $url
+  }
+  if $response.status != 200 {
+    fail $"Could not download Pagefind ($version)." $url $"GitHub answered ($response.status)."
+  }
+  $response.body
+}
+
+# The binary of Pagefind's latest release, downloaded into the cache when
+# that version is not there yet. Older versions are removed from the cache.
 def pagefind [hook: record] {
+  let version = latest
   let target = target
   let exe = if $nu.os-info.name == "windows" { "pagefind_extended.exe" } else { "pagefind_extended" }
-  let dir = $hook.cache-dir | path join $"pagefind-($VERSION)-($target)"
+  let dir = $hook.cache-dir | path join $"pagefind-($version)-($target)"
   let binary = $dir | path join $exe
   if ($binary | path exists) { return $binary }
 
-  let name = $"pagefind_extended-v($VERSION)-($target).tar.gz"
-  let url = $"https://github.com/CloudCannon/pagefind/releases/download/v($VERSION)/($name)"
+  # The extended build segments Chinese and Japanese.
+  let name = $"pagefind_extended-v($version)-($target).tar.gz"
+  let url = $"($REPO)/releases/download/v($version)/($name)"
+  # "<sha256>  <file name>"
+  let expected = fetch $"($url).sha256" $version | decode utf-8 | str trim | split row --regex '\s+' | first
   let file = $hook.temp-dir | path join $name
-  try { http get --raw $url | save --raw $file } catch {|err|
-    fail $"Could not download Pagefind ($VERSION)." $url $err.msg
-  }
-  if (open --raw $file | hash sha256) != ($DIGESTS | get $target) {
+  fetch $url $version | save --raw $file
+  if (open --raw $file | hash sha256) != $expected {
     fail $"The downloaded Pagefind archive does not match its SHA-256." $url
   }
 
@@ -69,6 +91,9 @@ def pagefind [hook: record] {
   if $untar.exit_code != 0 {
     fail "Could not unpack the Pagefind archive with tar." ($untar.stderr | str trim)
   }
+  ls $hook.cache-dir
+  | where type == dir and ($it.name | path basename) =~ '^pagefind-'
+  | each {|old| rm --recursive $old.name }
   mv $unpacked $dir
   $binary
 }
