@@ -164,7 +164,10 @@
   let tag = "h" + str(calc.min(it.level + 1, 6))
   let id = with-suffix(slug, n)
   html.elem(tag, attrs: (id: id), {
-    if it.level <= toc-depth { html.span(class: "heading-num", heading-num(it.level, it.location())) }
+    // Kept out of search excerpts, where it would run into the title ("02Blocks").
+    if it.level <= toc-depth {
+      html.elem("span", attrs: (class: "heading-num", data-pagefind-ignore: ""), heading-num(it.level, it.location()))
+    }
     it.body
     // Revealed on hover; copy.js copies the section URL on click.
     html.elem("a", attrs: (class: "heading-anchor", href: "#" + id, aria-label: "Copy link to this section", data-pagefind-ignore: ""), "#")
@@ -236,10 +239,6 @@
       // Fixed reading-progress bar at the top of the viewport (reading.js).
       html.div(class: "read-progress", role: "presentation")
       html.header(class: "post-head", {
-        html.div(class: "post-meta", {
-          label(class: "accent")[Post / #fmt-date(m.date)]
-          label(layout.author)
-        })
         html.elem("h1", attrs: (class: "post-title", data-pagefind-meta: "title"), m.title)
         if m.summary != none { html.p(class: "post-summary", m.summary) }
         layout.tag-list(m.tags)

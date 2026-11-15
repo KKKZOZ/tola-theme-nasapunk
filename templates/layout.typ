@@ -104,9 +104,10 @@
 #let preload-fonts = ("ibm-plex-mono-latin-400-normal.woff2", "rajdhani-latin-700-normal.woff2")
 
 /// Narrowest window, in CSS pixels, where a post's table of contents floats
-/// beside the column: the column, then on each side the 48px gap, the 220px
-/// TOC (assets/styles/toc-float.css) and 12px to spare.
-#let toc-float-at = content-width + 2 * (48 + 220 + 12)
+/// beside the column: the column, then on each side a 32px gap, the TOC at
+/// its narrowest, 200px, and 8px to spare. Wider windows give the gap and the
+/// TOC more room (assets/styles/toc-float.css).
+#let toc-float-at = content-width + 2 * (32 + 200 + 8)
 
 /// The preview image social.typ draws for the site (`social-image: auto`).
 #let social-output = "social.png"
