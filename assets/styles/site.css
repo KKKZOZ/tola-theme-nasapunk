@@ -153,6 +153,23 @@ main { flex: 1; width: 100%; }
   cursor: pointer;
 }
 :root:not([data-theme]) .theme-toggle { display: none; }
+
+/* The search shortcut as a keycap (palette.js): a click opens the palette.
+   Hidden without scripts, on touch screens, which have no such key, and in
+   a narrow window, where it would take a row of its own. */
+.palette-mark {
+  margin: 0 0 1px;
+  padding: 1px 5px;
+  background: none;
+  border: .5px solid var(--rule);
+  border-bottom-width: 1.5px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.palette-mark:hover { color: var(--orange); border-color: var(--orange); }
+:root:not([data-theme]) .palette-mark { display: none; }
+@media (hover: none), (max-width: 600px) { .palette-mark { display: none; } }
 .theme-toggle::before {
   content: "";
   width: 12px;
@@ -717,6 +734,54 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .search-excerpt { margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: var(--muted); }
 .search-excerpt mark { background: var(--tint); color: var(--emphasis); }
 
+/* Keyboard palette (palette.js): search, ">" commands, "@" sections. */
+.palette {
+  top: 14vh;
+  width: min(580px, calc(100vw - 32px));
+  max-height: 72vh;
+  margin: 0 auto;
+  padding: 0;
+  border: .5px solid var(--rule);
+  border-top: 2px solid var(--orange);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 40px var(--shadow);
+  overflow: hidden;
+}
+.palette[open] { display: flex; flex-direction: column; }
+.palette::backdrop { background: color-mix(in srgb, var(--bar) 40%, transparent); }
+.palette .search-bar { flex: none; }
+.palette .search-bar input:focus-visible { outline: 0; }
+.palette-status { flex: none; padding: 12px 14px; }
+.palette-list { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: 0; }
+.palette-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 14px 8px 11px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.palette-list li + li { border-top: .5px solid var(--rule); }
+.palette-list li[aria-selected="true"] { border-left-color: var(--orange); background: var(--pre-bg); }
+.palette-list li[aria-selected="true"] .palette-title { color: var(--orange); }
+.palette-body { flex: 1; min-width: 0; }
+.palette-title { font: 600 17px/1.3 var(--font-title); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.palette-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.palette-excerpt mark { background: var(--tint); color: var(--emphasis); }
+.palette-list .label { flex: none; }
+.palette-keys { flex: none; padding: 7px 14px; border-top: .5px solid var(--rule); }
+
 /* ========================================================================== */
 /* Prose                                                                      */
 /* ========================================================================== */
@@ -1116,7 +1181,7 @@ html:has(.zoom[open]) { overflow: hidden; }
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { display: block; min-height: 0; }
 
-  .skip, .site-nav, .read-progress, .toc, .sidenotes, .heading-anchor, .code-head, .post-nav, .post-footer-extra,
+  .skip, .site-nav, .palette, .read-progress, .toc, .sidenotes, .heading-anchor, .code-head, .post-nav, .post-footer-extra,
   .series-nav, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
   .has-readout > .readout-idle:not(.program-foot) { display: none !important; }
   .site-footer { margin-top: 36px; padding-bottom: 0; }

@@ -96,7 +96,7 @@
 // ============================================================================
 
 /// Scripts every page loads, deferred, in this order.
-#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js", "print.js", "math.js")
+#let scripts = ("theme.js", "reading.js", "copy.js", "footnotes.js", "zoom.js", "print.js", "math.js", "palette.js")
 
 /// Web fonts fetched before the stylesheet asks for them: the body text and
 /// the titles, so the first paint is not set in a fallback font that then
@@ -204,6 +204,8 @@
         let active = here == output or (output == "index.html" and here.starts-with("page/"))
         html.a(class: cls("label", if active { "is-active" }), href: output-url(output), name)
       }
+      // Opens the search palette and names its shortcut (assets/scripts/palette.js).
+      html.elem("button", attrs: (type: "button", class: "palette-mark label", aria-label: "Search", title: "Search"), "⌘K")
       // Day / night switch, wired up by assets/scripts/theme.js.
       html.elem("button", attrs: (type: "button", class: "theme-toggle", aria-label: "Dark theme", aria-pressed: "false"))
     })
