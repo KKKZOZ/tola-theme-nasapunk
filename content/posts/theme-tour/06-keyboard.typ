@@ -18,13 +18,16 @@ on this page.
 
 On Windows and Linux, hold `Ctrl` in place of `Cmd`.
 
-#table(
-  columns: 3,
-  table.header[Keys][Opens][Lists],
-  [`Cmd + K`], [Search], [Posts whose text matches, with the passage that matched],
-  [`Cmd + Shift + P`], [Commands], [Pages to go to and things to do on this one],
-  [`Cmd + Shift + O`], [Sections], [The headings of this page, and its figures],
-  [`?`], [Keys], [The shortcuts on this page],
+#figure(
+  table(
+    columns: 3,
+    table.header[Keys][Opens][Lists],
+    [`Cmd + K`], [Search], [Posts whose text matches, with the passage that matched],
+    [`Cmd + Shift + P`], [Commands], [Pages to go to and things to do on this one],
+    [`Cmd + Shift + O`], [Sections], [The headings of this page, and its figures],
+    [`?`], [Keys], [The shortcuts on this page],
+  ),
+  caption: [The four shortcuts that open the palette, and the list each one opens it on.],
 )
 
 The `⌘K` keycap in the header opens the search on a click. It is hidden on
@@ -34,13 +37,16 @@ touch screens, which have no such key, and in narrow windows.
 
 How the query starts picks the list, so any shortcut reaches all of them:
 
-#table(
-  columns: 2,
-  table.header[Starts with][List],
-  [nothing], [Search],
-  [`>`], [Commands],
-  [`@`], [Sections],
-  [`?`], [Keys],
+#figure(
+  table(
+    columns: 2,
+    table.header[Starts with][List],
+    [nothing], [Search],
+    [`>`], [Commands],
+    [`@`], [Sections],
+    [`?`], [Keys],
+  ),
+  caption: [The first character of the query picks the list: no prefix searches the site, `>` runs commands, `@` jumps to sections.],
 )
 
 Open the search, type `>`, and the commands appear. Delete it and the search
@@ -48,14 +54,17 @@ is back.
 
 = Inside the palette
 
-#table(
-  columns: 2,
-  table.header[Key][Does],
-  [`↑` `↓`], [Move through the list],
-  [`Enter`], [Open the entry, or run the command],
-  [`Cmd + Enter`], [Open the entry in a new tab],
-  [`Esc`], [Close the palette. So does a click outside it, or the shortcut that
-    opened it.],
+#figure(
+  table(
+    columns: 2,
+    table.header[Key][Does],
+    [`↑` `↓`], [Move through the list],
+    [`Enter`], [Open the entry, or run the command],
+    [`Cmd + Enter`], [Open the entry in a new tab],
+    [`Esc`], [Close the palette. So does a click outside it, or the shortcut that
+      opened it.],
+  ),
+  caption: [Keys inside the open palette.],
 )
 
 = The lists
@@ -97,14 +106,17 @@ the series pages, the list holds the years, tags and series instead.
 These work on their own, with no palette open and the cursor outside a text
 box.
 
-#table(
-  columns: 2,
-  table.header[Key][Does],
-  [`j` `k`], [Move to the next or previous post of a list: the home page, the
-    archive, a tag, a series, search results. `Enter` opens it.],
-  [`[` `]`], [Go to the previous or next post; on the home page, the previous
-    or next page of the list.],
-  [`?`], [List the keys],
+#figure(
+  table(
+    columns: 2,
+    table.header[Key][Does],
+    [`j` `k`], [Move to the next or previous post of a list: the home page, the
+      archive, a tag, a series, search results. `Enter` opens it.],
+    [`[` `]`], [Go to the previous or next post; on the home page, the previous
+      or next page of the list.],
+    [`?`], [List the keys],
+  ),
+  caption: [Single keys that work with no palette open, as long as the cursor is outside a text box.],
 )
 
 = Citing a post

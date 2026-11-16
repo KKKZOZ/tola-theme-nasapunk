@@ -16,10 +16,12 @@
   const mac = /Mac|iPhone|iPad/.test(navigator.platform);
   const LIMIT = 8;
   const MODES = {
-    ">": { prompt: "Command >", placeholder: "go to, switch theme …", empty: "No such command" },
-    "@": { prompt: "Section >", placeholder: "heading or figure on this page …", empty: "No sections match" },
-    "?": { prompt: "Keys >", placeholder: "shortcut …", empty: "No such key" },
-    "": { prompt: "Query >", placeholder: "keywords, 关键词 …", empty: "No signal: nothing matches" },
+    // The prompt is a bare word; a rule drawn in CSS divides it from the
+    // input, so no character in it reads like the `>` prefix.
+    ">": { prompt: "Command", placeholder: "go to, switch theme …", empty: "No such command" },
+    "@": { prompt: "Section", placeholder: "heading or figure on this page …", empty: "No sections match" },
+    "?": { prompt: "Keys", placeholder: "shortcut …", empty: "No such key" },
+    "": { prompt: "Query", placeholder: "keywords, 关键词 …", empty: "No signal: nothing matches" },
   };
 
   const el = (tag, props, ...children) => {

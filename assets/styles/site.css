@@ -587,8 +587,14 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .toc-list a.is-done::before { background: var(--muted); border-color: var(--muted); }
 .toc-list a.is-active::before { background: var(--orange); border-color: var(--orange); }
 
-/* Captioned figures and tables, under the sections. */
+/* Captioned figures and tables, under the sections, folded until clicked. */
 .toc-sub { margin-top: 14px; }
+.toc-sub > summary { display: flex; gap: 8px; align-items: baseline; width: fit-content; cursor: pointer; list-style: none; }
+.toc-sub > summary::-webkit-details-marker { display: none; }
+.toc-sub > summary::before { content: "+"; flex: none; width: 1ch; }
+.toc-sub[open] > summary::before { content: "\2212"; }
+.toc-sub > summary:hover { color: var(--dark-strong); }
+.toc-count { color: var(--muted); }
 .toc-figures { list-style: none; margin: 6px 0 0; padding: 0; }
 .toc-figures li { margin: 0; padding-left: 0; }
 .toc-figures a {
@@ -599,11 +605,13 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
   text-decoration: none;
   font-size: 12px;
   line-height: 1.45;
-  overflow-wrap: anywhere;
   transition: color .15s;
 }
 .toc-figures a:hover { color: var(--ink); }
-.toc-figures .toc-num { min-width: 2ch; font-weight: 400; }
+/* "F17" and "T3" take the same room, so the captions line up. */
+.toc-figures .toc-num { min-width: 3ch; font-weight: 400; }
+/* One line each; the link's title holds the whole caption (post.typ). */
+.toc-cap { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .toc-figures code { font: inherit; }
 /* Where the list links to: a point just above the figure (base.typ). */
 .figure-anchor { height: 0; margin: 0; scroll-margin-top: 24px; }
@@ -760,7 +768,16 @@ a[role="doc-biblioref"]:hover { background: var(--tint); }
   background: var(--bar);
   cursor: text;
 }
-.search-prompt { flex: none; font: 600 13px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--orange); }
+/* A word and a rule, not "Query >": `>` is the palette's command prefix. */
+.search-prompt {
+  flex: none;
+  padding-right: 12px;
+  border-right: 1px solid color-mix(in srgb, var(--orange) 45%, transparent);
+  font: 600 13px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
 .search-bar input {
   flex: 1;
   min-width: 0;
@@ -1233,6 +1250,25 @@ html:has(.zoom[open]) { overflow: hidden; }
 @page { margin: 16mm 14mm; }
 
 @media print {
+  /* The page box. Content in a margin box stands in for the browser's own
+     header and footer (date, URL, title in Times), which then go away.
+     print.js adds the post's number, title and address to these. The paper
+     size is left to the print dialog. */
+  @page {
+    margin: 16mm 22mm 18mm;
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font: 500 8pt/1 "IBM Plex Mono", monospace;
+      letter-spacing: .08em;
+      color: #65716f;
+    }
+  }
+  /* Screen sizes are set in px for a monitor; .8 of them reads at about
+     9.5pt on paper. The column fills the page box, so it lines up with the
+     running header and footer (about 80 characters to a line on A4). */
+  body { zoom: .8; }
+  .wrap { max-width: none; padding-inline: 0; }
+
   :root[data-theme] { color-scheme: light; }
   :root[data-theme] :is(.img, .gallery) img { filter: none; }
   /* Keep the livery, ink bars and callout tints: browsers drop backgrounds. */
@@ -1240,7 +1276,7 @@ html:has(.zoom[open]) { overflow: hidden; }
   body { display: block; min-height: 0; }
 
   .skip, .site-nav, .palette, .read-progress, .toc, .sidenotes, .heading-anchor, .code-head, .cite-copy, .post-nav, .post-footer-extra,
-  .series-nav, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
+  .series-nav, .series-all, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
   .has-readout > .readout-idle:not(.program-foot) { display: none !important; }
   .site-footer { margin-top: 36px; padding-bottom: 0; }
   .post-head { margin-top: 24px; }

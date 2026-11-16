@@ -250,7 +250,7 @@
   // the `search` build hook writes to /pagefind/.
   html.div(class: "search", {
     html.elem("label", attrs: (class: "search-bar", "for": "search-input"), {
-      html.span(class: "search-prompt", aria-hidden: true, "Query >")
+      html.span(class: "search-prompt", aria-hidden: true, "Query")
       html.elem("input", attrs: (
         id: "search-input",
         type: "search",

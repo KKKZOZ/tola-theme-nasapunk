@@ -208,19 +208,25 @@
       }))
     })
     let figures = doc-query(figure).filter(f => f.numbering != none and captioned(f))
-    if figures.len() > 0 {
-      label("Figures / tables", class: "accent toc-sub")
+    // Folded until clicked, so a long list doesn't push the sections aside.
+    if figures.len() > 0 { html.elem("details", attrs: (class: "toc-sub"), {
+      html.elem("summary", attrs: (class: "label accent"), {
+        [Figures / tables]
+        html.span(class: "toc-count", str(figures.len()))
+      })
+      // Captions run long: each entry keeps to one line, cut with an
+      // ellipsis, and the whole caption shows on hover.
       html.ol(class: "toc-figures", for f in figures {
-        html.li(html.a(href: "#" + figure-anchor(f), {
+        html.li(html.a(href: "#" + figure-anchor(f), title: plain-text(f.caption.body), {
           let n = str(f.counter.at(f.location()).first())
           html.span(class: "toc-num", if f.kind == table { "T" } else { "F" } + n)
           // A footnote or link in a caption stays with the caption.
           show html.elem.where(tag: "sup"): none
           show link: it => it.body
-          html.span(f.caption.body)
+          html.span(class: "toc-cap", f.caption.body)
         }))
       })
-    }
+    }) }
   }))
 }
 
