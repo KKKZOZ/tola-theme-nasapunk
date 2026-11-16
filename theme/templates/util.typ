@@ -2,7 +2,8 @@
 // Import: #import "/templates/util.typ": cls, social-tags, theme-asset
 
 #import "@tola/module:0.0.0": get-module
-#import "@tola/web:0.0.0": canonical, open-graph, plain-text, twitter-card
+#import "@tola/document:0.0.0": plain-text
+#import "@tola/head:0.0.0": canonical, open-graph, twitter-card
 
 /// URL of one of the theme's own files, by its path under assets/:
 /// `theme-asset("styles/site.css")`. Published under

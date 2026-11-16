@@ -9,7 +9,7 @@
 Write posts in Typst. Figures, diagrams and math render as inline SVG in the theme colours, by day and by night.
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-%3E0.8.2--pre.2-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2--pre.3-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -121,9 +121,9 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 ## Quick start
 
 > [!IMPORTANT]
-> This is the `preview` branch, for the next Tola release after [0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2). Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
+> This is the `preview` branch, for Tola [0.8.2-pre.3](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.3) and newer. Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
 
-You need a Tola release newer than 0.8.2-pre.2; until one ships, build Tola from its [main branch](https://github.com/tola-rs/tola-ssg). Nothing else: search uses [Pagefind](https://pagefind.app), which the first build downloads into `.tola/` (about 50 MB).
+You need Tola 0.8.2-pre.3 or newer (`mise use tola@0.8.2-pre.3`, or a [release download](https://github.com/tola-rs/tola-ssg/releases)). Nothing else: search uses [Pagefind](https://pagefind.app), which the first build downloads into `.tola/` (about 50 MB).
 
 ### Install as a module (recommended)
 

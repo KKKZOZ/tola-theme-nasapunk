@@ -11,7 +11,7 @@ const REPO = "https://github.com/Pagefind/pagefind"
 # Report one error and stop: Tola fails the build with the message.
 def fail [message: string, ...notes: string] {
   let hint = $"To build without search, set `search = false` under [modules.((get-module).name).options] in tola.toml."
-  [(diagnostic issue $message --severity error --code search --notes $notes --hints [$hint])]
+  [(diagnostic make $message --severity error --code search --notes $notes --hints [$hint])]
   | diagnostic submit
   exit 1
 }

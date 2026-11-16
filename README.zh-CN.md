@@ -9,7 +9,7 @@
 用 Typst 写文章，插图、图表和公式渲染为内联 SVG，跟随主题的日夜配色。
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-%3E0.8.2--pre.2-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2--pre.3-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -121,9 +121,9 @@
 ## 快速开始
 
 > [!IMPORTANT]
-> 这是 `preview` 分支，面向 [0.8.2-pre.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.2) 之后的下一个 Tola 版本。Tola 0.8.2 把主题改成了模块（module），所以主题现在位于 `theme/` 目录，并在 `tola.toml` 中配置。Tola 0.8.0 和 0.8.1 请使用 `main` 分支。
+> 这是 `preview` 分支，面向 Tola [0.8.2-pre.3](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.3) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题现在位于 `theme/` 目录，并在 `tola.toml` 中配置。Tola 0.8.0 和 0.8.1 请使用 `main` 分支。
 
-需要比 0.8.2-pre.2 更新的 Tola 版本；在新版本发布之前，请从 Tola 的 [main 分支](https://github.com/tola-rs/tola-ssg)构建。其他什么都不用装：搜索使用 [Pagefind](https://pagefind.app)，第一次构建时会自动下载到 `.tola/`（约 50 MB）。
+需要 Tola 0.8.2-pre.3 或更新版本（`mise use tola@0.8.2-pre.3`，或从 [Releases](https://github.com/tola-rs/tola-ssg/releases) 下载）。其他什么都不用装：搜索使用 [Pagefind](https://pagefind.app)，第一次构建时会自动下载到 `.tola/`（约 50 MB）。
 
 ### 作为模块安装（推荐）
 

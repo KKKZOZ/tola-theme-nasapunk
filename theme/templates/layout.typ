@@ -6,7 +6,7 @@
 #import "/config.typ": content-width, extras, mission, nav-items, search, social-image, social-links
 #import "/templates/feeds.typ": feed-output, has-feed
 #import "/templates/util.typ": cls, social-tags, theme-asset
-#import "@tola/web:0.0.0": head-metadata
+#import "@tola/head:0.0.0": head-metadata
 #import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/code:0.0.0": code-stylesheet
 #import "@tola/collection:0.0.0": group-by, group-by-keys

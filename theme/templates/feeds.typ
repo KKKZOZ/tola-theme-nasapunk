@@ -5,7 +5,8 @@
 
 #import "@tola/address:0.0.0": output-url
 #import "@tola/site:0.0.0": site
-#import "@tola/web:0.0.0": feed, sitemap
+#import "@tola/feed:0.0.0": feed
+#import "@tola/sitemap:0.0.0": sitemap
 #import "/config.typ": feed-full-text, feed-size
 
 /// The feed's file, relative to the site root.

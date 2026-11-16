@@ -7,7 +7,7 @@
 
 #import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/collection:0.0.0": adjacent
-#import "@tola/document:0.0.0": headings
+#import "@tola/document:0.0.0": headings, plain-text
 #import "/templates/base.typ": doc-query, endnotes
 #import "@tola/site:0.0.0": site
 #import "/config.typ": doc-prefix, extras, social-image, toc-depth
@@ -15,7 +15,6 @@
 #import "/templates/layout.typ" as layout: fmt-date, label, series-href
 #import "/templates/page.typ": html-document
 #import "/templates/social.typ": post-card
-#import "@tola/web:0.0.0": plain-text
 
 // ============================================================================
 // Document control block
@@ -35,7 +34,7 @@
 /// "2026:292": year and day of year, as in mission logs.
 #let gmt-day(d) = if d == none { none } else { str(d.year()) + ":" + pad(d.ordinal(), 3) }
 
-/// The words of a whole post body, for `read-minutes`. Not @tola/web
+/// The words of a whole post body, for `read-minutes`. Not @tola/document
 /// `plain-text`, which is for titles and labels: it warns at every drawing,
 /// formula or `context` that carries no text, and a post has many.
 #let body-text(it) = {

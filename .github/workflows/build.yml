@@ -16,10 +16,10 @@ permissions:
 
 env:
   # Oldest supported Tola release; keep it in step with the README badges.
-  # The search hook downloads Pagefind with Nu's `http get`, which works from
-  # the release after 0.8.2-pre.2 on (tola-rs/tola-ssg#107); pre-releases
-  # count too. Until one ships, no release qualifies and Tola main is the
-  # check.
+  # 0.8.2-pre.3 split @tola/web into @tola/head, @tola/feed and
+  # @tola/sitemap, renamed the hooks' `diagnostic issue` to `diagnostic make`,
+  # and fixed Nu's `http get`, which the search hook downloads Pagefind with
+  # (tola-rs/tola-ssg#107). Pre-releases count too.
   MIN_TOLA: 0.8.2-pre.3
 
 jobs:

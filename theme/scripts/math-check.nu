@@ -392,7 +392,7 @@ def main [] {
           $" ($BORDER)│($RESET)"
         ]
       }
-      $issues = $issues | append (diagnostic issue "formula cannot copy as LaTeX"
+      $issues = $issues | append (diagnostic make "formula cannot copy as LaTeX"
         --severity warning --code math-check
         --notes [($lines | str join "\n") $"it copies as ($PLACEHOLDER)"]
         --hints [$HELP])

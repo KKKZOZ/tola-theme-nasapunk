@@ -12,7 +12,7 @@
 
 = Requirements
 
-- #link("https://github.com/tola-rs/tola-ssg")[Tola], newer than 0.8.2-pre.2.
+- #link("https://github.com/tola-rs/tola-ssg")[Tola], 0.8.2-pre.3 or newer.
 
 Nothing else: the first build downloads
 #link("https://pagefind.app")[Pagefind], which builds the search index, into
