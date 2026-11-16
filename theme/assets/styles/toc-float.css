@@ -7,12 +7,16 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: calc(100% + 48px);
-  width: 220px;
+  /* 32px off the column and 200px wide where the window only just fits it,
+     growing to 48px and 220px (layout.typ `toc-float-at`). */
+  --side: calc((100vw - var(--measure)) / 2);
+  left: calc(100% + clamp(32px, var(--side) - 232px, 48px));
+  width: clamp(200px, var(--side) - 60px, 220px);
   margin: 0;
   padding: 0;
   border: 0;
 }
+.toc-list { columns: auto; }
 .toc-inner {
   position: sticky;
   top: 32px;
@@ -22,3 +26,34 @@
   border-top: 1.5px solid;
   border-image: linear-gradient(90deg, var(--orange) 0 32px, var(--rule) 32px) 1;
 }
+
+/* The same windows have an empty margin on the left. Section numbers hang in
+   it, set large, and each footnote sits beside the line that cites it
+   (assets/scripts/footnotes.js places them); the Notes list stays at the end. */
+.post .prose > h2 { position: relative; }
+.post .prose > h2 > .heading-num {
+  position: absolute;
+  right: calc(100% + 20px);
+  bottom: 4px;
+  margin: 0;
+  font-size: 60px;
+  line-height: .8;
+}
+.sidenotes { display: block; }
+.sidenote {
+  position: absolute;
+  right: calc(100% + 20px);
+  width: clamp(160px, var(--side) - 60px, 200px);
+  --side: calc((100vw - var(--measure)) / 2);
+  padding-top: 5px;
+  border-top: .5px solid var(--rule);
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.sidenote-num { margin-right: .5em; font-weight: 600; color: var(--orange); }
+.sidenote p { display: inline; margin: 0; }
+.sidenote a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--orange); text-underline-offset: 3px; }
+.sidenote code { font: .93em var(--font-mono); background: var(--code-bg); color: var(--blue); padding: .1em .35em; }

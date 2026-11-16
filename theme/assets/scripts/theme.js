@@ -21,6 +21,9 @@
   button?.addEventListener("click", () => {
     const theme = root.dataset.theme === "dark" ? "light" : "dark";
     try { localStorage.setItem("theme", theme); } catch {}
-    apply(theme);
+    // Cross-fade where the browser can, unless the reader asked for less motion.
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (document.startViewTransition && !still) document.startViewTransition(() => apply(theme));
+    else apply(theme);
   });
 })();

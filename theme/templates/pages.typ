@@ -23,6 +23,38 @@
   })
 }
 
+/// Four-cell summary under a listing's title, styled as the post's document
+/// control block: (label, value) pairs.
+#let index-stats(cells, class: "index-stats") = html.elem("dl", attrs: (class: "doc-control " + class), for (key, value) in cells {
+  html.div(class: "doc-cell", {
+    html.elem("dt", attrs: (class: "label"), key)
+    html.elem("dd", value)
+  })
+})
+
+/// Tallest bar, in segments, of the home page's activity strip.
+#let activity-steps = 4
+
+/// Mission status under the home page's hero: the latest document, the
+/// count, the latest date, and posts per month over the twelve months up to
+/// the latest post (so the strip does not go stale between builds).
+#let home-status(posts) = if posts.len() > 0 {
+  let latest = posts.at(0)
+  let month-index(p) = { let d = layout.fmt-date(p.date); int(d.slice(0, 4)) * 12 + int(d.slice(5, 7)) - 1 }
+  let last = month-index(latest)
+  let counts = range(last - 11, last + 1).map(m => posts.filter(p => month-index(p) == m).len())
+  let peak = calc.max(1, ..counts)
+  index-stats(class: "home-status", (
+    ("Latest doc", html.a(href: latest.permalink, doc-number(posts, latest.output))),
+    ("Entries", pad(posts.len(), 3)),
+    ("Latest entry", layout.fmt-date(latest.date)),
+    ("Activity / 12 mo", html.span(class: "spark", role: "img", aria-label: str(counts.sum()) + " posts in the last 12 months", for n in counts {
+      let steps = if n == 0 { 0 } else { calc.max(1, calc.round(n / peak * activity-steps)) }
+      html.span(style: "--steps: " + str(steps))
+    })),
+  ))
+}
+
 /// The home page and its following pages, `posts-per-page` posts each
 /// (an option), by `weight`.
 /// The sort is stable, so equal weights stay newest first; other listings
@@ -33,22 +65,13 @@
   for n in range(1, count + 1) {
     let first = (n - 1) * posts-per-page
     page(home-output(n), if n > 1 { "Page " + str(n) }, posts: posts, {
-      if n == 1 { layout.hero(subtitle: site.description, meta: str(posts.len()) + " posts") }
+      if n == 1 { layout.hero(subtitle: site.description); home-status(posts) }
       html.div(class: "section-label", layout.label(class: "accent")[Recent posts])
       layout.post-list(listed.slice(first, calc.min(listed.len(), first + posts-per-page)), start: listed.len() - first)
       pager(n, count)
     })
   }
 }
-
-/// Four-cell summary under a listing's title, styled as the post's document
-/// control block: (label, value) pairs.
-#let index-stats(cells) = html.elem("dl", attrs: (class: "doc-control index-stats"), for (key, value) in cells {
-  html.div(class: "doc-cell", {
-    html.elem("dt", attrs: (class: "label"), key)
-    html.elem("dd", value)
-  })
-})
 
 /// Segments in the tallest bar of the archive's density chart.
 #let density-steps = 8
@@ -228,7 +251,7 @@
   // the `search` build hook writes to /pagefind/.
   html.div(class: "search", {
     html.elem("label", attrs: (class: "search-bar", "for": "search-input"), {
-      html.span(class: "search-prompt", aria-hidden: true, "Query >")
+      html.span(class: "search-prompt", aria-hidden: true, "Query")
       html.elem("input", attrs: (
         id: "search-input",
         type: "search",

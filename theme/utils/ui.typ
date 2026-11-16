@@ -5,7 +5,7 @@
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
 #import "@tola/site:0.0.0": project-path
-#import "/templates/base.typ": doc-query, palette, term-slug
+#import "/templates/base.typ": cite-mark, doc-query, palette, term-slug
 #import "/config.typ": content-width
 #import "/templates/data.typ": post-index
 #import "/templates/layout.typ": fmt-date, label, spans
@@ -234,6 +234,7 @@
   label(title, class: "accent")
   html.div(class: "related-grid", for t in targets.pos() {
     let p = _find-post(t)
+    cite-mark(p.permalink)
     html.a(class: "related-card", href: p.permalink, {
       label(fmt-date(p.date))
       html.div(class: "related-title", p.title)

@@ -165,6 +165,11 @@ and with other text: #xref("03-cetz-figures", body: [this post]).
 #related("03-cetz-figures", "getting-started")
 ```)
 
+The post at the other end knows. Under its text, "Referenced by" lists every
+post that links to it with `xref`, `related` or a link that starts with `/`,
+by document number. This page has one at its end. Relative links are not
+counted.
+
 = Images
 
 Put files under `assets/images/` and reference them site-absolute. `img`
@@ -175,6 +180,8 @@ they are.
 
 `img` and `gallery` are figures: each is numbered with the page's other
 figures, a caption or not, and a label after it lets the text point at it.
+The figures and tables that have a caption are listed under the table of
+contents, as on this page.
 The label below is cited as `@fig-telemetry`, which renders as
 @fig-telemetry; the link jumps to `#fig-telemetry`. Typst only uses a label
 as the anchor when it is a valid HTML id, so write `<fig-x>` rather than

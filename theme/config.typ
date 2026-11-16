@@ -5,6 +5,7 @@
 // Import: #import "/config.typ": doc-prefix, mission, nav-items, ...
 
 #import "@tola/module:0.0.0": get-module
+#import "@tola/site:0.0.0": project-path
 #import "@tola/schema:0.0.0": array-of, enum-of, parse, schema, union
 
 #let _link = schema((label: str, url: str))
@@ -19,6 +20,7 @@
   feed-full-text: bool,
   social-image: union(enum-of(("auto", "none")), schema((src: str, alt: str))),
   cjk-font: str,
+  bibliography-style: str,
   code-theme: str,
   code-dark-theme: str,
   search: bool,
@@ -79,6 +81,13 @@
 // ============================================================================
 
 #let cjk-font = if _options.cjk-font != "" { _options.cjk-font }
+
+/// A style name Typst knows, or a CSL file of the site: the theme is a
+/// package, so a bare path would name a file in it.
+#let bibliography-style = {
+  let value = _options.bibliography-style
+  if value.ends-with(".csl") { project-path(value.trim("/", at: start)) } else { value }
+}
 #let code-theme = if _options.code-theme == "auto" { auto } else { _options.code-theme }
 #let code-dark-theme = _options.code-dark-theme
 

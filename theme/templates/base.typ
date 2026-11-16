@@ -7,7 +7,7 @@
 // `palette`: the theme's colours by day (templates/colors.typ), for drawings
 // that should match the page; each follows the night theme too.
 #import "/templates/colors.typ": palette
-#import "/config.typ": cjk-font, code-dark-theme, code-theme
+#import "/config.typ": bibliography-style, cjk-font, code-dark-theme, code-theme
 #import "/templates/data.typ": draft-index
 #import "/templates/latex.typ": probe, to-latex
 
@@ -133,6 +133,11 @@
   if slug == fragment { it } else { link(dest.slice(0, at + 1) + slug, it.body) }
 }
 
+/// Records that this page links to the post at `permalink`: the post lists
+/// the posts that do under "Referenced by" (`cited-by` in post.typ). Shows
+/// nothing.
+#let cite-mark(permalink) = context [#metadata((from: current-document().output, to: permalink))<nasapunk-cite>]
+
 #let site-link(it) = {
   let dest = it.dest
   if type(dest) != str or not (dest.starts-with("/") or dest.starts-with("#")) { return it }
@@ -142,6 +147,7 @@
     html.span(class: "draft-link", title: "Draft: not published yet", it.body)
   } else {
     slug-fragment(it)
+    cite-mark(path)
   }
 }
 
@@ -156,6 +162,17 @@
 // it is numbered too; to cite it, write the figure yourself, as
 // `#figure(table(...), caption: [...]) <tab-x>`, since Typst cannot
 // reference a bare table. `#figure(numbering: none, ...)` opts out.
+
+/// "figure" or "table": the word a figure's kind goes by in ids.
+#let figure-word(kind) = if kind == table { "table" } else if kind == raw { "listing" } else { "figure" }
+
+/// Whether a figure has a caption of its own, past its number.
+#let captioned(fig) = fig.caption != none and fig.caption.body not in (none, [], [ ])
+
+/// The id of the anchor set before a numbered, captioned figure, which the
+/// post's list of figures links to (`toc` in post.typ): "figure-2",
+/// "table-1". Needs `context`.
+#let figure-anchor(fig) = figure-word(fig.kind) + "-" + str(fig.counter.at(fig.location()).first())
 
 /// Whether the current position is inside a figure; set by `base`.
 #let in-figure = state("nasapunk-in-figure", false)
@@ -175,12 +192,59 @@
   })
 }
 
+// References are Typst's own: `#bibliography("refs.bib")` at the end of a
+// post and `@key` in its text. The site is one Bundle, and Typst numbers the
+// works of all its bibliographies in one run, so a page's first reference
+// would be "[4]" after a page with three. `base` marks where each page
+// starts and counts the works cited on the pages before it; the citations
+// and the numbers of the list are rewritten without that count.
+
+/// How many works the pages before this one cite; set by `base`.
+#let cite-offset = state("nasapunk-cite-offset", 0)
+
+/// A citation with the page's own number: "[5, p. 12]" as "[2, p. 12]".
+#let local-cite(it) = context {
+  let offset = cite-offset.get()
+  if offset == 0 { return it }
+  show regex("\[\d+"): m => "[" + str(int(m.text.slice(1)) - offset)
+  it
+}
+
 #let base(body) = {
   show link: site-link
 
+  // Where this page starts, for `cite-offset`.
+  [#metadata(none)<nasapunk-page>]
+  context {
+    let (count, keys) = (0, ())
+    for it in query(selector(cite).or(<nasapunk-page>).before(current-document().location)) {
+      if it.func() == metadata { count += keys.dedup().len(); keys = () } else { keys.push(str(it.key)) }
+    }
+    cite-offset.update(count + keys.dedup().len())
+  }
+  show cite: local-cite
+  set bibliography(title: none, style: bibliography-style)
+  show bibliography: it => html.elem("section", attrs: (class: "endnotes references"), {
+    html.div(class: "label accent", "References")
+    context {
+      let offset = cite-offset.get()
+      // A work's number is a text of its own: "[4]", never part of a title.
+      show regex("^\[\d+\]$"): m => if offset == 0 { m } else { "[" + str(int(m.text.slice(1, -1)) - offset) + "]" }
+      it
+    }
+  })
+
   // Figures and tables are numbered by default (see `figure-caption`).
   set figure(caption: [])
-  show figure: it => { in-figure.update(true); it; in-figure.update(false) }
+  show figure: it => {
+    // The figure's own id is its label, which most have none of.
+    if it.numbering != none and captioned(it) {
+      context if target() == "html" { html.div(class: "figure-anchor", id: figure-anchor(it)) }
+    }
+    in-figure.update(true)
+    it
+    in-figure.update(false)
+  }
   show table: it => context if in-figure.get() { it } else { figure(it) }
   // Tables carry their caption above, as is usual for tables.
   show figure.where(kind: table): set figure.caption(position: top)

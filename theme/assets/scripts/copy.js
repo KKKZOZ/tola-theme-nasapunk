@@ -1,5 +1,5 @@
-// Copy buttons on code blocks, click-to-copy heading anchors, and LaTeX
-// for formulas in a copied selection.
+// Copy buttons on code blocks, click-to-copy heading anchors, a post's
+// citation, and LaTeX for formulas in a copied selection.
 // Idempotent: safe to run more than once on the same page.
 (() => {
   const copy = async (text) => {
@@ -38,6 +38,49 @@
       copy(btn.closest(".code-block").querySelector("pre").innerText);
       flash(btn, "Copied");
     });
+  }
+
+  // A post as a citation: one line of text, or BibTeX. The "Cite" button
+  // beside the document number copies the line; the palette (palette.js)
+  // asks for either with a "nasapunk:cite" event.
+  const citation = (format) => {
+    const post = document.querySelector("article.post[data-date]");
+    if (!post) return null;
+    const { author = "", doc, date } = post.dataset;
+    const title = post.querySelector(".post-title")?.textContent.trim() ?? document.title;
+    const url = location.href.split(/[?#]/)[0];
+    if (format !== "bibtex") {
+      return [author && author + ".", `“${title}.”`, (doc ? doc + ", " : "") + date + ".", url].filter(Boolean).join(" ");
+    }
+    // A numbered post is a report of the site; one without, a web page.
+    const tex = (s) => s.replace(/[&%$#_{}]/g, "\\$&");
+    const site = document.querySelector(".brand-title")?.textContent.trim();
+    const key = (doc ?? url.replace(/\/$/, "").split("/").pop()).toLowerCase().replace(/[^a-z0-9]/g, "");
+    const fields = [
+      ["author", tex(author)],
+      ["title", `{${tex(title)}}`],
+      ...(doc ? [["institution", tex(site ?? "")], ["number", tex(doc)]] : []),
+      ["year", date.slice(0, 4)],
+      ["month", String(Number(date.slice(5, 7)))],
+      ["url", url],
+    ].filter(([, v]) => v);
+    return `@${doc ? "techreport" : "misc"}{${key},\n${fields.map(([k, v]) => `  ${k} = {${v}}`).join(",\n")}\n}`;
+  };
+  const citeButton = document.querySelector(".cite-copy");
+  if (!document._citeBound) {
+    document._citeBound = true;
+    document.addEventListener("nasapunk:cite", (e) => {
+      const text = citation(e.detail);
+      if (!text) return;
+      copy(text);
+      const button = document.querySelector(".cite-copy");
+      if (button) flash(button, "Copied");
+    });
+  }
+  if (citeButton && !citeButton.dataset.bound) {
+    citeButton.dataset.bound = "1";
+    citeButton.hidden = false;
+    citeButton.addEventListener("click", () => document.dispatchEvent(new CustomEvent("nasapunk:cite", { detail: "text" })));
   }
 
   // Formulas render as SVG, which has no text to copy: a selection that

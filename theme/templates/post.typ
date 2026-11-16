@@ -8,7 +8,7 @@
 #import "@tola/address:0.0.0": asset-url, output-url, slugify
 #import "@tola/collection:0.0.0": adjacent
 #import "@tola/document:0.0.0": headings, plain-text
-#import "/templates/base.typ": doc-query, endnotes
+#import "/templates/base.typ": captioned, doc-query, endnotes, figure-anchor
 #import "@tola/site:0.0.0": site
 #import "/config.typ": doc-prefix, extras, social-image, toc-depth
 #import "/templates/data.typ": series-parts
@@ -20,7 +20,8 @@
 // Document control block
 // ============================================================================
 // The NASA tech-report cover table under the post title: document number,
-// date, GMT day-of-year and estimated reading time.
+// date, GMT day-of-year and estimated reading time. The "Cite" button beside
+// the number copies a citation (assets/scripts/copy.js).
 
 #let pad(n, width) = "0" * calc.max(0, width - str(n).len()) + str(n)
 
@@ -57,8 +58,17 @@
 
 #let doc-control(m, body, posts, output) = html.elem("dl", attrs: (class: "doc-control"), {
   // (label, value, Pagefind metadata key for search results)
+  let doc = doc-number(posts, output)
   let cells = (
-    ("Doc no.", doc-number(posts, output), "doc"),
+    (
+      "Doc no.",
+      if doc != none {
+        html.elem("span", attrs: (data-pagefind-meta: "doc"), doc)
+        // Hidden until copy.js wires it up.
+        html.elem("button", attrs: (type: "button", class: "cite-copy", hidden: "", aria-label: "Copy citation"), "Cite")
+      },
+      none,
+    ),
     ("Date", fmt-date(m.date), "date"),
     ..if m.updated != none { (("Revised", fmt-date(m.updated), none),) },
     ("GMT day", gmt-day(m.date), none),
@@ -163,7 +173,10 @@
   let tag = "h" + str(calc.min(it.level + 1, 6))
   let id = with-suffix(slug, n)
   html.elem(tag, attrs: (id: id), {
-    if it.level <= toc-depth { html.span(class: "heading-num", heading-num(it.level, it.location())) }
+    // Kept out of search excerpts, where it would run into the title ("02Blocks").
+    if it.level <= toc-depth {
+      html.elem("span", attrs: (class: "heading-num", data-pagefind-ignore: ""), heading-num(it.level, it.location()))
+    }
     it.body
     // Revealed on hover; copy.js copies the section URL on click.
     html.elem("a", attrs: (class: "heading-anchor", href: "#" + id, aria-label: "Copy link to this section", data-pagefind-ignore: ""), "#")
@@ -171,6 +184,7 @@
 }
 
 /// Floating on wide screens, a box above the text on narrow ones (see CSS).
+/// The figures and tables with a caption are listed under the sections.
 #let toc() = context {
   let seen = (:)
   let entries = ()
@@ -192,7 +206,54 @@
         html.span(h.body)
       }))
     })
+    let figures = doc-query(figure).filter(f => f.numbering != none and captioned(f))
+    // Folded until clicked, so a long list doesn't push the sections aside.
+    if figures.len() > 0 { html.elem("details", attrs: (class: "toc-sub"), {
+      html.elem("summary", attrs: (class: "label accent"), {
+        [Figures / tables]
+        html.span(class: "toc-count", str(figures.len()))
+      })
+      // Captions run long: each entry keeps to one line, cut with an
+      // ellipsis, and the whole caption shows on hover.
+      html.ol(class: "toc-figures", for f in figures {
+        html.li(html.a(href: "#" + figure-anchor(f), title: plain-text(f.caption.body), {
+          let n = str(f.counter.at(f.location()).first())
+          html.span(class: "toc-num", if f.kind == table { "T" } else { "F" } + n)
+          // A footnote or link in a caption stays with the caption.
+          show html.elem.where(tag: "sup"): none
+          show link: it => it.body
+          html.span(class: "toc-cap", f.caption.body)
+        }))
+      })
+    }) }
   }))
+}
+
+// ============================================================================
+// Referenced by
+// ============================================================================
+// Every link from a post's text to another post leaves a mark (`cite-mark`
+// in base.typ): `xref`, `related` and plain links alike. A post lists the
+// posts whose marks point at it, newest first.
+
+#let cited-by(posts, output) = context {
+  let trim(s) = s.split("#").first().trim("/")
+  let me = posts.find(p => p.output == output)
+  if me == none { return }
+  // The site is one Bundle: a bare `query` sees every page.
+  let from = query(<nasapunk-cite>).map(m => m.value).filter(v => trim(v.to) == trim(me.permalink)).map(v => v.from)
+  let citing = posts.filter(p => p.output != output and p.output in from)
+  if citing.len() == 0 { return }
+  html.elem("section", attrs: (class: "cited-by", data-pagefind-ignore: ""), {
+    label("Referenced by", class: "accent")
+    html.ol(for p in citing {
+      html.li(html.a(href: p.permalink, {
+        html.div(class: "label accent", doc-number(posts, p.output))
+        html.div(class: "cited-title", p.title)
+        html.div(class: "label", fmt-date(p.date))
+      }))
+    })
+  })
 }
 
 // ============================================================================
@@ -231,14 +292,13 @@
   let image = post-image(m, page.output)
   html-document(page.output, m.title, description: m.summary, article: article, image: image, posts: posts, {
     show heading: heading-with-id
-    layout.shell(html.article(class: "post", {
+    // The data a citation is made from (copy.js).
+    let cite = (data-author: layout.author, data-doc: doc-number(posts, page.output), data-date: fmt-date(m.date))
+    let cite = cite.pairs().filter(((_, v)) => v != none).to-dict()
+    layout.shell(html.elem("article", attrs: (class: "post", ..cite), {
       // Fixed reading-progress bar at the top of the viewport (reading.js).
       html.div(class: "read-progress", role: "presentation")
       html.header(class: "post-head", {
-        html.div(class: "post-meta", {
-          label(class: "accent")[Post / #fmt-date(m.date)]
-          label(layout.author)
-        })
         html.elem("h1", attrs: (class: "post-title", data-pagefind-meta: "title"), m.title)
         if m.summary != none { html.p(class: "post-summary", m.summary) }
         layout.tag-list(m.tags)
@@ -252,6 +312,7 @@
         // id selects the text for the RSS feed (feeds.typ).
         html.elem("div", attrs: (class: "prose", id: "post-content", data-pagefind-body: ""), { body; endnotes() })
       })
+      cited-by(posts, page.output)
       post-nav(posts, page.output)
       // The `post-footer-extra` slot (`render-site`, lib.typ): comments and
       // the like.

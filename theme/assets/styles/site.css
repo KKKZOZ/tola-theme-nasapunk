@@ -88,6 +88,10 @@ main { flex: 1; width: 100%; }
 
 ::selection { background: var(--tint); color: var(--emphasis); }
 
+/* One focus ring for the keyboard, in place of each browser's own. Controls
+   that show focus another way turn it off below. */
+:focus-visible { outline: 1px solid var(--orange); outline-offset: 2px; }
+
 /* Five stacked livery bands. */
 .rail {
   --stripe: 2px;
@@ -129,7 +133,8 @@ main { flex: 1; width: 100%; }
 .brand-title { font: 700 26px/1.1 var(--font-title); letter-spacing: .01em; }
 
 .site-nav { display: flex; gap: 18px; }
-.site-nav a { text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+/* The top padding only deepens the target: the bar aligns to the bottom. */
+.site-nav a { text-decoration: none; padding: 6px 0 2px; border-bottom: 2px solid transparent; }
 .site-nav a:hover { color: var(--ink); }
 .site-nav a.is-active { color: var(--orange); border-bottom-color: var(--orange); }
 
@@ -139,15 +144,32 @@ main { flex: 1; width: 100%; }
 .theme-toggle {
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  margin: -4px -4px -2px 0;
+  width: 28px;
+  height: 28px;
+  margin: -5px -8px -7px -3px;
   padding: 0;
   background: none;
   border: 0;
   cursor: pointer;
 }
 :root:not([data-theme]) .theme-toggle { display: none; }
+
+/* The search shortcut as a keycap (palette.js): a click opens the palette.
+   Hidden without scripts, on touch screens, which have no such key, and in
+   a narrow window, where it would take a row of its own. */
+.palette-mark {
+  margin: 0 0 1px;
+  padding: 1px 5px;
+  background: none;
+  border: .5px solid var(--rule);
+  border-bottom-width: 1.5px;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.palette-mark:hover { color: var(--orange); border-color: var(--orange); }
+:root:not([data-theme]) .palette-mark { display: none; }
+@media (hover: none), (max-width: 600px) { .palette-mark { display: none; } }
 .theme-toggle::before {
   content: "";
   width: 12px;
@@ -159,7 +181,9 @@ main { flex: 1; width: 100%; }
 }
 :root[data-theme="dark"] .theme-toggle::before { transform: rotate(180deg); }
 .theme-toggle:hover::before { border-color: var(--orange); background-image: linear-gradient(90deg, var(--orange) 50%, transparent 50%); }
-.theme-toggle:focus-visible { outline: 1px solid var(--orange); outline-offset: 2px; }
+
+/* The switch cross-fades the page (theme.js starts the transition). */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .2s; }
 
 .site-footer { margin-top: 72px; padding-bottom: 28px; }
 .footer-rule { display: flex; align-items: center; gap: 4px; }
@@ -183,7 +207,7 @@ main { flex: 1; width: 100%; }
   grid-template-columns: 1fr auto;
   gap: 32px;
   align-items: center;
-  margin: 36px 0 32px;
+  margin: 36px 0 28px;
 }
 .hero-mark svg { display: block; }
 
@@ -204,9 +228,21 @@ main { flex: 1; width: 100%; }
     linear-gradient(var(--reg-c) 0 0) right bottom / 1px var(--reg-l);
   background-repeat: no-repeat;
 }
-.hero-lead { margin: 0; font: 600 clamp(24px, 4.6vw, 32px)/1.25 var(--font-title); color: var(--ink); }
+.hero-lead { margin: 0; text-wrap: balance; font: 600 clamp(24px, 4.6vw, 32px)/1.25 var(--font-title); color: var(--ink); }
 .hero-meta { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
 .hero-meta > * + *::before { content: "/"; margin-right: 10px; color: var(--rule); }
+
+/* Mission status under the hero (pages.typ `home-status`). */
+.doc-control.home-status { margin: 0 0 36px; }
+.home-status .doc-cell:first-child dd { color: var(--orange); }
+/* Posts per month as stacks of 3px segments, like the archive's chart. */
+.spark { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; align-items: end; max-width: 150px; height: calc(1.4 * 14px); }
+.spark > span {
+  height: 16px;
+  background:
+    repeating-linear-gradient(to top, transparent 0 1px, var(--orange) 1px 4px) bottom / 100% calc(var(--steps) * 4px) no-repeat,
+    linear-gradient(var(--rule) 0 0) bottom / 100% 1px no-repeat;
+}
 
 /* 404: loss of signal (content/404.typ). */
 .lost { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; margin: 56px 0 24px; }
@@ -223,7 +259,8 @@ main { flex: 1; width: 100%; }
 .prose > .section-label:first-child { margin-top: 36px; }
 
 .entry-list { list-style: none; margin: 0; padding: 0; }
-.entry-item { border-bottom: .5px solid var(--rule); }
+/* Listings reset the indent prose gives every <li>, to sit on the page edge. */
+.entry-item { padding-left: 0; border-bottom: .5px solid var(--rule); }
 .entry-item > a {
   display: grid;
   grid-template-columns: 44px 1fr;
@@ -232,8 +269,7 @@ main { flex: 1; width: 100%; }
   color: inherit;
   text-decoration: none;
 }
-.entry-code { padding-top: 3px; }
-.entry-title { margin: 2px 0 4px; font: 700 24px/1.2 var(--font-title); transition: color .15s; }
+.entry-title { margin: 2px 0 4px; font: 700 24px/1.2 var(--font-title); text-wrap: balance; transition: color .15s; }
 .entry-item > a:hover .entry-title { color: var(--orange); }
 .entry-summary { margin: 0; color: var(--muted); }
 
@@ -266,7 +302,7 @@ a.tag:hover { color: var(--orange); border-color: var(--orange); }
 .index-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; scroll-margin-top: 24px; }
 .index-heading:target { color: var(--orange); }
 .index-list { list-style: none; margin: 0 0 1.4em; padding: 0; }
-.index-list li { margin: 0; border-bottom: .5px solid var(--rule); }
+.index-list li { margin: 0; padding-left: 0; border-bottom: .5px solid var(--rule); }
 .index-list li::marker { content: none; }
 .index-list a {
   display: grid;
@@ -345,7 +381,6 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 
 /* Tags: telemetry channel index (pages.typ `tags`). */
 .doc-control.index-stats { margin: -12px 0 36px; }
-.index-stats .doc-cell:first-child dd { color: var(--ink); }
 .index-stats .doc-cell:last-child dd { color: var(--orange); overflow: hidden; text-overflow: ellipsis; text-transform: uppercase; }
 
 .channel-grid {
@@ -355,7 +390,7 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
   columns: 3;
   column-gap: 24px;
 }
-.channel-grid li { margin: 0; break-inside: avoid; }
+.channel-grid li { margin: 0; padding-left: 0; break-inside: avoid; }
 /* Each row's baseline is a level meter: segmented orange bar over a hairline,
    its length the tag's share of the busiest tag. */
 .channel {
@@ -402,7 +437,7 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .index-heading-code { flex: none; padding-left: 10px; color: var(--orange); font-weight: 500; }
 .index-heading.is-code .index-heading-title { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .index-heading.is-code > .label { flex: none; }
-:where(.prose) .index-heading-back { flex: none; color: var(--muted); text-decoration: none; }
+:where(.prose) .index-heading-back { flex: none; margin: -6px -8px; padding: 6px 8px; color: var(--muted); text-decoration: none; }
 :where(.prose) .index-heading-back:hover { color: var(--orange); }
 .index-heading.is-code:target { background: var(--bar); color: var(--on-bar); }
 .index-heading.is-code:target .index-heading-code,
@@ -462,8 +497,7 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 /* ========================================================================== */
 
 .post-head { margin: 40px 0 36px; }
-.post-meta { display: flex; justify-content: space-between; gap: 12px; }
-.post-title { margin: 10px 0 0; font: 700 clamp(34px, 6vw, 46px)/1.08 var(--font-title); }
+.post-title { margin: 0; text-wrap: balance; font: 700 clamp(34px, 6vw, 46px)/1.08 var(--font-title); }
 .post-summary { margin: 12px 0 0; font-size: 16px; color: var(--muted); }
 .post-head .rail { margin-top: 24px; }
 
@@ -482,7 +516,26 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .doc-cell:first-child { padding-left: 0; }
 .doc-cell dt { margin-bottom: 2px; }
 .doc-cell dd { margin: 0; font: 500 14px/1.4 var(--font-mono); color: var(--ink); white-space: nowrap; }
-.doc-cell:first-child dd { color: var(--orange); }
+.post-head .doc-cell:first-child dd { color: var(--orange); }
+.doc-cell dd a { color: inherit; text-decoration: none; }
+.doc-cell dd a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* Copies the post's citation (copy.js). */
+.cite-copy {
+  margin-left: 10px;
+  padding: 2px 5px;
+  vertical-align: 1px;
+  font: 500 10px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: none;
+  border: .5px solid var(--hairline);
+  cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.cite-copy:hover { color: var(--orange); border-color: var(--orange); }
+.cite-copy.is-copied { color: var(--success); border-color: var(--success); }
 
 /* Reading progress, fixed at the top edge (reading.js sets the scale). */
 .read-progress {
@@ -533,6 +586,41 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 }
 .toc-list a.is-done::before { background: var(--muted); border-color: var(--muted); }
 .toc-list a.is-active::before { background: var(--orange); border-color: var(--orange); }
+
+/* Captioned figures and tables, under the sections, folded until clicked. */
+.toc-sub { margin-top: 14px; }
+.toc-sub > summary { display: flex; gap: 8px; align-items: baseline; width: fit-content; cursor: pointer; list-style: none; }
+.toc-sub > summary::-webkit-details-marker { display: none; }
+.toc-sub > summary::before { content: "+"; flex: none; width: 1ch; }
+.toc-sub[open] > summary::before { content: "\2212"; }
+.toc-sub > summary:hover { color: var(--dark-strong); }
+.toc-count { color: var(--muted); }
+.toc-figures { list-style: none; margin: 6px 0 0; padding: 0; }
+.toc-figures li { margin: 0; padding-left: 0; }
+.toc-figures a {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0 2px 10px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.45;
+  transition: color .15s;
+}
+.toc-figures a:hover { color: var(--ink); }
+/* "F17" and "T3" take the same room, so the captions line up. */
+.toc-figures .toc-num { min-width: 3ch; font-weight: 400; }
+/* One line each; the link's title holds the whole caption (post.typ). */
+.toc-cap { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.toc-figures code { font: inherit; }
+/* Where the list links to: a point just above the figure (base.typ). */
+.figure-anchor { height: 0; margin: 0; scroll-margin-top: 24px; }
+
+/* The box sets a long list in two columns where it has the width. */
+@media (min-width: 601px) {
+  .toc-list { columns: 2; column-gap: 24px; }
+  .toc-list li { break-inside: avoid; }
+}
 
 /* The floating layout: assets/styles/toc-float.css, loaded once the window
    has room for it (layout.typ). */
@@ -597,6 +685,21 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .endnotes li:target { color: var(--ink); background: var(--tint); }
 .endnotes li > p { margin: 0 0 .4em; }
 .fn-back { margin-left: .4em; color: var(--orange) !important; text-decoration: none !important; }
+
+/* References (base.typ): Typst's bibliography, set like the notes. A
+   citation in the text links to its work, and the work's number back. */
+a[role="doc-biblioref"] { color: var(--orange) !important; text-decoration: none !important; white-space: nowrap; scroll-margin-top: 24px; }
+a[role="doc-biblioref"]:hover { background: var(--tint); }
+.references ul { margin: 8px 0 0; padding: 0; font-size: 13px; line-height: 1.65; color: var(--muted); }
+.references li { position: relative; margin: 0 0 .5em; padding-left: 3.2em; overflow-wrap: anywhere; scroll-margin-top: 24px; }
+.references li:target { color: var(--ink); background: var(--tint); }
+.references em { color: inherit; }
+.references .prefix { position: absolute; left: 0; width: 2.6em; text-align: right; }
+.references .prefix a { font: 500 12px var(--font-mono); color: var(--orange); text-decoration: none; }
+
+/* Notes beside the text (footnotes.js), on windows with a margin for them:
+   assets/styles/toc-float.css shows them. */
+.sidenotes { display: none; }
 
 /* Terms (utils/ui.typ `term`): a dotted underline in the text, a Terms list
    after the notes, each name over its definition. */
@@ -665,7 +768,16 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
   background: var(--bar);
   cursor: text;
 }
-.search-prompt { flex: none; font: 600 13px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--orange); }
+/* A word and a rule, not "Query >": `>` is the palette's command prefix. */
+.search-prompt {
+  flex: none;
+  padding-right: 12px;
+  border-right: 1px solid color-mix(in srgb, var(--orange) 45%, transparent);
+  font: 600 13px/1 var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
 .search-bar input {
   flex: 1;
   min-width: 0;
@@ -681,12 +793,60 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 .search-bar:focus-within { box-shadow: inset 0 -2px 0 var(--orange); }
 .search-status { margin: 10px 0 4px; }
 .search-results { list-style: none; margin: 0; padding: 0; }
-.search-results li { margin: 0; border-bottom: .5px solid var(--rule); }
+.search-results li { margin: 0; padding-left: 0; border-bottom: .5px solid var(--rule); }
 .search-results a { display: grid; grid-template-columns: 96px 1fr; gap: 12px; padding: 14px 0; color: var(--ink); text-decoration: none; }
 .search-results a > .label { padding-top: 4px; }
 .search-results a:hover .index-title { color: var(--orange); }
 .search-excerpt { margin: 4px 0 0; font-size: 13px; line-height: 1.6; color: var(--muted); }
 .search-excerpt mark { background: var(--tint); color: var(--emphasis); }
+
+/* Keyboard palette (palette.js): search, ">" commands, "@" sections. */
+.palette {
+  top: 14vh;
+  width: min(580px, calc(100vw - 32px));
+  max-height: 72vh;
+  margin: 0 auto;
+  padding: 0;
+  border: .5px solid var(--rule);
+  border-top: 2px solid var(--orange);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 40px var(--shadow);
+  overflow: hidden;
+}
+.palette[open] { display: flex; flex-direction: column; }
+.palette::backdrop { background: color-mix(in srgb, var(--bar) 40%, transparent); }
+.palette .search-bar { flex: none; }
+.palette .search-bar input:focus-visible { outline: 0; }
+.palette-status { flex: none; padding: 12px 14px; }
+.palette-list { flex: 1; min-height: 0; overflow-y: auto; list-style: none; margin: 0; padding: 0; }
+.palette-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 14px 8px 11px;
+  border-left: 3px solid transparent;
+  cursor: pointer;
+}
+.palette-list li + li { border-top: .5px solid var(--rule); }
+.palette-list li[aria-selected="true"] { border-left-color: var(--orange); background: var(--pre-bg); }
+.palette-list li[aria-selected="true"] .palette-title { color: var(--orange); }
+.palette-body { flex: 1; min-width: 0; }
+.palette-title { font: 600 17px/1.3 var(--font-title); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.palette-excerpt {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.palette-excerpt mark { background: var(--tint); color: var(--emphasis); }
+.palette-list .label { flex: none; }
+.palette-keys { flex: none; padding: 7px 14px; border-top: .5px solid var(--rule); }
 
 /* ========================================================================== */
 /* Prose                                                                      */
@@ -695,7 +855,7 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 /* :where() keeps prose rules at zero specificity so components override them. */
 
 /* Page text; Typst draws its SVG frames at the matching 12pt (base.typ). */
-.prose { font-size: 16px; }
+.prose { font-size: 16px; text-wrap: pretty; }
 :where(.prose > :first-child) { margin-top: 0; }
 
 :where(.prose) p, :where(.prose) ul, :where(.prose) ol, :where(.prose) blockquote, :where(.prose) table, :where(.prose) pre { margin: 0 0 1.1em; }
@@ -774,13 +934,13 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
   overflow-x: auto;
   padding: 14px 16px;
   background: var(--pre-bg);
-  border-left: 3px solid var(--orange);
+  border-left: 3px solid var(--muted);
   line-height: 1.55;
 }
 :where(.prose) pre code { font-size: 14px; }
 
 /* Code block wrapper (show rule in base.typ): language + copy bar over the pre. */
-:where(.prose) .code-block { margin: 0 0 1.1em; background: var(--pre-bg); border-left: 3px solid var(--orange); }
+:where(.prose) .code-block { margin: 0 0 1.1em; background: var(--pre-bg); border-left: 3px solid var(--muted); }
 :where(.prose) .code-block > pre { margin: 0; padding-top: 4px; border-left: 0; background: none; }
 .code-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; padding: 6px 10px 0 16px; }
 .code-lang { font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
@@ -892,14 +1052,18 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
   justify-content: space-between;
   gap: 10px;
   padding: 5px 11px;
-  background: var(--c);
-  color: var(--paper);
+  /* By day a bar of the colour; at night that would outshine the page, so
+     the bar is a deep tint with the label in the colour. */
+  background: light-dark(var(--c), color-mix(in srgb, var(--c) 26%, var(--paper)));
+  color: light-dark(var(--paper), var(--c));
   font: 700 12px/1.4 var(--font-mono);
   letter-spacing: .08em;
 }
 .callout-head * { color: inherit !important; }
 .callout-body { padding: 12px; font-weight: 500; }
 .callout-body > :last-child { margin-bottom: 0; }
+/* Inline code takes the callout's own colour, not the page's code tint. */
+.callout-body :not(pre) > code { background: color-mix(in srgb, var(--c) 12%, transparent); }
 
 /* `fold`: a hairline panel shut under its title row. A plus marks it
    closed, a minus open; the left edge turns orange while it is open. */
@@ -998,6 +1162,15 @@ figure:has(> .img-bleed) { margin-inline: calc(-1 * clamp(0px, (100vw - var(--me
 html:has(.zoom[open]) { overflow: hidden; }
 
 /* Cross-post links */
+/* "Referenced by" (post.typ `cited-by`): the posts that link to this one. */
+.cited-by { margin-top: 40px; padding-top: 12px; border-top: .5px solid var(--rule); }
+.cited-by ol { list-style: none; margin: 6px 0 0; padding: 0; }
+.cited-by li { margin: 0; padding: 0; }
+.cited-by a { display: flex; align-items: baseline; gap: 14px; padding: 5px 0; color: var(--ink); text-decoration: none; }
+.cited-by a > .label { flex: none; }
+.cited-title { flex: 1; min-width: 0; font: 600 17px/1.3 var(--font-title); transition: color .15s; }
+.cited-by a:hover .cited-title { color: var(--orange); }
+
 .related { margin: 2em 0; }
 .related > .label { margin-bottom: 8px; }
 .related-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
@@ -1020,8 +1193,14 @@ html:has(.zoom[open]) { overflow: hidden; }
 /* ========================================================================== */
 
 @media (max-width: 600px) {
-  .header-bar { flex-direction: column; align-items: flex-start; }
-  .site-nav { flex-wrap: wrap; gap: 8px 16px; }
+  .header-bar { position: relative; flex-direction: column; align-items: flex-start; }
+  .site-nav { flex-wrap: wrap; gap: 4px 16px; }
+  /* The switch sits beside the title, not on a row of its own under the links. */
+  .theme-toggle { position: absolute; top: 20px; right: calc(var(--gutter) - 8px); margin: 0; }
+  .prose { font-size: 15px; }
+  /* The entry number joins the date's line, leaving the row's width to the text. */
+  .entry-item > a { display: block; }
+  .entry-code { float: left; margin-right: 10px; }
   .hero { grid-template-columns: 1fr; margin: 32px 0 28px; }
   .hero-mark { display: none; }
   .lost { grid-template-columns: 1fr; margin-top: 36px; }
@@ -1071,14 +1250,33 @@ html:has(.zoom[open]) { overflow: hidden; }
 @page { margin: 16mm 14mm; }
 
 @media print {
+  /* The page box. Content in a margin box stands in for the browser's own
+     header and footer (date, URL, title in Times), which then go away.
+     print.js adds the post's number, title and address to these. The paper
+     size is left to the print dialog. */
+  @page {
+    margin: 16mm 22mm 18mm;
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font: 500 8pt/1 "IBM Plex Mono", monospace;
+      letter-spacing: .08em;
+      color: #65716f;
+    }
+  }
+  /* Screen sizes are set in px for a monitor; .8 of them reads at about
+     9.5pt on paper. The column fills the page box, so it lines up with the
+     running header and footer (about 80 characters to a line on A4). */
+  body { zoom: .8; }
+  .wrap { max-width: none; padding-inline: 0; }
+
   :root[data-theme] { color-scheme: light; }
   :root[data-theme] :is(.img, .gallery) img { filter: none; }
   /* Keep the livery, ink bars and callout tints: browsers drop backgrounds. */
   html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body { display: block; min-height: 0; }
 
-  .skip, .site-nav, .read-progress, .toc, .heading-anchor, .code-head, .post-nav, .post-footer-extra,
-  .series-nav, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
+  .skip, .site-nav, .palette, .read-progress, .toc, .sidenotes, .heading-anchor, .code-head, .cite-copy, .post-nav, .post-footer-extra,
+  .series-nav, .series-all, .pager, .footer-links, .fn-back, .fn-tip, .latex-tip, .zoom,
   .has-readout > .readout-idle:not(.program-foot) { display: none !important; }
   .site-footer { margin-top: 36px; padding-bottom: 0; }
   .post-head { margin-top: 24px; }

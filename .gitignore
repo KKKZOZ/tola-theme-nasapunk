@@ -11,3 +11,4 @@ node_modules/
 .agents
 # cjk/pack.sh output
 nasapunk-cjk.tar.gz
+mise.toml

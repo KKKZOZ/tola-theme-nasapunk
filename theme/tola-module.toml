@@ -65,6 +65,11 @@ social-image = "auto"
 # glyphs. Pages use the browser's fonts.
 cjk-font = ""
 
+# How references are cited and listed (`#bibliography("refs.bib")` in a
+# post): a numbered style Typst knows, such as "ieee" or "vancouver", or the
+# path of a CSL file in the site, e.g. "styles/my-style.csl".
+bibliography-style = "ieee"
+
 # Syntax colours for code: a name from @tola/code's `code-themes`
 # (`tola help "@tola/code" code-themes`), or "auto" for Typst's own.
 # `code-theme` is the day look, `code-dark-theme` the night one.
