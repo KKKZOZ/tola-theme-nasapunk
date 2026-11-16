@@ -5,12 +5,12 @@
 #tola-meta((
   title: "[Tour 06] Keyboard Palette",
   date: "2026-11-15",
-  summary: "Three shortcuts open one palette: search the site, run a command, or jump to a section.",
+  summary: "Shortcuts for one palette that searches the site, runs a command or jumps to a section, and single keys to move between posts.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
 
-Every page answers three shortcuts, borrowed from code editors. They open the
+Every page answers a few shortcuts, borrowed from code editors. Most open the
 same palette, a box in the middle of the window with a list under it. Try them
 on this page.
 
@@ -23,15 +23,16 @@ On Windows and Linux, hold `Ctrl` in place of `Cmd`.
   table.header[Keys][Opens][Lists],
   [`Cmd + K`], [Search], [Posts whose text matches, with the passage that matched],
   [`Cmd + Shift + P`], [Commands], [Pages to go to and things to do on this one],
-  [`Cmd + Shift + O`], [Sections], [The headings of this page],
+  [`Cmd + Shift + O`], [Sections], [The headings of this page, and its figures],
+  [`?`], [Keys], [The shortcuts on this page],
 )
 
 The `⌘K` keycap in the header opens the search on a click. It is hidden on
 touch screens, which have no such key, and in narrow windows.
 
-= One box, three lists
+= One box, four lists
 
-How the query starts picks the list, so any shortcut reaches all three:
+How the query starts picks the list, so any shortcut reaches all of them:
 
 #table(
   columns: 2,
@@ -39,6 +40,7 @@ How the query starts picks the list, so any shortcut reaches all three:
   [nothing], [Search],
   [`>`], [Commands],
   [`@`], [Sections],
+  [`?`], [Keys],
 )
 
 Open the search, type `>`, and the commands appear. Delete it and the search
@@ -78,16 +80,39 @@ leads to the search page for all of them. On the search page itself,
 - Switch between the day and night themes.
 - Back to top.
 - Copy a link to this page.
-- On a post: the next and previous posts, and print.
+- On a post: the next and previous posts, copy its citation as a line of
+  text or as BibTeX, and print.
 
 Typing narrows the list. Letters match in order, not only side by side:
 `swth` finds "Switch to night theme".
 
 == Sections
 
-On a post, the numbered headings: on this page, `@list` finds "The lists".
-On the archive, the tag and the series pages, the list holds the years, tags
-and series instead.
+On a post, the numbered headings, and the figures and tables that have a
+caption: on this page, `@list` finds "The lists". On the archive, the tag and
+the series pages, the list holds the years, tags and series instead.
+
+= Single keys
+
+These work on their own, with no palette open and the cursor outside a text
+box.
+
+#table(
+  columns: 2,
+  table.header[Key][Does],
+  [`j` `k`], [Move to the next or previous post of a list: the home page, the
+    archive, a tag, a series, search results. `Enter` opens it.],
+  [`[` `]`], [Go to the previous or next post; on the home page, the previous
+    or next page of the list.],
+  [`?`], [List the keys],
+)
+
+= Citing a post
+
+The `Cite` button beside the document number copies the post as one line:
+author, title, number, date and address. The palette has it as a command,
+and a second one that copies BibTeX, where a numbered post is a
+`@techreport` of the site.
 
 = When a shortcut does nothing
 

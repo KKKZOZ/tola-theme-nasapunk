@@ -1,9 +1,10 @@
-// Footnote and term previews: hovering or focusing a note ref or a term
-// (`term` in utils/ui.typ) shows the note or definition in a popover. Touch
+// Footnote, term and reference previews: hovering or focusing a note ref, a
+// term (`term` in utils/ui.typ) or a citation shows the note, definition or
+// work in a popover. Touch
 // screens skip it; the link still leads down to the Notes or Terms section.
 // Idempotent: safe to run more than once on the same page.
 (() => {
-  const refs = [...document.querySelectorAll(":is(.fn-ref a, a.term-ref):not([data-bound])")];
+  const refs = [...document.querySelectorAll(":is(.fn-ref a, a.term-ref, a[role='doc-biblioref']):not([data-bound])")];
   if (!refs.length || matchMedia("(hover: none)").matches) return;
 
   let tip = document.querySelector(".fn-tip");
@@ -22,11 +23,19 @@
     clearTimeout(hideTimer);
     const head = Object.assign(document.createElement("div"), { className: "label accent" });
     const isTerm = a.classList.contains("term-ref");
-    head.textContent = isTerm ? `Term / ${a.textContent}` : `Note ${a.textContent}`;
+    const isWork = a.getAttribute("role") === "doc-biblioref";
     // A term's entry is a <dt> and a <dd>: the popover shows the <dd>'s text.
     const body = (isTerm ? note.querySelector("dd") : note).cloneNode(true);
     body.removeAttribute("id");
     body.querySelector(".fn-back")?.remove();
+    // A work leads with its number, "[2]", which moves to the head.
+    const number = isWork ? body.querySelector(".prefix") : null;
+    number?.remove();
+    head.textContent = isTerm
+      ? `Term / ${a.textContent}`
+      : isWork
+        ? `Reference ${number?.textContent ?? ""}`.trim()
+        : `Note ${a.textContent}`;
     tip.replaceChildren(head, ...body.childNodes);
     tip.hidden = false;
 
@@ -48,7 +57,7 @@
   // shows the container), each footnote is also set beside the line that
   // cites it, moved down past the note or the section number above it.
   const body = document.querySelector(".post-body");
-  const notes = refs.filter((a) => !a.classList.contains("term-ref") && a.closest(".post-body"));
+  const notes = refs.filter((a) => a.matches(".fn-ref a") && a.closest(".post-body"));
   if (body && notes.length) {
     const side = Object.assign(document.createElement("aside"), { className: "sidenotes" });
     side.setAttribute("aria-hidden", "true"); // the Notes section has them

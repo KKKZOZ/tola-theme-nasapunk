@@ -2,9 +2,14 @@
 // as in an editor's quick-open box.
 //   Cmd/Ctrl + K          search the site (Pagefind, as on /search/)
 //   Cmd/Ctrl + Shift + P  ">" commands: go to a page, switch theme, ...
-//   Cmd/Ctrl + Shift + O  "@" sections of this page
+//   Cmd/Ctrl + Shift + O  "@" sections of this page, and its captioned figures
+//   ?                     "?" the keys themselves
 // A shortcut the browser keeps for itself never reaches the page; the other
 // lists are still a prefix away.
+//
+// Single keys, outside the palette and any text box:
+//   j / k   next / previous entry of a list (home, archive, tags, search)
+//   [ / ]   previous / next post, or page of the home list
 (() => {
   // This file is <base>/assets/scripts/palette.js: the site root is two up.
   const root = new URL("../../", document.currentScript.src);
@@ -12,7 +17,8 @@
   const LIMIT = 8;
   const MODES = {
     ">": { prompt: "Command >", placeholder: "go to, switch theme …", empty: "No such command" },
-    "@": { prompt: "Section >", placeholder: "heading on this page …", empty: "No sections match" },
+    "@": { prompt: "Section >", placeholder: "heading or figure on this page …", empty: "No sections match" },
+    "?": { prompt: "Keys >", placeholder: "shortcut …", empty: "No such key" },
     "": { prompt: "Query >", placeholder: "keywords, 关键词 …", empty: "No signal: nothing matches" },
   };
 
@@ -28,7 +34,7 @@
   let pagefind; // promise of the Pagefind module, or of null without an index
   let ticket = 0; // drops search results a newer keystroke has overtaken
 
-  const modeOf = (value) => (value[0] === ">" || value[0] === "@" ? value[0] : "");
+  const modeOf = (value) => (">@?".includes(value[0] ?? " ") ? value[0] : "");
 
   // --------------------------------------------------------------------------
   // Lists
@@ -55,8 +61,17 @@
       .sort((a, b) => a.score - b.score)
       .map((x) => x.item);
 
+  /// Headings, and the figures and tables that have a caption, in page order.
   const sections = () =>
-    [...document.querySelectorAll("main :is(h2, h3, h4, h5, h6)[id]")].map((h) => {
+    [...document.querySelectorAll("main :is(h2, h3, h4, h5, h6)[id], main figure:has(> figcaption > .figure-num)")].map((h) => {
+      if (h.tagName === "FIGURE") {
+        const text = h.querySelector("figcaption").cloneNode(true);
+        const num = text.querySelector(".figure-num");
+        num.remove();
+        const title = text.textContent.replace(/^[\s—]+/, "").trim();
+        if (!title) return null;
+        return { title, hint: num.textContent, run: () => h.scrollIntoView() };
+      }
       const text = h.cloneNode(true);
       // The number of a post section, or the code of a listing one ("CH-01").
       const num = text.querySelector(".heading-num, .index-heading-code")?.textContent ?? "";
@@ -69,7 +84,7 @@
           h.scrollIntoView();
         },
       };
-    });
+    }).filter(Boolean);
 
   const commands = () => {
     const out = [];
@@ -99,8 +114,44 @@
       hint: "Share",
       run: () => navigator.clipboard?.writeText(location.href.split("#")[0]),
     });
-    if (post) out.push({ title: "Print this post", hint: "Share", run: () => setTimeout(() => print(), 50) });
+    if (post) {
+      const cite = (format) => () => document.dispatchEvent(new CustomEvent("nasapunk:cite", { detail: format }));
+      out.push({ title: "Copy citation", hint: "Share", run: cite("text") });
+      out.push({ title: "Copy citation as BibTeX", hint: "Share", run: cite("bibtex") });
+      out.push({ title: "Print this post", hint: "Share", run: () => setTimeout(() => print(), 50) });
+    }
+    out.push({ title: "Keyboard shortcuts …", hint: "?", run: () => reopen("?"), stay: true });
     return out;
+  };
+
+  const mod = mac ? "⌘" : "Ctrl ";
+  const keys = () => [
+    { title: "Search the site", hint: mod + "K", run: () => reopen(""), stay: true },
+    { title: "Commands", hint: mod + (mac ? "⇧P" : "Shift P"), run: () => reopen(">"), stay: true },
+    { title: "Sections and figures of this page", hint: mod + (mac ? "⇧O" : "Shift O"), run: () => reopen("@"), stay: true },
+    { title: "Next / previous entry of a list", hint: "J / K", run: () => step(1) },
+    { title: "Previous / next post or page", hint: "[ / ]", run: () => {} },
+    { title: "This list", hint: "?", run: () => {}, stay: true },
+  ];
+
+  // --------------------------------------------------------------------------
+  // Single keys
+  // --------------------------------------------------------------------------
+
+  /// Move the focus `by` entries along the page's list of posts.
+  const step = (by) => {
+    const links = [...document.querySelectorAll(".entry-item > a, .index-list li > a, .search-results li > a")];
+    if (!links.length) return;
+    const at = links.indexOf(document.activeElement);
+    const next = links[at < 0 ? 0 : Math.min(Math.max(at + by, 0), links.length - 1)];
+    next.focus({ focusVisible: true });
+    next.scrollIntoView({ block: "nearest" });
+  };
+
+  /// Follow the page's link to the previous (-1) or next (1) post or page.
+  const turn = (by) => {
+    const a = document.querySelector(by < 0 ? ".post-nav a.prev, .pager a.prev" : ".post-nav a.next, .pager a.next");
+    if (a) location.href = a.href;
   };
 
   const search = async (query) => {
@@ -165,11 +216,11 @@
     input.placeholder = placeholder;
     const mine = ++ticket;
     if (mode) {
-      const found = filter(mode === ">" ? commands() : sections(), query);
+      const found = filter(mode === ">" ? commands() : mode === "@" ? sections() : keys(), query);
       const none = mode === "@" && !query ? "No sections on this page" : empty;
       return show(found, found.length ? null : none);
     }
-    if (!query) return show([], "Standing by / > commands / @ sections");
+    if (!query) return show([], "Standing by / > commands / @ sections / ? keys");
     // Let a burst of keystrokes settle before asking the index.
     await new Promise((done) => setTimeout(done, 120));
     if (mine !== ticket) return;
@@ -195,7 +246,7 @@
     prompt = el("span", { className: "search-prompt", ariaHidden: "true" });
     input = el("input", { type: "text", autocomplete: "off", spellcheck: false });
     input.setAttribute("role", "combobox");
-    input.setAttribute("aria-label", "Search, or type > for commands, @ for sections");
+    input.setAttribute("aria-label", "Search, or type > for commands, @ for sections, ? for keys");
     input.setAttribute("aria-controls", "palette-list");
     input.setAttribute("aria-expanded", "true");
     list = el("ol", { id: "palette-list", className: "palette-list" });
@@ -243,7 +294,15 @@
   };
 
   document.addEventListener("keydown", (e) => {
-    if ((mac ? !e.metaKey || e.ctrlKey : !e.ctrlKey || e.metaKey) || e.altKey || e.isComposing) return;
+    if (e.isComposing) return;
+    if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+      // Typing belongs to the text box, and to the palette while it is open.
+      if (dialog?.open || e.target.closest?.("input, textarea, select, [contenteditable]")) return;
+      const act = { j: () => step(1), k: () => step(-1), "[": () => turn(-1), "]": () => turn(1), "?": () => toggle("?") }[e.key];
+      if (act) (e.preventDefault(), act());
+      return;
+    }
+    if ((mac ? !e.metaKey || e.ctrlKey : !e.ctrlKey || e.metaKey) || e.altKey) return;
     const key = e.key.toLowerCase();
     const mode = !e.shiftKey && key === "k" ? "" : e.shiftKey && key === "p" ? ">" : e.shiftKey && key === "o" ? "@" : null;
     if (mode === null) return;

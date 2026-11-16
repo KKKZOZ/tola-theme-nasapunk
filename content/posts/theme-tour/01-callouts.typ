@@ -7,7 +7,7 @@
 #tola-meta((
   title: "[Tour 01] In-Article Components",
   date: "2025-03-12",
-  summary: "Part one of a sample series: checklists, callouts, hints, folds, columns, footnotes and terms.",
+  summary: "Part one of a sample series: checklists, callouts, hints, folds, columns, footnotes, terms and references.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
@@ -174,3 +174,27 @@ Each channel of #term(
 )[Measurements a spacecraft sends home: temperatures, voltages, attitude.]
 is plotted against mission time.
 ```)
+
+= References
+
+Typst's own bibliography works as it does on paper. Keep the works in a
+`.bib` file (or a Hayagriva `.yml`) beside the post, cite them with `@key`,
+and end the post with `#bibliography`:
+
+```typst
+Information can be measured @shannon1948, and so can the cost of an
+algorithm @knuth1997[ch. 1].
+
+#bibliography("refs.bib")
+```
+
+Information can be measured @shannon1948, and so can the cost of an
+algorithm @knuth1997[ch. 1]. Hover a citation for the work, or follow it to
+the list under the post; the number there leads back to the first place the
+work was cited. `#cite(<shannon1948>, form: "prose")` names the author in
+the sentence: #cite(<shannon1948>, form: "prose").
+
+The numbers start at 1 on every page. `bibliography-style` in `config.typ`
+picks the style, `"ieee"` unless you change it.
+
+#bibliography("refs.bib")

@@ -83,6 +83,11 @@
 /// themselves use the browser's fonts (assets/styles/site.css).
 #let cjk-font = none
 
+/// How references are cited and listed (`#bibliography("refs.bib")` in a
+/// post): a numbered style Typst knows, such as "ieee" or "vancouver", or the
+/// path of a CSL file.
+#let bibliography-style = "ieee"
+
 /// Syntax colours for code: a name from @tola/code's `code-themes`
 /// (`tola help "@tola/code" code-themes`), or `auto` for Typst's own
 /// colours. `code-theme` is the day look, `code-dark-theme` the night one.
