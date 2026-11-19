@@ -156,25 +156,31 @@
 #let with-suffix(slug, n) = if n <= 1 { slug } else { slug + "-" + str(n) }
 
 /// Section number shared by headings and the ToC, for a heading of `level`
-/// at `loc`. Level 1: "01", "02", ...; level 2: "1.1", "1.2", ...
-/// restarting per section. Needs `context`.
+/// at `loc`. Level 1: "01", "02", ...; level 2: "1.1", "1.2", ...; level 3:
+/// "1.1.1", ...; each restarting under its parent. A post without level-1
+/// headings numbers from level 2: "1", "1.1", ... Needs `context`.
 #let heading-num(level, loc) = {
-  let (n, m) = (0, 0)
+  let counts = (0,) * 6
   // `before` is inclusive, so the count includes this heading.
   for x in doc-query(selector(heading).before(loc)) {
-    if x.level == 1 { n += 1; m = 0 } else if x.level == 2 { m += 1 }
+    let i = calc.min(x.level, 6) - 1
+    counts.at(i) += 1
+    for j in range(i + 1, 6) { counts.at(j) = 0 }
   }
-  if level == 1 { if n < 10 { "0" } + str(n) } else if n > 0 { str(n) + "." + str(m) } else { str(m) }
+  let n = counts.first()
+  if level == 1 { if n < 10 { "0" } + str(n) } else {
+    counts.slice(if n > 0 { 0 } else { 1 }, calc.min(level, 6)).map(str).join(".")
+  }
 }
 
-#let heading-with-id(it) = context {
+#let heading-with-id(it, depth: toc-depth) = context {
   let slug = heading-slug(plain-text(it.body))
   let n = doc-query(selector(heading).before(it.location())).filter(h => heading-slug(plain-text(h.body)) == slug).len()
   let tag = "h" + str(calc.min(it.level + 1, 6))
   let id = with-suffix(slug, n)
   html.elem(tag, attrs: (id: id), {
     // Kept out of search excerpts, where it would run into the title ("02Blocks").
-    if it.level <= toc-depth {
+    if it.level <= depth {
       html.elem("span", attrs: (class: "heading-num", data-pagefind-ignore: ""), heading-num(it.level, it.location()))
     }
     it.body
@@ -185,14 +191,14 @@
 
 /// Floating on wide screens, a box above the text on narrow ones (see CSS).
 /// The figures and tables with a caption are listed under the sections.
-#let toc() = context {
+#let toc(depth: toc-depth) = context {
   let seen = (:)
   let entries = ()
   // @tola/document: this page's headings, `text` being the plain text.
   for h in headings() {
     let slug = heading-slug(h.text)
     seen.insert(slug, seen.at(slug, default: 0) + 1)
-    if h.level <= toc-depth { entries.push((h, with-suffix(slug, seen.at(slug)))) }
+    if h.level <= depth { entries.push((h, with-suffix(slug, seen.at(slug)))) }
   }
   if entries.len() < 2 { return }
   html.aside(class: "toc", html.nav(class: "toc-inner", aria-label: "Table of contents", {
@@ -291,7 +297,7 @@
   }
   let image = post-image(m, page.output)
   html-document(page.output, m.title, description: m.summary, article: article, image: image, posts: posts, {
-    show heading: heading-with-id
+    show heading: heading-with-id.with(depth: m.toc-depth)
     // The data a citation is made from (copy.js).
     let cite = (data-author: layout.author, data-doc: doc-number(posts, page.output), data-date: fmt-date(m.date))
     let cite = cite.pairs().filter(((_, v)) => v != none).to-dict()
@@ -306,7 +312,7 @@
         series-box(if m.series != none { m.series.at(0, default: none) }, posts, page.output)
       })
       html.div(class: "post-body", {
-        toc()
+        toc(depth: m.toc-depth)
         // Only the text is indexed for search (Pagefind); title, date and doc
         // number are tagged as result metadata where they are shown above. The
         // id selects the text for the RSS feed (feeds.typ).

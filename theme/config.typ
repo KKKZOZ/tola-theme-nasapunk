@@ -6,9 +6,10 @@
 
 #import "@tola/module:0.0.0": get-module
 #import "@tola/site:0.0.0": project-path
-#import "@tola/schema:0.0.0": array-of, enum-of, parse, schema, union
+#import "@tola/schema:0.0.0": array-of, dictionary-of, enum-of, matches, parse, schema, union
 
 #let _link = schema((label: str, url: str))
+#let _hex = matches(str, regex("^#[0-9a-fA-F]{6}$"))
 
 #let _options = parse(get-module().options, schema((
   doc-prefix: str,
@@ -26,6 +27,7 @@
   search: bool,
   search-language: str,
   math-check: bool,
+  colors: dictionary-of(union(_hex, array-of(_hex))),
   nav: array-of(schema((label: str, output: str))),
   social-links: array-of(_link),
 )))
@@ -98,6 +100,19 @@
 /// Whether /search/ is published and linked; the `search` hook follows the
 /// same option.
 #let search = _options.search
+
+// ============================================================================
+// Colours
+// ============================================================================
+
+/// Name -> colour, or (day, night): the site's additions to and replacements
+/// for templates/colors.typ.
+#let colors = _options.colors.pairs().map(((name, v)) => {
+  if type(v) == array {
+    assert(v.len() == 2, message: "colors." + name + ": give one colour, or two as [\"#day\", \"#night\"]")
+    (name, (rgb(v.first()), rgb(v.last())))
+  } else { (name, rgb(v)) }
+}).to-dict()
 
 // ============================================================================
 // Extra markup

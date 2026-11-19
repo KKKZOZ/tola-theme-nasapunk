@@ -569,8 +569,11 @@ a.density-bar:is(:hover, :focus-visible) { --fill: var(--ink); --rule: var(--ink
 }
 /* l2 boxes line up with l1 titles: 10px pad + 7px box + 8px gap + "01" + 8px gap. */
 .toc-list .toc-l2 a { padding-left: 49px; font-size: 12px; }
+/* l3 boxes line up with l2 titles: 49px + 7px box + 8px gap + "3.1" + 8px gap.
+   Deeper levels (`toc-depth` 4+) share the l3 indent. */
+.toc-list :is(.toc-l3, .toc-l4, .toc-l5, .toc-l6) a { padding-left: 94px; font-size: 12px; }
 .toc-num { flex: none; color: var(--orange); font-weight: 500; }
-.toc-l2 .toc-num { font-weight: 400; }
+.toc-list li:not(.toc-l1) .toc-num { font-weight: 400; }
 .toc-list a:hover { color: var(--ink); }
 .toc-list a.is-active { color: var(--ink); border-left-color: var(--orange); }
 

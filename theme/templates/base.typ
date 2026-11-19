@@ -256,7 +256,9 @@
   }
 
   // Equations render as SVG (see `math-svg`).
-  show math.equation: set text(font: "New Computer Modern Math")
+  // Book (450), the heavier cut of New Computer Modern Math, so thin serif
+  // strokes hold up next to IBM Plex Mono.
+  show math.equation: set text(font: "New Computer Modern Math", weight: 450)
   show math.equation: math-svg
 
   // 12pt == 16px, the CSS size of `.prose`, so SVG frames (math, cetz) keep true scale.

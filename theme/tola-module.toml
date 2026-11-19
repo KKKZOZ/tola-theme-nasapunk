@@ -45,7 +45,8 @@ content-width = 760
 posts-per-page = 10
 
 # Deepest heading level numbered and listed in a post's table of contents
-# (1 = `=`, 2 = `==`).
+# (1 = `=`, 2 = `==`, 3 = `===`). A post may set its own `toc-depth` in
+# tola-meta.
 toc-depth = 2
 
 # Newest posts listed in the RSS feed, and whether each carries the post's
@@ -88,6 +89,13 @@ search-language = ""
 # Under `tola dev`, list formulas that cannot copy as LaTeX, compiler style
 # (the `math-check` hook below). `tola build` skips it.
 math-check = true
+
+# Colours by name, by day and by night: "#rrggbb" for both themes, or
+# ["#day", "#night"]. A theme colour's name (ink, paper, orange, ...; see
+# templates/colors.typ) replaces it; a new name adds a colour for your own
+# figures, as `palette.<name>` in Typst and `var(--<name>)` in CSS, which
+# follows the day / night switch like the theme's own.
+colors = {}
 
 # Header navigation: label and output file. A page written as
 # content/projects.typ publishes at "projects/index.html".

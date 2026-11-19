@@ -4,6 +4,7 @@
 #import "@tola/address:0.0.0": join-route, output-of, output-url, slugify
 #import "@tola/schema:0.0.0": date, nullable, one-or-many, optional, schema
 #import "@tola/source:0.0.0": parse-sources
+#import "/config.typ": toc-depth
 
 /// The fields a source may declare with `tola-meta`; unknown keys are errors.
 #let page-schema = schema((
@@ -27,6 +28,9 @@
   // pins a post to the top and `weight: 200` sinks it.
   weight: optional(int, default: 100),
   draft: optional(bool, default: false),
+  // Deepest heading level numbered and listed in this post's table of
+  // contents, in place of the `toc-depth` option (post.typ).
+  toc-depth: optional(int, default: toc-depth),
 ))
 
 /// A source's output file. Routes follow the file layout, each segment

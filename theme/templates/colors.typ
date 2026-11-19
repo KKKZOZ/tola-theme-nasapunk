@@ -8,6 +8,10 @@
 // assets/styles/site.css uses. Drawings use the day values (`palette`);
 // `colors-css` also maps each day value found in inline SVG to its property,
 // so a drawing follows the day / night switch without a dark version.
+//
+// A site changes or adds colours with the `colors` option (tola-module.toml).
+
+#import "/config.typ": colors as site-colors
 
 /// Name -> (day, night), or a single colour for both themes.
 ///
@@ -15,7 +19,7 @@
 /// day value maps back to one name only: the first entry with it wins
 /// (`bar` draws as `ink`). Colours with transparency, and those that do not
 /// change at night, are not mapped.
-#let colors = (
+#let _theme-colors = (
   // Page
   paper: (rgb("#ffffff"), rgb("#15191b")),
   ink: (rgb("#222a2d"), rgb("#dde2dc")),
@@ -75,6 +79,10 @@
   accent-sub: (rgb("#6b4a3c"), rgb("#d4a58f")),
 )
 
+/// The theme's colours with the site's `colors` option applied: a theme name
+/// keeps its place with the site's value, a new name comes last.
+#let colors = _theme-colors + site-colors
+
 /// Other day values drawings carry, by the name they map to: Typst's default
 /// black text.
 #let aliases = (ink: (rgb("#000000"),))
@@ -101,5 +109,11 @@
   let rules = mapped.pairs().map(((hex, name)) => {
     for attr in ("fill", "stroke") { "svg [" + attr + "=\"" + hex + "\"]{" + attr + ":var(--" + name + ")}" }
   })
-  ":root{" + props + "}" + rules.join()
+  // Formula glyphs Typst paints in the day ink take the surrounding text
+  // colour instead (night theme, inverted table headers), with a thin
+  // outline so New Computer Modern's hairlines sit closer to the weight of
+  // IBM Plex Mono. Units are pt, the frame's viewBox.
+  let ink = palette.ink.to-hex()
+  let math = ":is(.math-inline,.math-block) use[fill=\"" + ink + "\"]{fill:currentColor;stroke:currentColor;stroke-width:.2;stroke-linejoin:round}"
+  ":root{" + props + "}" + rules.join() + math
 }
