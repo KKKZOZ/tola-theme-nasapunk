@@ -6,7 +6,7 @@ description: Download a Tola release binary and put it on PATH
 
 inputs:
   version:
-    description: 'Release version without the "v", such as 0.8.2-pre.3, or "latest"'
+    description: 'Release version without the "v", such as 0.8.2, or "latest"'
     default: latest
 
 runs:

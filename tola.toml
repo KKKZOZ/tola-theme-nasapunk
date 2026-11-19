@@ -36,7 +36,7 @@ fragments = "error"
 # A copy of this template keeps the theme in theme/. To follow the theme's
 # releases instead, delete theme/ and fetch it from Git, then `tola update
 # nasapunk` to upgrade:
-#   git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+#   git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", subdir = "theme" }
 [modules.nasapunk]
 path = "theme"
 

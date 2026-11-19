@@ -24,7 +24,7 @@ entry = "site.typ"
 
 # Creates a new site that uses this theme (tools/init.nu):
 #   tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
-#     --branch preview --subdir theme --alias nasapunk
+#     --subdir theme --alias nasapunk
 [init]
 nu = "tools/init.nu"
 

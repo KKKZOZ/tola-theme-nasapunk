@@ -9,7 +9,7 @@
 用 Typst 写文章，插图、图表和公式渲染为内联 SVG，跟随主题的日夜配色。
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2--pre.3-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -121,15 +121,15 @@
 ## 快速开始
 
 > [!IMPORTANT]
-> 这是 `preview` 分支，面向 Tola [0.8.2-pre.3](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.3) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题现在位于 `theme/` 目录，并在 `tola.toml` 中配置。Tola 0.8.0 和 0.8.1 请使用 `main` 分支。
+> NASApunk 只支持 Tola [0.8.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题位于 `theme/` 目录，并在 `tola.toml` 中配置。适用于 Tola 0.8.0 和 0.8.1 的最后一个版本是提交 [`e83ec75`](https://github.com/KKKZOZ/tola-theme-nasapunk/tree/e83ec75)，之后不再更新。
 
-需要 Tola 0.8.2-pre.3 或更新版本（`mise use tola@0.8.2-pre.3`，或从 [Releases](https://github.com/tola-rs/tola-ssg/releases) 下载）。其他什么都不用装：搜索使用 [Pagefind](https://pagefind.app)，第一次构建时会自动下载到 `.tola/`（约 50 MB）。
+需要 Tola 0.8.2 或更新版本（`mise use tola@latest`，或从 [Releases](https://github.com/tola-rs/tola-ssg/releases) 下载）。其他什么都不用装：搜索使用 [Pagefind](https://pagefind.app)，第一次构建时会自动下载到 `.tola/`（约 50 MB）。
 
 ### 作为模块安装（推荐）
 
 ```sh
 tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
-  --branch preview --subdir theme --alias nasapunk
+  --subdir theme --alias nasapunk
 cd my-blog
 tola dev
 ```
@@ -145,7 +145,7 @@ tola dev
 | `content/posts/hello.typ`、`content/about.typ` | 第一篇文章和关于页 |
 | `.gitignore` | 构建输出和缓存 |
 
-站点标题、作者、简介和语言在 `tola.toml` 的 `[site]` 中填写。主题选项写在 `[modules.nasapunk.options]` 下，全部选项及其默认值和说明见 [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml)。第一次构建会把主题用到的 Typst 包写入 `tola.lock`，构建之后提交它。
+站点标题、作者、简介和语言在 `tola.toml` 的 `[site]` 中填写。主题选项写在 `[modules.nasapunk.options]` 下，全部选项及其默认值和说明见 [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/theme/tola-module.toml)。第一次构建会把主题用到的 Typst 包写入 `tola.lock`，构建之后提交它。
 
 更新主题时，运行 `tola update nasapunk`，然后提交变化了的 `tola.lock`。锁文件把主题固定在某个提交上，所以在你主动更新之前，任何机器上的每次构建都使用同一个版本的主题。[演示站点](https://kkkzoz.github.io/tola-theme-nasapunk/)展示了每个组件及其源码。
 
@@ -159,7 +159,7 @@ title = "My Blog"
 entry = { module = "nasapunk" }
 
 [modules.nasapunk]
-git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", subdir = "theme" }
 
 [typst.fonts]
 modules = ["nasapunk"]
@@ -173,7 +173,7 @@ system = true
 想先试用主题，或者要修改主题本身的代码，可以克隆本仓库：它就是演示站点，主题位于 `theme/`。
 
 ```sh
-git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+git clone https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
 cd my-blog
 tola dev
 ```
@@ -182,7 +182,7 @@ tola dev
 
 ### Typst 值类型的设置
 
-额外的 `<head>` 内容（如统计脚本）和每篇文章末尾的内容（如评论区）是 Typst 值，不能写在 TOML 里。在 `[build]` 中设置 `entry = "site.typ"`，然后在你自己的 `site.typ` 里把它们传给 `render-site`；[演示站点的 `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/site.typ) 中有这两项的示例。
+额外的 `<head>` 内容（如统计脚本）和每篇文章末尾的内容（如评论区）是 Typst 值，不能写在 TOML 里。在 `[build]` 中设置 `entry = "site.typ"`，然后在你自己的 `site.typ` 里把它们传给 `render-site`；[演示站点的 `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/site.typ) 中有这两项的示例。
 
 ## 文档
 

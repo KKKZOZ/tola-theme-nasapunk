@@ -9,7 +9,7 @@
 Write posts in Typst. Figures, diagrams and math render as inline SVG in the theme colours, by day and by night.
 
 [![Build](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml/badge.svg)](https://github.com/KKKZOZ/tola-theme-nasapunk/actions/workflows/build.yml)
-[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2--pre.3-cb4b22)](https://github.com/tola-rs/tola-ssg)
+[![Tola](https://img.shields.io/badge/Tola-%E2%89%A50.8.2-cb4b22)](https://github.com/tola-rs/tola-ssg)
 [![Typst](https://img.shields.io/badge/Typst-0.15-239dad)](https://typst.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-286379)](LICENSE)
 
@@ -121,15 +121,15 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 ## Quick start
 
 > [!IMPORTANT]
-> This is the `preview` branch, for Tola [0.8.2-pre.3](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2-pre.3) and newer. Tola 0.8.2 turns themes into modules, so the theme now lives in `theme/` and is set up in `tola.toml`. For Tola 0.8.0 and 0.8.1, use the `main` branch.
+> NASApunk supports Tola [0.8.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2) and newer only. Tola 0.8.2 turns themes into modules, so the theme lives in `theme/` and is set up in `tola.toml`. The last version for Tola 0.8.0 and 0.8.1 is commit [`e83ec75`](https://github.com/KKKZOZ/tola-theme-nasapunk/tree/e83ec75); it gets no further updates.
 
-You need Tola 0.8.2-pre.3 or newer (`mise use tola@0.8.2-pre.3`, or a [release download](https://github.com/tola-rs/tola-ssg/releases)). Nothing else: search uses [Pagefind](https://pagefind.app), which the first build downloads into `.tola/` (about 50 MB).
+You need Tola 0.8.2 or newer (`mise use tola@latest`, or a [release download](https://github.com/tola-rs/tola-ssg/releases)). Nothing else: search uses [Pagefind](https://pagefind.app), which the first build downloads into `.tola/` (about 50 MB).
 
 ### Install as a module (recommended)
 
 ```sh
 tola init my-blog --from https://github.com/KKKZOZ/tola-theme-nasapunk \
-  --branch preview --subdir theme --alias nasapunk
+  --subdir theme --alias nasapunk
 cd my-blog
 tola dev
 ```
@@ -145,7 +145,7 @@ The theme's initializer writes a ready site:
 | `content/posts/hello.typ`, `content/about.typ` | A first post and an about page |
 | `.gitignore` | Build output and caches |
 
-Set your site's title, author, description and language under `[site]` in `tola.toml`. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
+Set your site's title, author, description and language under `[site]` in `tola.toml`. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
 
 To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
 
@@ -159,7 +159,7 @@ title = "My Blog"
 entry = { module = "nasapunk" }
 
 [modules.nasapunk]
-git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", branch = "preview", subdir = "theme" }
+git = { url = "https://github.com/KKKZOZ/tola-theme-nasapunk", subdir = "theme" }
 
 [typst.fonts]
 modules = ["nasapunk"]
@@ -173,7 +173,7 @@ Then delete the site's own `site.typ` and import components in posts from `@tola
 To try the theme out, or to change the theme's own code, clone this repository: it is the demo site, with the theme in `theme/`.
 
 ```sh
-git clone --branch preview https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
+git clone https://github.com/KKKZOZ/tola-theme-nasapunk.git my-blog
 cd my-blog
 tola dev
 ```
@@ -182,7 +182,7 @@ Your title, name and language go under `[site]` in `tola.toml`, the theme's opti
 
 ### Typst-valued settings
 
-Extra `<head>` markup (analytics) and content under every post (comments) are Typst values, not TOML. Set `entry = "site.typ"` under `[build]` and pass them to `render-site` in a `site.typ` of your own; [the demo's `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/site.typ) shows both.
+Extra `<head>` markup (analytics) and content under every post (comments) are Typst values, not TOML. Set `entry = "site.typ"` under `[build]` and pass them to `render-site` in a `site.typ` of your own; [the demo's `site.typ`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/site.typ) shows both.
 
 ## Documentation
 

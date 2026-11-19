@@ -24,7 +24,7 @@ language = {language}
 # The theme builds every page. To give it Typst values (extra <head>
 # markup, comments under posts), write a site.typ that calls the theme's
 # `render-site` and set `entry = "site.typ"`; see
-# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/site.typ
+# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/site.typ
 [build]
 entry = { module = {alias} }
 
@@ -34,7 +34,7 @@ entry = { module = {alias} }
 path = {root}
 
 # The theme's options. All of them, with defaults and notes:
-# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/preview/theme/tola-module.toml
+# https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/theme/tola-module.toml
 [modules.{name}.options]
 doc-prefix = "TN"
 
