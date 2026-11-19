@@ -38,14 +38,14 @@ jobs:
       # Origin and path of this Pages site: base_path is "" for
       # <user>.github.io and "/<repo>" for a project site.
       - id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Build
         run: tola build --origin "${{ steps.pages.outputs.origin }}" --base-path "${{ steps.pages.outputs.base_path }}/"
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: public
 
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
