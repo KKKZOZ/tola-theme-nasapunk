@@ -75,11 +75,10 @@ def page-formulas [html: string] {
     let text = $between | get $k
     $notes = (inside $notes $text '<section class="endnotes' '</section>')
     $toc = (inside $toc $text '<aside class="toc"' '</aside>')
-    let wrapper = $text | parse --regex '<(?:span|div) data-latex="(?<latex>[^"]*)">$' | get -o 0.latex
-    let issues = if $wrapper == null { attr $tag "data-latex-issues" | default "" } else { "" }
+    let issues = attr $tag "data-latex-issues" | default ""
     $out = $out | append {
       issues: (if $issues == "" { null } else { $issues | decode-html })
-      latex: ($wrapper | default (attr $tag "data-latex") | default "" | decode-html)
+      latex: (attr $tag "data-latex" | default "" | decode-html)
       before: ($text | text-before)
       place: (if $toc { "toc" } else if $notes { "notes" } else { "text" })
     }

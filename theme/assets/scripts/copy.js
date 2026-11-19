@@ -86,17 +86,12 @@
   // Formulas render as SVG, which has no text to copy: a selection that
   // touches one copies its LaTeX (`data-latex`) instead. Typst formulas carry
   // LaTeX made from them (templates/latex.typ); a formula from
-  // utils/mitex.typ sits in a wrapper with its own source, which wins.
+  // utils/mitex.typ carries its own source.
   // A formula with parts LaTeX has no counterpart for copies as a placeholder
   // (`data-latex-issues` names the parts), and a tip at the foot of the
   // window says so.
   if (!document._latexCopy) {
     document._latexCopy = true;
-    // The element a formula copies from: a mitex wrapper around it wins.
-    const outermost = (el) => {
-      while (el.parentElement?.closest("[data-latex]")) el = el.parentElement.closest("[data-latex]");
-      return el;
-    };
     let copied;
     const tex = (el) => {
       copied.push(el);
@@ -129,7 +124,6 @@
       const range = sel.getRangeAt(0);
       const node = range.commonAncestorContainer;
       let within = (node.nodeType === 1 ? node : node.parentElement).closest("[data-latex]");
-      if (within) within = outermost(within);
       const box = document.createElement("div");
       copied = [];
       if (within) {
@@ -138,8 +132,7 @@
         box.append(range.cloneContents());
         const maths = box.querySelectorAll("[data-latex]");
         if (!maths.length) return;
-        // Partly selected formulas are cloned with their attribute too. In
-        // document order, an outer formula is replaced before its inner one.
+        // Partly selected formulas are cloned with their attribute too.
         for (const m of maths) if (box.contains(m)) m.replaceWith(tex(m));
       }
       // innerText needs the box laid out to turn blocks into line breaks.
@@ -171,7 +164,7 @@
       const math = e.target.closest?.('[role="math"]');
       if (!math) return;
       const range = document.createRange();
-      range.selectNode(outermost(math));
+      range.selectNode(math);
       getSelection().removeAllRanges();
       getSelection().addRange(range);
     });

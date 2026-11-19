@@ -4,10 +4,11 @@
 // Formulas render as SVG like any other equation (base.typ `math-svg`), and
 // a copied selection carries them as LaTeX (assets/scripts/copy.js). For
 // Typst's own math that LaTeX is rebuilt from the parsed formula
-// (templates/latex.typ); in HTML export each formula here is wrapped in an
-// element carrying its source as `data-latex`, so it copies exactly as
-// written. Everything else (`mitext`, `mitex-convert`, ...) is re-exported
-// as-is.
+// (templates/latex.typ); each formula here is an equation labelled
+// <nasapunk-mitex> with its source as `alt`, which `math-svg` puts in
+// `data-latex`, so it copies exactly as written. Being a plain equation (no
+// `context`), it also reads as text in a heading or caption. Everything else
+// (`mitext`, `mitex-convert`, ...) is re-exported as-is.
 //
 // Usage:
 // ```typst
@@ -22,12 +23,13 @@
 
 #let _source(it) = if type(it) == str { it } else { it.text }
 
-/// Same signature as mitex's `mimath`. Unless `alt` says otherwise, screen
-/// readers read the source.
-#let mimath(it, block: true, ..args) = context {
-  let eq = _mitex.mimath(it, block: block, alt: _source(it), ..args)
-  if target() != "html" { return eq }
-  html.elem(if block { "div" } else { "span" }, attrs: (data-latex: _source(it)), eq)
+/// Same signature as mitex's `mimath`. Screen readers read the source. A
+/// formula given its own `alt` is left unlabelled, so it copies as LaTeX
+/// rebuilt from the formula, like Typst's own math.
+#let mimath(it, block: true, ..args) = {
+  if "alt" in args.named() { return _mitex.mimath(it, block: block, ..args) }
+  // No space before the label: it would stay in the content as a space.
+  [#_mitex.mimath(it, block: block, alt: _source(it), ..args)<nasapunk-mitex>]
 }
 
 #let mi = mimath.with(block: false)

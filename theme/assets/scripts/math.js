@@ -5,9 +5,7 @@
 // Idempotent: safe to run more than once on the same page.
 (() => {
   const punct = /^[,.;:!?)\]}”’，。；：！？、）」』》]+/;
-  for (const m of document.querySelectorAll(".math-inline")) {
-    // Formulas from utils/mitex.typ sit in a `data-latex` wrapper.
-    const el = m.parentElement.matches("[data-latex]") ? m.parentElement : m;
+  for (const el of document.querySelectorAll(".math-inline")) {
     if (el.parentElement.classList.contains("math-nobreak")) continue;
     const next = el.nextSibling;
     const run = next?.nodeType === Node.TEXT_NODE && next.data.match(punct);

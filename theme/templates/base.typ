@@ -45,7 +45,10 @@
     it
   }
   if target() != "html" { return body }
-  let latex = to-latex(it.body)
+  // A formula from utils/mitex.typ carries its source as `alt`.
+  let latex = if it.at("label", default: none) == <nasapunk-mitex> {
+    (latex: it.alt, issues: ())
+  } else { to-latex(it.body) }
   let attrs = (
     role: "math",
     class: if it.block { "math-block" } else { "math-inline" },

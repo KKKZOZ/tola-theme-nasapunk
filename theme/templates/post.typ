@@ -46,6 +46,30 @@
   } else if it == [ ] { " " } else { "" }
 }
 
+/// A caption as plain text, for the figure list's hover title. A reference
+/// reads as it renders ("Figure 3"); `plain-text` alone would drop it, as a
+/// `ref` carries no text. A formula from utils/mitex.typ reads as its
+/// source. Needs `context`.
+#let caption-text(it) = {
+  if type(it) != content { return plain-text(it) }
+  if it.at("label", default: none) == <nasapunk-mitex> { return it.alt }
+  if it.func() == ref {
+    let target = doc-query(it.target)
+    if target.len() == 0 { return plain-text(it) }
+    let t = target.first()
+    if t.at("numbering", default: none) == none { return plain-text(it) }
+    let supplement = it.at("supplement", default: auto)
+    if supplement == auto { supplement = t.supplement }
+    let c = if t.func() == figure { t.counter } else { counter(t.func()) }
+    let n = numbering(t.numbering, ..c.at(t.location()))
+    return if supplement in (none, []) { plain-text(n) } else { plain-text(supplement) + " " + plain-text(n) }
+  }
+  if it.has("children") { return it.children.map(caption-text).sum(default: "") }
+  if it.has("child") { return caption-text(it.child) }
+  if it.func() != raw and it.has("body") and type(it.body) == content { return caption-text(it.body) }
+  plain-text(it)
+}
+
 /// Minutes to read, as Hugo estimates it: ~500 units a minute in CJK-led
 /// text (where English words are mostly embedded terms), else ~220 words.
 #let read-minutes(body) = {
@@ -222,7 +246,7 @@
       // Captions run long: each entry keeps to one line, cut with an
       // ellipsis, and the whole caption shows on hover.
       html.ol(class: "toc-figures", for f in figures {
-        html.li(html.a(href: "#" + figure-anchor(f), title: plain-text(f.caption.body), {
+        html.li(html.a(href: "#" + figure-anchor(f), title: caption-text(f.caption.body), {
           let n = str(f.counter.at(f.location()).first())
           html.span(class: "toc-num", if f.kind == table { "T" } else { "F" } + n)
           // A footnote or link in a caption stays with the caption.
