@@ -123,7 +123,7 @@ Write posts in Typst. Figures, diagrams and math render as inline SVG in the the
 > [!IMPORTANT]
 > NASApunk supports Tola [0.8.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2) and newer only. Tola 0.8.2 turns themes into modules, so the theme lives in `theme/` and is set up in `tola.toml`. The last version for Tola 0.8.0 and 0.8.1 is commit [`e83ec75`](https://github.com/KKKZOZ/tola-theme-nasapunk/tree/e83ec75); it gets no further updates.
 
-You need Tola 0.8.2 or newer (`mise use tola@latest`, or a [release download](https://github.com/tola-rs/tola-ssg/releases)). Nothing else: search uses [Pagefind](https://pagefind.app), which the first build downloads into `.tola/` (about 50 MB).
+You need Tola 0.8.2 or newer (`mise use tola@latest`, or a [release download](https://github.com/tola-rs/tola-ssg/releases)).
 
 ### Install as a module (recommended)
 
@@ -147,7 +147,7 @@ The theme's initializer writes a ready site:
 
 Set your site's title, author, description and language under `[site]` in `tola.toml`. The theme's options go under `[modules.nasapunk.options]`; [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/theme/tola-module.toml) lists them all with their defaults and notes. Commit `tola.lock` after your first build, which adds the Typst packages the theme uses.
 
-To update the theme, run `tola update nasapunk` and commit the changed `tola.lock`. The lock pins the theme to one commit, so until you update, every build, on any machine, uses the same theme. The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
+The [demo site](https://kkkzoz.github.io/tola-theme-nasapunk/) shows every component with its source.
 
 To use the theme in a site you already have, add to its `tola.toml`:
 
@@ -167,6 +167,22 @@ system = true
 ```
 
 Then delete the site's own `site.typ` and import components in posts from `@tola-modules/nasapunk:0.0.0`.
+
+### Updating the theme
+
+`tola.lock` pins the theme to one commit, so every build, on any machine, uses the same theme until you update it. In your site's folder:
+
+```sh
+tola update nasapunk --dry-run   # is there a newer theme?
+tola update nasapunk             # fetch it and record it in tola.lock
+tola dev                         # look over your site
+git add tola.lock && git commit -m "Update NASApunk"
+```
+
+- Only `tola.lock` changes; your posts, `tola.toml` and `site.typ` are left alone.
+- Commit `tola.lock`: CI builds with the commit it names, not the newest one.
+- To undo an update, restore the old `tola.lock` (`git restore tola.lock`).
+- To stay on one commit, add `rev = "<full commit id>"` to the `git` line in `tola.toml`, then run `tola update nasapunk`.
 
 ### Start from the demo site
 

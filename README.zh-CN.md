@@ -123,7 +123,7 @@
 > [!IMPORTANT]
 > NASApunk 只支持 Tola [0.8.2](https://github.com/tola-rs/tola-ssg/releases/tag/v0.8.2) 及更新版本。Tola 0.8.2 把主题改成了模块（module），所以主题位于 `theme/` 目录，并在 `tola.toml` 中配置。适用于 Tola 0.8.0 和 0.8.1 的最后一个版本是提交 [`e83ec75`](https://github.com/KKKZOZ/tola-theme-nasapunk/tree/e83ec75)，之后不再更新。
 
-需要 Tola 0.8.2 或更新版本（`mise use tola@latest`，或从 [Releases](https://github.com/tola-rs/tola-ssg/releases) 下载）。其他什么都不用装：搜索使用 [Pagefind](https://pagefind.app)，第一次构建时会自动下载到 `.tola/`（约 50 MB）。
+需要 Tola 0.8.2 或更新版本（`mise use tola@latest`，或从 [Releases](https://github.com/tola-rs/tola-ssg/releases) 下载）。
 
 ### 作为模块安装（推荐）
 
@@ -147,7 +147,7 @@ tola dev
 
 站点标题、作者、简介和语言在 `tola.toml` 的 `[site]` 中填写。主题选项写在 `[modules.nasapunk.options]` 下，全部选项及其默认值和说明见 [`theme/tola-module.toml`](https://github.com/KKKZOZ/tola-theme-nasapunk/blob/main/theme/tola-module.toml)。第一次构建会把主题用到的 Typst 包写入 `tola.lock`，构建之后提交它。
 
-更新主题时，运行 `tola update nasapunk`，然后提交变化了的 `tola.lock`。锁文件把主题固定在某个提交上，所以在你主动更新之前，任何机器上的每次构建都使用同一个版本的主题。[演示站点](https://kkkzoz.github.io/tola-theme-nasapunk/)展示了每个组件及其源码。
+[演示站点](https://kkkzoz.github.io/tola-theme-nasapunk/)展示了每个组件及其源码。
 
 要在已有站点中使用本主题，在它的 `tola.toml` 中加入：
 
@@ -167,6 +167,22 @@ system = true
 ```
 
 然后删除站点自己的 `site.typ`，并在文章中从 `@tola-modules/nasapunk:0.0.0` 导入组件。
+
+### 更新主题
+
+`tola.lock` 把主题固定在某个提交上，所以在你更新之前，任何机器上的每次构建都使用同一个版本的主题。在站点目录中：
+
+```sh
+tola update nasapunk --dry-run   # 看看有没有新版本
+tola update nasapunk             # 拉取新版本并写入 tola.lock
+tola dev                         # 检查一下站点
+git add tola.lock && git commit -m "Update NASApunk"
+```
+
+- 只有 `tola.lock` 会变化，你的文章、`tola.toml` 和 `site.typ` 都不会被改动。
+- 记得提交 `tola.lock`：CI 构建时使用它记录的提交，而不是最新的提交。
+- 想撤销更新，恢复旧的 `tola.lock` 即可（`git restore tola.lock`）。
+- 想固定在某个提交上，在 `tola.toml` 的 `git` 一行中加上 `rev = "<完整提交 ID>"`，然后运行 `tola update nasapunk`。
 
 ### 从演示站点开始
 
