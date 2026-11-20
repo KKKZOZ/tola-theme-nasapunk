@@ -13,6 +13,7 @@
 #import "/config.typ": doc-prefix, extras, social-image, toc-depth
 #import "/templates/data.typ": series-parts
 #import "/templates/layout.typ" as layout: fmt-date, label, series-href
+#import "/templates/agents.typ": source-output
 #import "/templates/page.typ": html-document
 #import "/templates/social.typ": post-card
 
@@ -320,7 +321,7 @@
     )
   }
   let image = post-image(m, page.output)
-  html-document(page.output, m.title, description: m.summary, article: article, image: image, posts: posts, {
+  html-document(page.output, m.title, description: m.summary, article: article, image: image, source: source-output(page), posts: posts, {
     show heading: heading-with-id.with(depth: m.toc-depth)
     // The data a citation is made from (copy.js).
     let cite = (data-author: layout.author, data-doc: doc-number(posts, page.output), data-date: fmt-date(m.date))

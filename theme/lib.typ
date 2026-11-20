@@ -17,6 +17,7 @@
 #import "@tola/source:0.0.0": all-sources
 #import "/config.typ": extras, search as search-enabled
 #import "/templates/data.typ": draft-index, draft-urls, post-records, select-pages
+#import "/templates/agents.typ": agent-files, source-output
 #import "/templates/feeds.typ": feeds
 #import "/templates/page.typ": page
 #import "/templates/pages.typ" as pages
@@ -66,7 +67,7 @@
     if entry.source.id.starts-with("posts/") or entry.source.id.starts-with("lab/") {
       post(entry, posts)
     } else {
-      page(entry.output, entry.source.meta.title, include entry.source.file, posts: posts)
+      page(entry.output, entry.source.meta.title, include entry.source.file, posts: posts, source: source-output(entry))
     }
   }
 
@@ -78,5 +79,6 @@
   pages.not-found()
 
   feeds(selected, posts)
+  agent-files(selected, posts)
   social-card()
 }

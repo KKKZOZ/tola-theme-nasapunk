@@ -88,6 +88,20 @@
       };
     }).filter(Boolean);
 
+  /// Copy the text at `url`. The clipboard write starts in the keypress's own
+  /// task with the text still loading, as a ClipboardItem of a promise:
+  /// Safari refuses a write that only starts after an `await`.
+  const copyFrom = (url) => {
+    const text = fetch(url).then((r) => (r.ok ? r.text() : Promise.reject(new Error(`${r.status} ${url}`))));
+    const write =
+      window.ClipboardItem && navigator.clipboard?.write
+        ? navigator.clipboard
+            .write([new ClipboardItem({ "text/plain": text.then((t) => new Blob([t], { type: "text/plain" })) })])
+            .catch(() => text.then((t) => navigator.clipboard.writeText(t)))
+        : text.then((t) => navigator.clipboard?.writeText(t));
+    write.catch((e) => console.warn("Copy failed:", e));
+  };
+
   const commands = () => {
     const out = [];
     const post = document.querySelector("article.post");
@@ -116,6 +130,13 @@
       hint: "Share",
       run: () => navigator.clipboard?.writeText(location.href.split("#")[0]),
     });
+    // The page's Typst source, when the site publishes it (templates/agents.typ).
+    const source = document.querySelector('link[rel="alternate"][type="text/plain"]');
+    if (source) {
+      out.push({ title: "Copy Typst source of this page", hint: "Share", run: () => copyFrom(source.href) });
+      // `href` of the element is absolute: a link to hand to an agent.
+      out.push({ title: "Copy link to Typst source", hint: "Share", run: () => navigator.clipboard?.writeText(source.href) });
+    }
     if (post) {
       const cite = (format) => () => document.dispatchEvent(new CustomEvent("nasapunk:cite", { detail: format }));
       out.push({ title: "Copy citation", hint: "Share", run: cite("text") });

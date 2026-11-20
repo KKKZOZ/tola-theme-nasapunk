@@ -86,6 +86,14 @@ search = true
 # site written mostly in Chinese, Japanese or Korean.
 search-language = ""
 
+# Publish each page's Typst source as plain text beside its HTML
+# (posts/x/index.typ.txt), linked from the page's <head> and from
+# /llms.txt, for AI agents and other programs that read the site: the HTML
+# draws formulas and figures as SVG, which they cannot read. The file is the
+# source as written, comments included. /llms.txt is published either way,
+# linking to the pages instead when this is false.
+publish-sources = true
+
 # Under `tola dev`, list formulas that cannot copy as LaTeX, compiler style
 # (the `math-check` hook below). `tola build` skips it.
 math-check = true

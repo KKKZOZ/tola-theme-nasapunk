@@ -27,6 +27,7 @@
   search: bool,
   search-language: str,
   math-check: bool,
+  publish-sources: bool,
   colors: dictionary-of(union(_hex, array-of(_hex))),
   nav: array-of(schema((label: str, output: str))),
   social-links: array-of(_link),
@@ -100,6 +101,14 @@
 /// Whether /search/ is published and linked; the `search` hook follows the
 /// same option.
 #let search = _options.search
+
+// ============================================================================
+// Agents
+// ============================================================================
+
+/// Whether each page's Typst source is published beside it
+/// (templates/agents.typ).
+#let publish-sources = _options.publish-sources
 
 // ============================================================================
 // Colours

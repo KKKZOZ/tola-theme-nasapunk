@@ -137,8 +137,9 @@
 /// custom head must emit them. `description` falls back to the site's;
 /// `article` is a post's `(published:, updated:, tags:)`; `image` is the
 /// preview image, an `(url:, alt:)` dictionary, `none`, or `auto` for the
-/// site's (`share-image`).
-#let head(output, title, description: none, article: none, image: auto) = html.head({
+/// site's (`share-image`); `source` is the output of the page's published
+/// Typst source (agents.typ), or `none`.
+#let head(output, title, description: none, article: none, image: auto, source: none) = html.head({
   // A blocking script keeps the first paint until the stylesheet is in,
   // avoiding a flash of unstyled content. It also settles the theme before
   // that paint: the reader's pick (theme.js), else the system setting.
@@ -172,6 +173,10 @@
   // Lets feed readers find the feed from any page.
   if has-feed {
     html.link(rel: "alternate", type: "application/rss+xml", title: site.title, href: output-url(feed-output))
+  }
+  // The page's Typst source as plain text, for agents (agents.typ).
+  if source != none {
+    html.link(rel: "alternate", type: "text/plain", title: "Typst source", href: output-url(source))
   }
   // Link previews when the page is shared.
   social-tags(
