@@ -90,7 +90,9 @@ search-language = ""
 # (posts/x/index.typ.txt), linked from the page's <head> and from
 # /llms.txt, for AI agents and other programs that read the site: the HTML
 # draws formulas and figures as SVG, which they cannot read. The file is the
-# source as written, comments included. /llms.txt is published either way,
+# source as written, comments included, followed by the site's .typ files it
+# imports or includes (figures, and what they import), each under a comment
+# naming its path; packages are left out. /llms.txt is published either way,
 # linking to the pages instead when this is false.
 publish-sources = true
 
