@@ -16,7 +16,7 @@
 #import "@tola/site:0.0.0": site
 #import "@tola/source:0.0.0": all-sources
 #import "/config.typ": extras, search as search-enabled
-#import "/templates/data.typ": draft-index, draft-urls, post-records, select-pages
+#import "/templates/data.typ": draft-index, draft-urls, left-out-index, left-out-posts, post-records, select-pages
 #import "/templates/agents.typ": agent-files, source-output
 #import "/templates/feeds.typ": feeds
 #import "/templates/page.typ": page
@@ -62,6 +62,7 @@
   let posts = post-records(selected)
 
   draft-index.update(draft-urls(sources))
+  left-out-index.update(left-out-posts(sources))
 
   for entry in selected {
     if entry.source.id.starts-with("posts/") or entry.source.id.starts-with("lab/") {

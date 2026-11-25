@@ -7,7 +7,7 @@
 #import "@tola/site:0.0.0": project-path
 #import "/templates/base.typ": cite-mark, doc-query, palette, term-slug
 #import "/config.typ": content-width
-#import "/templates/data.typ": post-index
+#import "/templates/data.typ": left-out-index, left-out-note, post-index
 #import "/templates/layout.typ": fmt-date, label, spans
 
 /// Instrument-panel callout. Color is paired with a readable status label.
@@ -232,33 +232,48 @@
 
 /// Find a published post by permalink ("/posts/tools/foo/") or by the last
 /// segment of its permalink ("foo"), which survives moving the post to
-/// another folder. Needs `context`: the post list comes from `post-index`.
+/// another folder. A post the `recent-posts` option leaves out is found
+/// too, marked `left-out: true`. Needs `context`: the post list
+/// comes from `post-index` and `left-out-index`.
 #let _find-post(target) = {
   let key = _trim(target)
-  let hits = post-index.get().filter(p => _trim(p.permalink) == key)
-  if hits.len() == 0 { hits = post-index.get().filter(p => _trim(p.permalink).split("/").last() == key) }
+  let posts = post-index.get() + left-out-index.get().map(p => p + (left-out: true))
+  let hits = posts.filter(p => _trim(p.permalink) == key)
+  if hits.len() == 0 { hits = posts.filter(p => _trim(p.permalink).split("/").last() == key) }
   assert(hits.len() > 0, message: "xref: no post at `" + target + "`")
   assert(hits.len() == 1, message: "xref: `" + target + "` names " + str(hits.len()) + " posts; use its permalink")
   hits.first()
 }
 
-/// Inline link to another post; the text defaults to the post title.
+/// Inline link to another post; the text defaults to the post title. A post
+/// left out of this build shows as plain text.
 #let xref(target, body: auto) = context {
   let p = _find-post(target)
-  link(p.permalink, if body == auto { p.title } else { body })
+  let text = if body == auto { p.title } else { body }
+  if p.at("left-out", default: false) {
+    html.span(class: "draft-link", title: left-out-note, text)
+  } else {
+    link(p.permalink, text)
+  }
 }
 
-/// "See also" cards linking to other posts.
+/// "See also" cards linking to other posts. The card of a post left out of
+/// this build is not a link.
 #let related(..targets, title: [See also]) = html.aside(class: "related", context {
   label(title, class: "accent")
   html.div(class: "related-grid", for t in targets.pos() {
     let p = _find-post(t)
-    cite-mark(p.permalink)
-    html.a(class: "related-card", href: p.permalink, {
+    let card = {
       label(fmt-date(p.date))
       html.div(class: "related-title", p.title)
       if p.at("summary", default: none) != none { html.div(class: "related-summary", p.summary) }
-    })
+    }
+    if p.at("left-out", default: false) {
+      html.div(class: "related-card draft-link", title: left-out-note, card)
+    } else {
+      cite-mark(p.permalink)
+      html.a(class: "related-card", href: p.permalink, card)
+    }
   })
 })
 

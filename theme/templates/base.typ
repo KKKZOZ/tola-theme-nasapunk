@@ -8,7 +8,7 @@
 // that should match the page; each follows the night theme too.
 #import "/templates/colors.typ": palette
 #import "/config.typ": bibliography-style, cjk-font, code-dark-theme, code-theme
-#import "/templates/data.typ": draft-index
+#import "/templates/data.typ": draft-index, left-out-index, left-out-note
 #import "/templates/latex.typ": probe, to-latex
 
 // Rajdhani and IBM Plex Mono come from typst-fonts/ (`[typst] fonts`); CJK text uses
@@ -122,7 +122,8 @@
 }
 
 /// Site links. A link to a draft is plain text until the draft is published,
-/// so index pages can list unfinished notes. A fragment is slugged like
+/// so index pages can list unfinished notes; so is a link to a post that the
+/// `recent-posts` option leaves out. A fragment is slugged like
 /// heading ids, as Tola 0.7 did: `link("#MLP layer")` reaches the heading
 /// "MLP layer" (id `mlp-layer`). External links and fragments already in slug
 /// form are returned as is.
@@ -148,6 +149,8 @@
   if path == "" { return slug-fragment(it) }
   context if path in draft-index.get() {
     html.span(class: "draft-link", title: "Draft: not published yet", it.body)
+  } else if left-out-index.get().any(post => post.permalink == path) {
+    html.span(class: "draft-link", title: left-out-note, it.body)
   } else {
     slug-fragment(it)
     cite-mark(path)

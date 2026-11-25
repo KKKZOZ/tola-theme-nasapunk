@@ -100,6 +100,19 @@ publish-sources = true
 # (the `math-check` hook below). `tola build` skips it.
 math-check = true
 
+# Publish only the newest this many dated posts; 0 publishes every post.
+# Other pages stay; links, `xref` and `related` to a post left out show as
+# plain text, and the home page, archive, tags and series list only the
+# posts kept. Meant for writing on a large site: `tola dev` rebuilds faster
+# and holds less memory. Set it in a second config that only `tola dev`
+# reads, so `tola build` still publishes everything:
+#
+#   # tola.dev.toml, used as `tola dev -C tola.dev.toml`
+#   include = ["tola.toml"]
+#   [modules.nasapunk.options]
+#   recent-posts = 20
+recent-posts = 0
+
 # Colours by name, by day and by night: "#rrggbb" for both themes, or
 # ["#day", "#night"]. A theme colour's name (ink, paper, orange, ...; see
 # templates/colors.typ) replaces it; a new name adds a colour for your own

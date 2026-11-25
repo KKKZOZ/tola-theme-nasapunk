@@ -27,6 +27,7 @@
   search: bool,
   search-language: str,
   math-check: bool,
+  recent-posts: int,
   publish-sources: bool,
   colors: dictionary-of(union(_hex, array-of(_hex))),
   nav: array-of(schema((label: str, output: str))),
@@ -101,6 +102,18 @@
 /// Whether /search/ is published and linked; the `search` hook follows the
 /// same option.
 #let search = _options.search
+
+// ============================================================================
+// Writing
+// ============================================================================
+
+/// How many dated posts are published, or `none` for every post: see
+/// `recent-posts` in tola-module.toml.
+#let recent-posts = {
+  let count = _options.recent-posts
+  assert(count >= 0, message: "recent-posts must be 0 (every post) or more, got " + str(count))
+  if count > 0 { count }
+}
 
 // ============================================================================
 // Agents

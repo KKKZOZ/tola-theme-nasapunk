@@ -1,10 +1,10 @@
 // Page metadata and the published post list.
-// Import: #import "/templates/data.typ": select-pages, post-records, series-parts, post-index, draft-urls, draft-index
+// Import: #import "/templates/data.typ": select-pages, post-records, series-parts, post-index, draft-urls, draft-index, left-out-posts, left-out-index, left-out-note
 
 #import "@tola/address:0.0.0": join-route, output-of, output-url, slugify
 #import "@tola/schema:0.0.0": date, nullable, one-or-many, optional, schema
 #import "@tola/source:0.0.0": parse-sources
-#import "/config.typ": toc-depth
+#import "/config.typ": recent-posts, toc-depth
 
 /// The fields a source may declare with `tola-meta`; unknown keys are errors.
 #let page-schema = schema((
@@ -37,12 +37,30 @@
 /// slugged the way Tola 0.7 did, so URLs are stable.
 #let output-for(source) = output-of(join-route(source.route-segments.map(segment => slugify(segment, mode: "ascii"))))
 
-/// One `(source:, output:)` record per published source.
-#let select-pages(sources) = {
+/// One `(source:, output:)` record per source that is not a draft.
+#let _published(sources) = {
   // Every source is validated here, drafts included, before choosing which to publish.
   parse-sources(sources, page-schema)
     .filter(source => not source.meta.draft)
     .map(source => (source: source, output: output-for(source)))
+}
+
+/// The outputs of the posts the `recent-posts` option leaves out: every
+/// dated post past the newest `recent-posts`, or none.
+#let _left-out(pages) = {
+  if recent-posts == none { return () }
+  let posts = pages
+    .filter(page => page.source.id.starts-with("posts/") and page.source.meta.date != none)
+    .sorted(key: page => page.source.meta.date)
+    .rev()
+  posts.slice(calc.min(recent-posts, posts.len())).map(page => page.output)
+}
+
+/// One `(source:, output:)` record per published source.
+#let select-pages(sources) = {
+  let pages = _published(sources)
+  let skipped = _left-out(pages)
+  pages.filter(page => page.output not in skipped)
 }
 
 /// The URLs drafts will publish at. Links to them render as plain text until
@@ -78,6 +96,17 @@
     .rev()
 }
 
+/// The posts the `recent-posts` option leaves out, as `post-records`; empty
+/// when it is 0.
+#let left-out-posts(sources) = {
+  let pages = _published(sources)
+  let skipped = _left-out(pages)
+  post-records(pages.filter(page => page.output in skipped))
+}
+
+/// The tooltip of a link to a post left out of this build.
+#let left-out-note = "Not built: this build keeps only the newest posts (recent-posts)"
+
 /// The parts of the series `name`, in order: those with a `part` number by
 /// it, then the rest oldest first; ties by date, then by title, so
 /// "[DDIA 02]" precedes "[DDIA 03]".
@@ -95,3 +124,8 @@
 /// `draft-urls`, for the link rule in base.typ, which cannot receive
 /// arguments from the root either. Set like `post-index`; read it in `context`.
 #let draft-index = state("nasapunk-draft-index", ())
+
+/// `left-out-posts`, for the link rule in base.typ and for `xref` and
+/// `related`, which show a post left out as plain text. Set like
+/// `draft-index`; read it in `context`.
+#let left-out-index = state("nasapunk-left-out-index", ())
