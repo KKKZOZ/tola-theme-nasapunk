@@ -1,5 +1,5 @@
 // Printing, or saving as PDF: the page prints in the day theme, with folded
-// panels (`fold`) open, as the print styles in site.css expect, and a post
+// panels (`fold`, `qa`) open, as the print styles in site.css expect, and a post
 // gets a running header and footer: its number and title at the top, its
 // address at the bottom (the page count is in site.css). All goes back as it
 // was once the print dialog closes.
@@ -33,7 +33,7 @@
   addEventListener("beforeprint", () => {
     theme = root.dataset.theme;
     root.dataset.theme = "light";
-    opened = [...document.querySelectorAll("details.fold:not([open])")];
+    opened = [...document.querySelectorAll("details.fold:not([open]), details.qa:not([open])")];
     for (const d of opened) d.open = true;
     margins ??= runningHead();
   });

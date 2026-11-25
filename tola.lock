@@ -1,6 +1,6 @@
 [modules.nasapunk]
 path = "theme"
-tree_sha256 = "68e6054afc84109abfcefd7c67e72ea8193d8051f054f377bd9be08112cfb4ac"
+tree_sha256 = "f156e8d05e039a8f552594d7a90c857fa4f10f54b09201b4ded159022a5a881f"
 
 [packages."@preview/cetz"]
 version = "0.5.2"

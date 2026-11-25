@@ -5,7 +5,7 @@
 // - `render-site`: the site program. The module's own site.typ calls it
 //   with no arguments; a site that needs `head-extra` or
 //   `post-footer-extra` sets `[build] entry = "site.typ"` and calls it there.
-// - In-article components, for content sources: callouts, folds, terms,
+// - In-article components, for content sources: callouts, folds, Q&A, terms,
 //   images, columns, cross-post links, diagrams, CeTZ figures, math.
 //
 // Sources under content/ declare their metadata with `tola-meta`
@@ -25,7 +25,7 @@
 #import "/templates/social.typ": social-card
 
 // Components for content sources.
-#import "/utils/ui.typ": callout, cols, demo, fold, gallery, hint, img, related, term, xref
+#import "/utils/ui.typ": callout, cols, demo, fold, gallery, hint, img, qa, related, term, xref
 #import "/utils/mitex.typ": mi, mitex
 #import "/utils/diagram.typ": diagram, divider, edge, flow, flows, n, node, note, timeline
 #import "/utils/figure.typ": arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt

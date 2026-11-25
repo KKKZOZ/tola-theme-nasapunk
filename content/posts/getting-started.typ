@@ -83,7 +83,7 @@ Posts import the theme's components from `@tola-modules/nasapunk:0.0.0`:
 #import "@tola-modules/nasapunk:0.0.0": callout, hint, xref
 ```
 
-The in-article components are `callout`, `hint`, `fold`, `term`, `img`,
+The in-article components are `callout`, `hint`, `fold`, `qa`, `term`, `img`,
 `gallery`, `cols`, `xref` and `related`. `flow`, `diagram` and `timeline`
 draw box-and-arrow diagrams and timelines in the site palette;
 #xref("02-diagrams") shows them. `cetz` is a drop-in CeTZ that renders to

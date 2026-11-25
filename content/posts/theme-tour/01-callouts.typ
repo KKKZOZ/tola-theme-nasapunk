@@ -1,13 +1,13 @@
 #import "@tola/address:0.0.0": output-url
 #import "@tola/source:0.0.0": tola-meta
-#import "@tola-modules/nasapunk:0.0.0": callout, cols, demo, fold, hint, term, xref
+#import "@tola-modules/nasapunk:0.0.0": callout, cols, demo, fold, hint, qa, term, xref
 
-#let demo = demo.with(scope: (callout: callout, cols: cols, fold: fold, hint: hint, term: term))
+#let demo = demo.with(scope: (callout: callout, cols: cols, fold: fold, hint: hint, qa: qa, term: term))
 
 #tola-meta((
   title: "[Tour 01] In-Article Components",
   date: "2025-03-12",
-  summary: "Part one of a sample series: checklists, callouts, hints, folds, columns, footnotes, terms and references.",
+  summary: "Part one of a sample series: checklists, callouts, hints, folds, questions and answers, columns, footnotes, terms and references.",
   tags: ("example", "series"),
   series: "Theme Tour",
 ))
@@ -88,6 +88,34 @@ detail most readers skip. `title` names it (`Details` by default) and
 #fold(title: [Pre-flight list], open: true)[
   + `tola build` passes.
   + Both themes checked.
+]
+```)
+
+= Questions and Answers
+
+`qa` sets one question with its answer folded shut under it, for the
+questions a reader is likely to ask after a section. The question sits on a
+warm tint and the answer under it on the page, framed by an orange rule on
+the left. A click on the question opens the answer, and `open: true` starts
+it open. The blocks on a page are tagged Q01, Q02, ... in order, and blocks
+that follow each other join into one frame. `tag` replaces the number with
+your own label.
+
+#demo(```typst
+#import "@tola-modules/nasapunk:0.0.0": qa
+
+#qa[
+  Does `tola dev` rebuild the whole site on every save?
+][
+  No. It rebuilds the pages that depend on the changed file, so a post
+  shows the edit in about a second.
+]
+
+#qa(open: true)[
+  Why does a broken anchor fail the build?
+][
+  A link to a missing section looks fine in the source and only shows up
+  when a reader clicks it. Failing the build catches it first.
 ]
 ```)
 

@@ -1,6 +1,6 @@
-// In-article components: callouts, hints, folds, terms, images, columns,
+// In-article components: callouts, hints, folds, Q&A lists, terms, images, columns,
 // cross-post links and source-plus-output demos.
-// Import: #import "/utils/ui.typ": callout, hint, fold, term, img, gallery, cols, xref, related, demo
+// Import: #import "/utils/ui.typ": callout, hint, fold, qa, term, img, gallery, cols, xref, related, demo
 
 #import "@tola/address:0.0.0": asset-url
 #import "@tola/image:0.0.0": image-metadata, img as responsive-img
@@ -64,6 +64,25 @@
     html.div(class: "fold-body", body)
   },
 )
+
+/// One question and its answer, the answer folded shut under the question:
+/// `#qa[Is the cache cold?][Yes: the first read misses.]`.
+/// Blocks on a page are tagged Q01, Q02, ... in order, and blocks that
+/// follow each other read as one list.
+/// - `open`: `true` starts the answer unfolded.
+/// - `tag`: the tag before the question; `auto` numbers it.
+#let _qa-count = counter("nasapunk-qa")
+#let qa(question, answer, open: false, tag: auto) = {
+  _qa-count.step()
+  let pad(i) = if i < 10 { "0" + str(i) } else { str(i) }
+  html.elem("details", attrs: (class: "qa") + if open { (open: "") } else { (:) }, {
+    html.elem("summary", attrs: (class: "qa-q"), {
+      html.span(class: "qa-tag", if tag == auto { context "Q" + pad(_qa-count.get().first()) } else { tag })
+      html.span(class: "qa-text", question)
+    })
+    html.div(class: "qa-a", answer)
+  })
+}
 
 // ============================================================================
 // Images

@@ -1083,6 +1083,65 @@ a[role="doc-biblioref"]:hover { background: var(--tint); }
 .fold-body > :first-child { margin-top: 0; }
 .fold-body > :last-child { margin-bottom: 0; }
 
+/* `qa`: a question with its answer folded under it, framed apart from the
+   text: an orange rule down the left edge and a warm hairline round the
+   rest. The question row sits on the warm tint of the notes, the answer
+   under it on the page, a hairline between them. Blocks that follow each
+   other join into one frame. */
+.qa {
+  --qa-hang: calc(8px + 10px + 3.2em + 10px);
+  --qa-bg: var(--tint-note);
+  --qa-line: var(--accent-line);
+  --qa-accent: var(--orange);
+  margin: 1.6em 0;
+  border: .5px solid var(--qa-line);
+  border-left: 2px solid var(--qa-accent);
+}
+.qa + .qa { margin-top: 0; border-top: 0; }
+.qa:has(+ .qa) { margin-bottom: 0; }
+.qa-q {
+  display: grid;
+  grid-template-columns: 8px 3.2em 1fr;
+  gap: 10px;
+  align-items: start;
+  padding: 12px 16px 12px 14px;
+  background: var(--qa-bg);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+.qa-q::-webkit-details-marker { display: none; }
+/* The chevron: points right while shut, down when open. */
+.qa-q::before {
+  content: "";
+  grid-row: 1;
+  grid-column: 1;
+  width: 6px;
+  height: 6px;
+  margin-top: calc(.5lh - 3px);
+  border-right: 1.5px solid var(--accent-sub);
+  border-bottom: 1.5px solid var(--accent-sub);
+  rotate: -45deg;
+}
+.qa[open] > .qa-q::before { rotate: 45deg; border-color: var(--qa-accent); }
+.qa[open] > .qa-q { border-bottom: .5px solid var(--qa-line); }
+.qa-tag { font: 600 12px/inherit var(--font-mono); line-height: inherit; letter-spacing: .06em; color: var(--qa-accent); }
+.qa-q:hover .qa-text { color: var(--qa-accent); }
+.qa-q:focus-visible { outline: 1px solid var(--qa-accent); outline-offset: -1px; }
+.qa-text { min-width: 0; }
+.qa-a { padding: 14px 16px 16px calc(14px + var(--qa-hang)); }
+.qa-a > :first-child { margin-top: 0; }
+.qa-a > :last-child { margin-bottom: 0; }
+.qa::details-content { interpolate-size: allow-keywords; overflow: clip; contain: layout; }
+.qa:not([open])::details-content { block-size: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .qa-q::before { transition: rotate .2s, border-color .2s; }
+  .qa::details-content {
+    transition: block-size .25s ease-in-out, content-visibility .25s allow-discrete;
+  }
+}
+@media (max-width: 600px) { .qa-a { padding-left: 14px; } }
+
 .hint { margin: 1.8em 0; }
 .hint-rule { display: flex; align-items: center; gap: 3px; height: 5px; }
 .hint-rule span { height: 4px; }
