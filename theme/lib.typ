@@ -28,7 +28,7 @@
 #import "/utils/ui.typ": callout, cols, demo, fold, gallery, hint, img, qa, related, term, xref
 #import "/utils/mitex.typ": mi, mitex
 #import "/utils/diagram.typ": diagram, divider, edge, flow, flows, n, node, note, timeline
-#import "/utils/figure.typ": arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt
+#import "/utils/figure.typ": arrow, axis-stroke, box-swatch, brace, c, card, cells, coord, curve-arrow, frame, grid-stroke, hbars, lanes, legend, line-swatch, num, pill, seg, series, tag, txt, x-grid, x-ticks, y-grid
 #import "/utils/cetz.typ" as cetz
 #import "/templates/colors.typ": palette
 #import "/templates/layout.typ": page-head

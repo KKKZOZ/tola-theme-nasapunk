@@ -1,5 +1,5 @@
 #import "@tola/source:0.0.0": tola-meta
-#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, box-swatch, c, cells, curve-arrow, legend, line-swatch, pill, seg, tag, txt, callout, demo, hint
+#import "@tola-modules/nasapunk:0.0.0": cetz, arrow, axis-stroke, box-swatch, brace, c, card, cells, coord, curve-arrow, frame, grid-stroke, hbars, lanes, legend, line-swatch, num, pill, seg, series, tag, txt, x-grid, x-ticks, y-grid, callout, demo, hint
 
 #tola-meta((
   title: "[Tour 03] Figures with CeTZ",
@@ -12,6 +12,9 @@
 #let demo = demo.with(scope: (
   cetz: cetz, c: c, txt: txt, tag: tag, arrow: arrow, curve-arrow: curve-arrow, pill: pill,
   cells: cells, seg: seg, legend: legend, box-swatch: box-swatch, line-swatch: line-swatch,
+  num: num, brace: brace, card: card, grid-stroke: grid-stroke, axis-stroke: axis-stroke,
+  y-grid: y-grid, x-ticks: x-ticks, series: series, hbars: hbars,
+  lanes: lanes, coord: coord, frame: frame, x-grid: x-grid,
 ))
 
 CeTZ draws through the regular `@preview/cetz` package. Import `cetz` from
@@ -278,8 +281,13 @@ the small uppercase label used for panel titles and markers.
 
 ```typst
 txt(body, size: 8pt, fill: c.muted, weight: 400, style: "normal")
-tag(body, fill: c.orange)
+tag(body, fill: c.orange, size: 7.5pt, weight: 600, tracking: .8pt)
+num(v, digits: 1, fixed: false)   // 2.345 -> "2.3"; fixed: true pads, 2 -> "2.0"
 ```
+
+A module with its own text size sets it once, `#let txt = txt.with(size:
+9pt)`, rather than defining a second `txt`. `str` already writes negative
+numbers with a real minus sign (−3), so labels need no helper for that.
 
 = Arrows
 
@@ -380,8 +388,31 @@ returns each cell's fill, which is where the drawing's logic goes.
 })
 ```)
 
+Cells can carry values too. `labels` is an array of rows, or a function of
+the row and column; `ink` and `weight` set the text per cell, the same way
+`paint` sets the fill, and `row-labels` and `col-labels` index the grid.
+
+#demo(```typst
+#cetz.canvas(length: 1pt, {
+  let names = ("GPU0", "GPU1", "GPU2")
+  let link = (("X", "NV4", "SYS"), ("NV4", "X", "SYS"), ("SYS", "SYS", "X"))
+  let hot(r, k) = link.at(r).at(k) == "NV4"
+  cells((40, 0), 3, 3, 40, 18, labels: link, gap: .8pt,
+    paint: (r, k) => if r == k { c.grey1 } else if hot(r, k) { c.orange1 } else { c.blue1 },
+    ink: (r, k) => if hot(r, k) { c.orange } else { c.ink },
+    weight: (r, k) => if hot(r, k) { 700 } else { 400 },
+    row-labels: names, col-labels: names)
+  cells((240, -18), 1, 8, 22, 18, labels: ((3, -1, 4, 1, -5, 9, 2, -6),),
+    paint: (r, k) => if k < 4 { c.teal1 } else { c.teal2 })
+})
+```)
+
 ```typst
-cells(o, rows, cols, w, h, paint: (r, k) => c.grey1)
+cells(o, rows, cols, w, h, paint: (r, k) => c.grey1, gap: .5pt,
+  labels: none, ink: c.ink, size: 7.5pt, weight: 400,
+  row-labels: none, col-labels: none, index-gap: 5)
+// paint, ink, weight: a value or a function of (row, col)
+// labels: an array of rows or a function of (row, col); numbers go through str
 ```
 
 = Bars
@@ -412,6 +443,32 @@ seg(x0, x1, y, tone, body: none, h: 16)
 // tones: blue1 blue2 blue orange1 orange teal1 teal2 grey ink
 ```
 
+For a timeline or a Gantt chart drawn to scale, `lanes` lays out a row per
+lane: its label on the left, its spans `(t0, t1, fill)` or `(t0, t1, fill,
+body)` placed in time by `X`. `track` shades the whole lane behind them, and
+`x-grid` draws the time grid with its labels above.
+
+#demo(```typst
+#cetz.canvas(length: 1pt, {
+  import cetz.draw: *
+  let X = coord(0, 120, 380, at: 40)
+  x-grid(range(0, 121, step: 20), X, -66, 6, fill: c.muted)
+  lanes((
+    ("CPU", ((0, 18, c.grey2, [launch]), (18, 36, c.grey2), (36, 54, c.grey2))),
+    ("GPU", ((18, 30, c.blue2, [k0]), (36, 48, c.blue2, [k1]), (54, 90, c.orange2, [attention]))),
+    ("copy", ((90, 112, c.teal1, [D2H]),)),
+  ), X, track: c.panel, extent: (0, 120))
+})
+```)
+
+```typst
+lanes(rows, X, y: 0, h: 15, pitch: 20, gap: 8, size: 7.5pt, fill: c.ink,
+  body-size: 7pt, stroke: .5pt + palette.paper, track: none, extent: none,
+  anchor: "center", inset: 4)
+// rows: (label, spans), top lane first; lane i's top edge is at y - i * pitch
+// anchor: "west" starts each body inset after t0
+```
+
 = Legends
 
 `legend` writes a label to the right of a swatch at `(x, y)`. Pass it the
@@ -434,6 +491,78 @@ legend(x, y, body, swatch)
 box-swatch(x, y, fill, stroke: none)
 line-swatch(x, y, color, dash: none, w: 1pt)
 ```
+
+= Brackets and cards
+
+`brace` draws a bracket under a span with a label below it, or a short stem
+with `tip: true`. `card` is a rectangle with a few centred lines of content,
+for blocks in a pipeline or a model diagram.
+
+#demo(```typst
+#cetz.canvas(length: 1pt, {
+  import cetz.draw: *
+  cells((0, 0), 1, 8, 20, 14, paint: (r, k) => if k < 5 { c.blue1 } else { c.orange1 })
+  brace(0, 100, -18, body: txt[5 weights])
+  brace(100, 160, -18, body: txt[3 scales], color: c.orange)
+  card((200, -40), (320, 0), (txt(fill: c.ink, weight: 600)[decode step], txt(size: 7pt)[one token]))
+  card((340, -40), (440, 0), (txt(fill: c.ink, weight: 600)[KV cache],), fill: c.orange1, stroke: c.orange)
+})
+```)
+
+```typst
+brace(x0, x1, y, body: none, color: c.line, inset: 0, tip: false)
+card(a, b, lines, fill: c.blue1, stroke: c.blue, radius: 3, pitch: 11)
+```
+
+= Charts
+
+A chart maps values to points with scale functions `X` and `Y`, written by
+hand or made by `coord` (linear, or logarithmic with `log: true`). `frame`
+places the titles around the plot, and `y-grid` and `x-ticks` draw its axes. A tick is a value, labelled with
+`format(value)` (`str` by default), or a `(value, label)` pair; a `none`
+label draws the line alone. The grid line at `axis` (by default the first
+tick) is drawn as the axis. `series` draws a data line with a marker on each
+point, `hbars` a column of labelled horizontal bars.
+
+#demo(```typst
+#cetz.canvas(length: 1pt, {
+  import cetz.draw: *
+  let (w, h) = (220, 100)
+  let X = coord(0, 8, w)
+  let Y = coord(0, 40, h)
+  frame(w, h, title: [speed-up], x-title: [threads])
+  y-grid(range(0, 41, step: 10), Y, 0, w, format: v => str(v) + "%")
+  x-ticks((1, 2, 4, 8), X)
+  series(((1, 4), (2, 11), (4, 22), (8, 37)).map(((s, v)) => (X(s), Y(v))), c.blue)
+  series(((1, 3), (2, 6), (4, 9), (8, 10)).map(((s, v)) => (X(s), Y(v))), c.orange, marker: "square")
+  content((w + 4, Y(37)), txt(fill: c.blue, weight: 600)[sharded], anchor: "west")
+  content((w + 4, Y(10)), txt(fill: c.orange, weight: 600)[shared], anchor: "west")
+  translate((400, 0))
+  hbars((
+    ([dense], 27.9, c.grey2, [27.9]),
+    ([overlap], 41.0, c.orange, [*41.0*]),
+    ([serial], 58.7, c.orange2, [58.7]),
+  ), 1.6, unit: [ms per token])
+})
+```)
+
+```typst
+coord(lo, hi, len, log: false, at: 0)   // a function lo..hi -> at..at + len
+frame(w, h, title: none, unit: none, x-title: none, y-title: none, at: (0, 0),
+  title-at: (-34, 16), x-gap: 25, y-gap: 30, size: 8pt, fill: c.muted)
+grid-stroke, axis-stroke   // dotted hairline; .6pt line
+y-grid(ticks, Y, x0, x1, axis: auto, gap: 6, size: 7.5pt, fill: c.ink, format: str)
+x-ticks(ticks, X, y: 0, len: 3, gap: 11, size: 7.5pt, fill: c.ink, anchor: "center", format: str)
+x-grid(ticks, X, y0, y1, stroke: grid-stroke, gap: 2, size: 7.5pt, fill: c.ink, format: str)
+series(pts, color, dash: none, w: 1.2pt, marker: "circle", r: 2.3, ring: .6pt)
+// markers: "circle", "square", "hollow", none
+hbars(rows, sx, pitch: 20, h: 14, size: 8pt, note-size: auto, note-fill: c.muted,
+  stroke: .5pt + c.line, axis: axis-stroke, unit: none, ref: none, ref-label: none)
+// rows: (label, value, fill, note), top row first; sx: points per unit
+```
+
+A post whose charts share a look sets it once: `#let y-grid = y-grid.with(gap:
+5, size: 7pt, fill: c.muted)`.
 
 = Putting it together
 
